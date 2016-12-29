@@ -10,9 +10,10 @@ int initWp();
 int updateWp();
 GLuint BuildShaderProgram(const char *vsPath, const char *fsPath);
 GLuint CreateShader(GLenum eShaderType, const char *strShaderFile);
-GLuint theShaderProgram;
+GLuint shaderProgram;
 GLuint vao;
-GLuint triangleBufferObject;
+GLuint vertex_vbo;
+GLuint color_vbo;
 
 int initWp()
 {
@@ -52,19 +53,14 @@ int initWp()
         return 1;
     }
 
-  theShaderProgram = BuildShaderProgram("vs1.glsl", "fs1.glsl");
-  if (theShaderProgram == 1)
+  shaderProgram = BuildShaderProgram("shaders/vs1.glsl", "shaders/fs1.glsl");
+  if (shaderProgram == 1)
   {
     SDL_Quit();
     return 0;
   }
 
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao); //make our vertex array object, we need it to restore state we set after binding it. Re-binding reloads the state associated with it.
-
-  glGenBuffers(1, &triangleBufferObject); //create the buffer
-  glBindBuffer(GL_ARRAY_BUFFER, triangleBufferObject); //we're "using" this one now
-
+  
   return 0;
 }
 
@@ -73,19 +69,16 @@ int updateWp()
   glClearColor(0.0,0.0,0.0,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  /* drawing code in here! */
-  glUseProgram(theShaderProgram);
-  glBindBuffer(GL_ARRAY_BUFFER, triangleBufferObject); //bind the buffer we're applying attributes to
-  glEnableVertexAttribArray(0); //0 is our index, refer to "location = 0" in the vertex shader
-  glEnableVertexAttribArray(1); //attribute 1 is for vertex color data
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0); //tell gl (shader!) how to interpret our vertex data
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)48); //color data is 48 bytes in to the array
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  glBindVertexArray(vao);
 
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glUseProgram(0);
-  /* drawing code above here! */
+  glUseProgram(shaderProgram);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
+  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glEnableVertexAttribArray(1);
+  glDrawArrays(GL_TRIANGLES, 0, 3);
 
   SDL_GL_SwapWindow(window);
   return 0;
@@ -99,22 +92,16 @@ GLuint BuildShaderProgram(const char *vsPath, const char *fsPath)
 	vertexShader = CreateShader(GL_VERTEX_SHADER, vsPath);
 	fragmentShader = CreateShader(GL_FRAGMENT_SHADER, fsPath);
 	
-	/* So we've compiled our shaders, now we need to link them in to the program
-	that will be used for rendering. */
-	
-	/*This section could be broken out into a separate function, but we're doing it here 
-	because I'm not using C++ STL features that would make this easier. Tutorial doing so is 
-	here: http://www.arcsynthesis.org/gltut/Basics/Tut01%20Making%20Shaders.html */
-	
 	GLuint tempProgram;
 	tempProgram = glCreateProgram();
 	
 	glAttachShader(tempProgram, vertexShader);
 	glAttachShader(tempProgram, fragmentShader);
+  glBindAttribLocation(tempProgram, 0, "position");
+  glBindAttribLocation(tempProgram, 1, "color");
 	
-	glLinkProgram(tempProgram); //linking!
+	glLinkProgram(tempProgram);
 	
-	//error checking
 	GLint status;
     	glGetProgramiv(tempProgram, GL_LINK_STATUS, &status);
     	if (status == GL_FALSE)

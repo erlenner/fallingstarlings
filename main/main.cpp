@@ -9,15 +9,25 @@ int main(int argc, char *argv[])
   const float vertices[] = {
     0.0f, 0.5f, 0.0f, 1.0f,
     0.5f, -0.366f, 0.0f, 1.0f,
-    -0.5f, -0.366f, 0.0f, 1.0f,
-    //next part contains vertex colors
+    -0.5f, -0.366f, 0.0f, 1.0f
+  };
+  const float colors[] = {
     0.0f, 1.0f, 0.0f, 1.0f,
     1.0f, 1.0f, 1.0f, 1.0f,
     1.0f, 1.0f, 1.0f, 1.0f 	
-  }; //we love you vertices!
+  };
 
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //formatting the data for the buffer
-  glBindBuffer(GL_ARRAY_BUFFER, 0); //unbind any buffers
+  glGenVertexArrays(1, &vao);
+
+  // vertex_vbo
+  glGenBuffers(1, &vertex_vbo); //create the buffer
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo); //we're "using" this one now
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  // color_vbo
+  glGenBuffers(1, &color_vbo); //create the buffer
+  glBindBuffer(GL_ARRAY_BUFFER, color_vbo); //we're "using" this one now
+  glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
   char bGameLoopRunning = 1;
   while (bGameLoopRunning)

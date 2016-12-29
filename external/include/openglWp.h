@@ -14,11 +14,17 @@ GLuint shaderProgram;
 GLuint vao;
 GLuint vertex_vbo;
 GLuint color_vbo;
+GLuint elements;
+
+GLubyte indices[] = {
+  0,1,2
+};
+
 
 int initWp()
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) return 1;
-  
+
   window = SDL_CreateWindow("My Game Window",
     SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED,
@@ -40,7 +46,7 @@ int initWp()
   }
 
   SDL_GL_MakeCurrent(window, glContext);
-  
+
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
@@ -60,7 +66,6 @@ int initWp()
     return 0;
   }
 
-  
   return 0;
 }
 
@@ -72,13 +77,18 @@ int updateWp()
   glBindVertexArray(vao);
 
   glUseProgram(shaderProgram);
+  // vertex_vbo
   glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
   glEnableVertexAttribArray(0);
+  // color_vbo
   glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
   glEnableVertexAttribArray(1);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  //glDrawArrays(GL_TRIANGLES, 0, 3);
+  // indices:vbo
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
+  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, 0);
 
   SDL_GL_SwapWindow(window);
   return 0;

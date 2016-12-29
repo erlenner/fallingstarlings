@@ -29,6 +29,11 @@ int main(int argc, char *argv[])
   glBindBuffer(GL_ARRAY_BUFFER, color_vbo); //we're "using" this one now
   glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
+  // index_vbo
+  glGenBuffers(1, &elements);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
   char bGameLoopRunning = 1;
   while (bGameLoopRunning)
   {

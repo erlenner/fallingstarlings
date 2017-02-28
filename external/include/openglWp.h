@@ -16,11 +16,6 @@ GLuint vertex_vbo;
 GLuint color_vbo;
 GLuint elements;
 
-GLubyte indices[] = {
-  0,1,2
-};
-
-
 int initWp()
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) return 1;

@@ -20,12 +20,14 @@ public:
   vec operator+=(const vec& rhs){ x+=rhs.x; y+=rhs.y; return *this; }
   vec operator-(const vec& rhs)const{ return vec(x-rhs.x,y-rhs.y); }
   vec operator-=(const vec& rhs){ x-=rhs.x; y-=rhs.y; return *this; }
-  bool operator==(const vec& rhs)const{ return (x==rhs.x)&&(y==rhs.y); }
   friend float abs2(const vec&);
   friend float abs(const vec&);
+  friend vec norm(const vec&);
+  bool operator==(const vec& rhs)const{ return (x==rhs.x)&&(y==rhs.y); }
   bool operator<(const vec& rhs)const{ return abs2(*this)<abs2(rhs); }
   bool operator>(const vec& rhs)const{ return abs2(*this)>abs2(rhs); }
 };
 
 float abs2(const vec& vecc){ return vecc.x*vecc.x+vecc.y*vecc.y; }
 float abs(const vec& vecc){ return sqrt(vecc.x*vecc.x+vecc.y*vecc.y); }
+vec norm(const vec& vecc){ return vec(vecc.x/sqrt(vecc.x*vecc.x+vecc.y*vecc.y),vecc.y/sqrt(vecc.x*vecc.x+vecc.y*vecc.y)); }

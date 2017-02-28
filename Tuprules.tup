@@ -1,4 +1,4 @@
-CC = g++
+CC = g++-6
 
 CFLAGS += -std=c++11
 CFLAGS += -O2

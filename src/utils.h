@@ -1,4 +1,5 @@
 #pragma once
+#include<iostream>
 
 class vec
 {
@@ -26,9 +27,11 @@ public:
     bool operator==(const vec& rhs)const{ return (x==rhs.x)&&(y==rhs.y); }
     bool operator<(const vec& rhs)const{ return abs2(*this)<abs2(rhs); }
     bool operator>(const vec& rhs)const{ return abs2(*this)>abs2(rhs); }
+    friend std::ostream& operator<<(std::ostream& os, const vec& vecc);
 };
 
 float abs2(const vec& vecc){ return vecc.x*vecc.x+vecc.y*vecc.y; }
 float abs(const vec& vecc){ return sqrt(vecc.x*vecc.x+vecc.y*vecc.y); }
 vec norm(const vec& vecc){ return vec((vecc.x==0) ? 0 : vecc.x/sqrt(vecc.x*vecc.x+vecc.y*vecc.y),
                                       (vecc.y==0) ? 0 : vecc.y/sqrt(vecc.x*vecc.x+vecc.y*vecc.y)); }
+std::ostream& operator<<(std::ostream& os, const vec& vecc){ os << vecc.x << "," << vecc.y; return os; }

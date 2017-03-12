@@ -90,39 +90,39 @@ int updateWp()
 
 GLuint BuildShaderProgram(const char *vsPath, const char *fsPath)
 {
-	GLuint vertexShader;
-	GLuint fragmentShader;
-	
-	vertexShader = CreateShader(GL_VERTEX_SHADER, vsPath);
-	fragmentShader = CreateShader(GL_FRAGMENT_SHADER, fsPath);
-	
-	GLuint tempProgram;
-	tempProgram = glCreateProgram();
-	
-	glAttachShader(tempProgram, vertexShader);
-	glAttachShader(tempProgram, fragmentShader);
-  glBindAttribLocation(tempProgram, 0, "position");
-  glBindAttribLocation(tempProgram, 1, "color");
-	
-	glLinkProgram(tempProgram);
-	
-	GLint status;
-    	glGetProgramiv(tempProgram, GL_LINK_STATUS, &status);
-    	if (status == GL_FALSE)
-    	{
-    		GLint infoLogLength;
-        	glGetProgramiv(tempProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
-	
-		GLchar strInfoLog[4096];
-		glGetProgramInfoLog(tempProgram, infoLogLength, NULL, strInfoLog);
-		printf("Shader linker failure: %s\n", strInfoLog);
-		return -1;
-	}
-	
-	glDetachShader(tempProgram, vertexShader);
-	glDetachShader(tempProgram, fragmentShader);
-	
-	return tempProgram;
+    GLuint vertexShader;
+    GLuint fragmentShader;
+    
+    vertexShader = CreateShader(GL_VERTEX_SHADER, vsPath);
+    fragmentShader = CreateShader(GL_FRAGMENT_SHADER, fsPath);
+    
+    GLuint tempProgram;
+    tempProgram = glCreateProgram();
+    
+    glAttachShader(tempProgram, vertexShader);
+    glAttachShader(tempProgram, fragmentShader);
+    glBindAttribLocation(tempProgram, 0, "position");
+    glBindAttribLocation(tempProgram, 1, "color");
+    
+    glLinkProgram(tempProgram);
+    
+    GLint status;
+        glGetProgramiv(tempProgram, GL_LINK_STATUS, &status);
+        if (status == GL_FALSE)
+        {
+            GLint infoLogLength;
+            glGetProgramiv(tempProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
+
+            GLchar strInfoLog[4096];
+            glGetProgramInfoLog(tempProgram, infoLogLength, NULL, strInfoLog);
+            printf("Shader linker failure: %s\n", strInfoLog);
+            return -1;
+        }
+
+glDetachShader(tempProgram, vertexShader);
+glDetachShader(tempProgram, fragmentShader);
+
+return tempProgram;
 }
 
 GLuint CreateShader(GLenum eShaderType, const char *strShaderFile)

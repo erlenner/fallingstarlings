@@ -37,18 +37,12 @@ int main(int argc, char *argv[])
 
     // vertex_vbo
     glGenBuffers(1, &vertex_vbo); //create the buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo); //we're "using" this one now
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
 
     // color_vbo
     glGenBuffers(1, &color_vbo); //create the buffer
-    glBindBuffer(GL_ARRAY_BUFFER, color_vbo); //we're "using" this one now
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_STATIC_DRAW);
 
     // index_vbo
     glGenBuffers(1, &elements);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indices.size(), indices.data(), GL_STATIC_DRAW);
 
     SDL_DisplayMode displayMode;
     SDL_GetCurrentDisplayMode(0, &displayMode);
@@ -64,7 +58,7 @@ int main(int argc, char *argv[])
                 bGameLoopRunning = 0;
         }
 
-        updateWp();
+        updateWp(vertices, colors, indices);
 
         SDL_Delay(10);
     } 

@@ -1,6 +1,7 @@
 //gcc sdl2-opengl-sample.c -o sdl2-opengl-sample -Wall -std=c99 -I/usr/local/include/SDL2 -lSDL2 -I/usr/include/GL -lGL -lGLEW -Wall
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include <vector>
 
 SDL_Window* window;
 SDL_GLContext glContext;
@@ -63,7 +64,7 @@ int initWp()
   return 0;
 }
 
-int updateWp()
+int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<unsigned char>& indices)
 {
   glClearColor(0.0,0.0,0.0,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
@@ -73,16 +74,19 @@ int updateWp()
   glUseProgram(shaderProgram);
   // vertex_vbo
   glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
   // color_vbo
-  glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, color_vbo); //we're "using" this one now
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_STATIC_DRAW);
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
   glEnableVertexAttribArray(1);
   //glDrawArrays(GL_TRIANGLES, 0, 3);
   // indices:vbo
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, 0);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indices.size(), indices.data(), GL_STATIC_DRAW);
+  glDrawElements(GL_TRIANGLES, vertices.size()/2, GL_UNSIGNED_BYTE, 0);
 
   SDL_GL_SwapWindow(window);
   return 0;

@@ -3,7 +3,7 @@
 #include "Boid.h"
 #include "utils.h"
 
-#define N_BOIDS 5
+#define N_BOIDS 1
 
 int main(int argc, char *argv[])
 {
@@ -38,22 +38,7 @@ int main(int argc, char *argv[])
     //for (int i=0; i<colors.size(); ++i)
     //    std::cout << colors[i] << "\t";
 
-    initWp();
-
-    glGenVertexArrays(1, &vao);
-
-    // vertex_vbo
-    glGenBuffers(1, &vertex_vbo); //create the buffer
-
-    // color_vbo
-    glGenBuffers(1, &color_vbo); //create the buffer
-
-    // index_vbo
-    glGenBuffers(1, &elements);
-
-    SDL_DisplayMode displayMode;
-    SDL_GetCurrentDisplayMode(0, &displayMode);
-    std::cout << "displayMode: " << displayMode.w << "," << displayMode.h << "\n";
+    initWp(vertices, colors, indices);
 
     char done = 0;
     while (!done){
@@ -80,7 +65,7 @@ int main(int argc, char *argv[])
         dt = now - before;
         before = now;
 
-        std::cout << "rate:\t" << 1/dt << "\n";
+        //std::cout << "rate:\t" << 1/dt << "\n";
 
         for (auto& boid : boids){
             boid.update(dt);

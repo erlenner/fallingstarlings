@@ -15,7 +15,7 @@ LIBS += -lGLEW
 LIBS += -lGLU
 
 # Compile position independent object code
-!cc = |> ^ CC %f^ $(CC) -fPIC -c %f -o %o $(CFLAGS) $(INCLUDES) |> %B.o
+!cc = |> ^co CC %f^ $(CC) -fPIC -c %f -o %o $(CFLAGS) $(INCLUDES) |> %B.o
 
 # Link executable binary
-!lb = |> ^ LD %o^ $(CC) %f -o %o $(LIBS) |>
+!lb = |> ^o LD %o^ $(CC) %f -o %o $(LIBS) |>

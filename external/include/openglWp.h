@@ -16,15 +16,19 @@ GLuint vertex_vbo;
 GLuint color_vbo;
 GLuint elements;
 
-int initWp()
+int initWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<unsigned char>& indices)
 {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) return 1;
+
+  SDL_DisplayMode displayMode;
+  SDL_GetCurrentDisplayMode(0, &displayMode);
 
   window = SDL_CreateWindow("My Game Window",
     SDL_WINDOWPOS_UNDEFINED,
     SDL_WINDOWPOS_UNDEFINED,
+    //displayMode.w, displayMode.h,
     640, 480,
-    SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL/* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
 
   glContext = SDL_GL_CreateContext(window);
   if (glContext == NULL)
@@ -61,12 +65,28 @@ int initWp()
     return 0;
   }
 
+  //glMatrixMode(GL_PROJECTION);
+  //glLoadIdentity();
+  //glOrtho(0.0f, displayMode.w, displayMode.h, 0.0f, 1.0f, -1.0f);
+  //glMatrixMode(GL_MODELVIEW);
+
+  glGenVertexArrays(1, &vao);
+
+  // vertex_vbo
+  glGenBuffers(1, &vertex_vbo); //create the buffer
+
+  // color_vbo
+  glGenBuffers(1, &color_vbo); //create the buffer
+
+  // index_vbo
+  glGenBuffers(1, &elements);
+
   return 0;
 }
 
 int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<unsigned char>& indices)
 {
-  glClearColor(0.0,0.0,0.0,0.0);
+  //glClearColor(0.0,0.0,0.0,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
   glBindVertexArray(vao);

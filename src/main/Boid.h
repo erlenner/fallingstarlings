@@ -2,14 +2,13 @@
 #include "utils.h"
 #include <vector>
 #define BOID_POINTS 3
-#define BOID_LENGTH 4.
-#define BOID_WIDTH 1.
-#define BOID_SIZE .01
+#define BOID_LENGTH .04
+#define BOID_WIDTH .01
 
 class Boid
 {
 public:
-    float* vertex;
+    vec* vertex;
     vec vel;
     //unsigned oldIndex;
 
@@ -22,14 +21,14 @@ public:
         indices.push_back((vertices.size()/2)+2);
 
         vertices.push_back(pos.x);
-        vertex = &vertices.back();
+        vertex = (vec*)&vertices.back();
         vertices.push_back(pos.y);
 
-        vertices.push_back(pos.x+BOID_WIDTH*BOID_SIZE);
-        vertices.push_back(pos.y+BOID_LENGTH*BOID_SIZE);
+        vertices.push_back(pos.x+BOID_WIDTH);
+        vertices.push_back(pos.y+BOID_LENGTH);
 
-        vertices.push_back(pos.x-BOID_WIDTH*BOID_SIZE);
-        vertices.push_back(pos.y+BOID_LENGTH*BOID_SIZE);
+        vertices.push_back(pos.x-BOID_WIDTH);
+        vertices.push_back(pos.y+BOID_LENGTH);
 
         for (unsigned i=0; i<BOID_POINTS; ++i){
             colors.push_back(1.0);
@@ -40,14 +39,14 @@ public:
     }
 
     void update(float dt){
-        //vertex += vel*dt;
-        vec newpos = vec(vertex) + vel*dt;
-        memcpy(vertex, &(newpos), sizeof(vec));
+        vertex[0] += vel*dt;
 
-        //float speed = abs(vel);
-        //if (speed > 0){
-        //    *(vertex + 2) = vertexjjjjj
-        //}
+        float speed = abs(vel);
+        if (speed > 0){
+            vec velNormed = vel / speed;
+            vertex[1] = vertex[0] - velNormed * BOID_LENGTH + BOID_WIDTH * vec(-velNormed.y, velNormed.x);
+            vertex[2] = vertex[0] - velNormed * BOID_LENGTH + BOID_WIDTH * vec(velNormed.y, -velNormed.x);
+        }
         //for (int i=0; i<BOID_POINTS; ++i)
         //    (vertex+2*i) += vel*dt;
     }

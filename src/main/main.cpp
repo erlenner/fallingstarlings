@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     before = now = secs();
 
     std::vector<Boid> boids;
-    vec velInit(0,-0.1);
+    vec velInit(0.1,-0.1);
     for (unsigned i=0; i<N_BOIDS; ++i){
         static vec initPos(0,0);
         boids.push_back(Boid());
@@ -80,13 +80,15 @@ int main(int argc, char *argv[])
         dt = now - before;
         before = now;
 
+        std::cout << "rate:\t" << 1/dt << "\n";
+
         for (auto& boid : boids){
             boid.update(dt);
         }
 
         updateWp(vertices, colors, indices);
 
-        SDL_Delay(10);
+        //SDL_Delay(10);
     }
 
     SDL_GL_DeleteContext(glContext);

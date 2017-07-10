@@ -2,9 +2,8 @@
 #include<iostream>
 #include <cmath>
 
-class vec
+struct vec
 {
-public:
     float x;
     float y;
 
@@ -30,6 +29,7 @@ public:
     bool operator<(const vec& rhs)const{ return abs2(*this)<abs2(rhs); }
     bool operator>(const vec& rhs)const{ return abs2(*this)>abs2(rhs); }
     friend vec operator^(const vec& lhs, const vec& rhs);
+    friend vec operator*(float lhs, const vec& rhs);
     //friend float* operator+=(float* lhs, const vec& rhs);
     friend std::ostream& operator<<(std::ostream& os, const vec& vecc);
 };
@@ -39,6 +39,7 @@ float abs(const vec& vecc){ return sqrt(vecc.x*vecc.x+vecc.y*vecc.y); }
 vec norm(const vec& vecc){ return vec((vecc.x==0) ? 0 : vecc.x/sqrt(vecc.x*vecc.x+vecc.y*vecc.y),
                                       (vecc.y==0) ? 0 : vecc.y/sqrt(vecc.x*vecc.x+vecc.y*vecc.y)); }
 vec operator^(const vec& lhs, const vec& rhs){ return vec(lhs.x*rhs.x, lhs.y*rhs.y); }
+vec operator*(float lhs, const vec& rhs){ return rhs*lhs; }
 
 //float* operator+=(float* lhs, const vec& rhs){ lhs[0] += rhs.x; lhs[1] += rhs.y; return lhs; }
 std::ostream& operator<<(std::ostream& os, const vec& vecc){ os << vecc.x << "," << vecc.y; return os; }

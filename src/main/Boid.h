@@ -16,14 +16,12 @@ class Boid
     vec* vertex;
     vec vel;
     uint32_t gridIndex;
-
     friend class Grid;
-    static Grid grid;
 
 public:
 
     Boid(){}
-    void init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel);
+    void init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Grid& grid);
 
-    void update(float dt);
+    void update(float dt, Grid& grid);
 };

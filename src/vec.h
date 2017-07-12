@@ -25,6 +25,7 @@ struct vec
     friend float abs(const vec& vecc){ return sqrt(vecc.x*vecc.x+vecc.y*vecc.y); }
     friend vec norm(const vec& vecc){ return    vec((vecc.x==0) ? 0 : vecc.x/sqrt(vecc.x*vecc.x+vecc.y*vecc.y),
                                                     (vecc.y==0) ? 0 : vecc.y/sqrt(vecc.x*vecc.x+vecc.y*vecc.y)); }
+    friend float maxDim(const vec& vecc){ return vecc.x*vecc.x > vecc.y*vecc.y ? vecc.x : vecc.y; }
     bool operator==(const vec& rhs)const{ return (x==rhs.x)&&(y==rhs.y); }
     bool operator<(const vec& rhs)const{ return abs2(*this)<abs2(rhs); }
     bool operator>(const vec& rhs)const{ return abs2(*this)>abs2(rhs); }

@@ -1,9 +1,7 @@
 #include "Boid.h"
 #include "utils.h"
 
-Grid Boid::grid;
-
-void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
+void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Grid& grid)
 {
     this->vel=vel;
     indices.push_back(vertices.size()/2);
@@ -11,7 +9,7 @@ void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indice
     indices.push_back(2+vertices.size()/2);
 
     vertices.push_back(pos.x);
-    vertex = (vec*)&vertices.back();
+    vertex = reinterpret_cast<vec*>(&vertices.back());
     vertices.push_back(pos.y);
 
     vertices.push_back(pos.x+BOID_WIDTH);
@@ -27,15 +25,15 @@ void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indice
     grid.insert(*this);
 }
 
-void Boid::update(float dt)
+void Boid::update(float dt, Grid& grid)
 {
-    //grid.update(*this);
+    grid.update(*this);
 
-    vec acc(0.5, -0.5);
+    vec acc;
     vel += acc*dt;
-    vertex[0] += vel*dt;
-
-    std::cout << "v: " << vertex[0] << "\n";
+    vec newPos = vertex[0] + vel*dt;
+    if (maxDim(newPos) < 1)
+        vertex[0] = newPos;
 
     float speed = abs(vel);
     if (speed > 0){

@@ -3,7 +3,9 @@
 #include "Boid.h"
 #include "utils.h"
 
-#define N_BOIDS 1
+#define N_BOIDS 7
+
+Grid grid;
 
 int main(int argc, char *argv[])
 {
@@ -19,11 +21,12 @@ int main(int argc, char *argv[])
     before = now = secs();
 
     std::vector<Boid> boids;
-    vec velInit(0.1,-0.1);
-    for (unsigned i=0; i<N_BOIDS; ++i){
+    boids.reserve(N_BOIDS);
+    vec velInit(0.1,0.1);
+    for (uint32_t i=0; i<N_BOIDS; ++i){
         static vec initPos(0,0);
         boids.push_back(Boid());
-        boids.back().init(vertices, indices, colors, initPos, velInit);
+        boids.back().init(vertices, indices, colors, initPos, velInit, grid);
         //std::cout << initPos << "\n";
         initPos += vec(0.05,0.15);
     }
@@ -68,7 +71,7 @@ int main(int argc, char *argv[])
         //std::cout << "rate:\t" << 1/dt << "\n";
 
         for (auto& boid : boids){
-            boid.update(dt);
+            boid.update(dt, grid);
         }
 
         updateWp(vertices, colors, indices);

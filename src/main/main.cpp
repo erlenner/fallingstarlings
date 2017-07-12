@@ -5,8 +5,6 @@
 
 #define N_BOIDS 7
 
-Grid grid;
-
 int main(int argc, char *argv[])
 {
     std::vector<float> vertices;
@@ -26,7 +24,7 @@ int main(int argc, char *argv[])
     for (uint32_t i=0; i<N_BOIDS; ++i){
         static vec initPos(0,0);
         boids.push_back(Boid());
-        boids.back().init(vertices, indices, colors, initPos, velInit, grid);
+        boids.back().init(vertices, indices, colors, initPos, velInit);
         //std::cout << initPos << "\n";
         initPos += vec(0.05,0.15);
     }
@@ -71,7 +69,7 @@ int main(int argc, char *argv[])
         //std::cout << "rate:\t" << 1/dt << "\n";
 
         for (auto& boid : boids){
-            boid.update(dt, grid);
+            boid.update(dt);
         }
 
         updateWp(vertices, colors, indices);

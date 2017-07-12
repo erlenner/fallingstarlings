@@ -4,16 +4,13 @@
 #define MAP_SIZE 2
 #define MAX_BOIDS 10
 
-
-#include "Boid.h"
 class Boid;
 
-class Grid {
+namespace Grid {
 
-    Boid* grid[GRID_SIZE*GRID_SIZE*MAX_BOIDS];
-
-public:
-    Grid();
     void insert(Boid& boid);
     void update(Boid& boid);
 };
+
+#include "Boid.h"
+

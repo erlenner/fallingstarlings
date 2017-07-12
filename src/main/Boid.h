@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "Grid.h"
-class Grid;
 
 #include "vec.h"
 
@@ -16,12 +15,14 @@ class Boid
     vec* vertex;
     vec vel;
     uint32_t gridIndex;
-    friend class Grid;
+
+    friend void Grid::insert(Boid& boid);
+    friend void Grid::update(Boid& boid);
 
 public:
 
     Boid(){}
-    void init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Grid& grid);
+    void init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel);
 
-    void update(float dt, Grid& grid);
+    void update(float dt);
 };

@@ -1,7 +1,7 @@
 #include "Boid.h"
 #include "utils.h"
 
-void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Grid& grid)
+void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
 {
     this->vel=vel;
     indices.push_back(vertices.size()/2);
@@ -22,12 +22,12 @@ void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indice
     colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
     colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
 
-    grid.insert(*this);
+    Grid::insert(*this);
 }
 
-void Boid::update(float dt, Grid& grid)
+void Boid::update(float dt)
 {
-    grid.update(*this);
+    Grid::update(*this);
 
     vec acc;
     vel += acc*dt;

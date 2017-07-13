@@ -29,6 +29,8 @@ void Boid::update(float dt)
 {
     Grid::update(*this);
 
+    Boid* neighbours[NEIGHBOURS_CONSIDERED+1] = {};
+    Grid::findNeighbours(*this, neighbours);
     vec acc;
     vel += acc*dt;
     vec newPos = vertex[0] + vel*dt;

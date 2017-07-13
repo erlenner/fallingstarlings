@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
         static vec initPos(0,0);
         boids.push_back(Boid());
         boids.back().init(vertices, indices, colors, initPos, velInit);
-        //std::cout << initPos << "\n";
+        std::cout << &boids.back() << "\n";
         initPos += vec(0.05,0.15);
     }
     //std::cout << "vertices:\n";
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         dt = now - before;
         before = now;
 
-        //std::cout << "rate:\t" << 1/dt << "\n";
+        std::cout << "rate:\t" << 1/dt << "\n";
 
         for (auto& boid : boids){
             boid.update(dt);

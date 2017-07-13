@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
-
-#include "Grid.h"
-
 #include "vec.h"
+
+#define NEIGHBOURS_CONSIDERED 7
 
 #define BOID_POINTS 3
 #define BOID_LENGTH .02
 #define BOID_WIDTH .005
+#include "Grid.h"
+
 
 
 class Boid
@@ -18,6 +19,8 @@ class Boid
 
     friend void Grid::insert(Boid& boid);
     friend void Grid::update(Boid& boid);
+    friend void Grid::findNeighbours(Boid& boid, Boid** neighbours);
+    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, Boid** neighbours);
 
 public:
 

@@ -1,8 +1,9 @@
-#include "Grid.h"
 #include "utils.h"
+#include "array.h"
+#include "Grid.h"
 
 namespace Grid{
-    static std::vector<Boid*> grid(GRID_SIZE*GRID_SIZE*MAX_BOIDS);
+    static std::vector<array<Boid*, MAX_BOIDS>> grid(GRID_SIZE*GRID_SIZE);
 
     // helpers
     static float neighbourDistances[NEIGHBOURS_CONSIDERED+1];
@@ -10,33 +11,20 @@ namespace Grid{
 
     void insert(Boid& boid)
     {
-        boid.gridIndex = (uint32_t)((boid.vertex->x + 1) / GRID_STEP) + GRID_SIZE * (uint32_t)((boid.vertex->y + 1) / GRID_STEP);
-        for (uint32_t i = boid.gridIndex; i < boid.gridIndex + MAX_BOIDS*GRID_SIZE*GRID_SIZE; i+=GRID_SIZE*GRID_SIZE)
-            if (!grid[i]){
-                grid[i] = &boid;
-                break;
-            }
+        uint32_t index = (uint32_t)((boid.vertex->x + 1) / GRID_STEP) + GRID_SIZE * (uint32_t)((boid.vertex->y + 1) / GRID_STEP);
+        if ((index > 0) && (index < GRID_SIZE*GRID_SIZE)){
+            grid[index].push_back(&boid);
+            boid.gridIndex = index;
+        }
     }
 
     void update(Boid& boid)
     {
         uint32_t index = (uint32_t)((boid.vertex->x + 1) / GRID_STEP) + GRID_SIZE * (uint32_t)((boid.vertex->y + 1) / GRID_STEP);
-        if ((index < 0) || (index > MAX_BOIDS*GRID_SIZE*GRID_SIZE))
-            return;
 
-        if (index != boid.gridIndex){
-            for (uint32_t i = boid.gridIndex; i < boid.gridIndex + MAX_BOIDS*GRID_SIZE*GRID_SIZE; i+=GRID_SIZE*GRID_SIZE)
-                if (grid[i] == &boid){
-                    for (uint32_t j = i; j < boid.gridIndex + (MAX_BOIDS-1)*GRID_SIZE*GRID_SIZE; j+=GRID_SIZE*GRID_SIZE)
-                        grid[j] = grid[j+GRID_SIZE*GRID_SIZE];
-                    grid[boid.gridIndex + (MAX_BOIDS-1)*GRID_SIZE*GRID_SIZE] = nullptr;
-                    break;
-                }
-            for (uint32_t i = index; i < index + MAX_BOIDS*GRID_SIZE*GRID_SIZE; i+=GRID_SIZE*GRID_SIZE)
-                if (!grid[i]){
-                    grid[i] = &boid;
-                    break;
-                }
+        if ((index != boid.gridIndex) && (index > 0) && (index < GRID_SIZE*GRID_SIZE)){
+            grid[boid.gridIndex].erase(&boid);
+            grid[index].push_back(&boid);
             boid.gridIndex = index;
         }
     }
@@ -93,12 +81,12 @@ namespace Grid{
 
     inline void insertNeighbours(uint32_t index, Boid& boid, Boid** neighbours)
     {
-        for (uint32_t i = index; (i < index + MAX_BOIDS*GRID_SIZE*GRID_SIZE) && (grid[i]!=nullptr); i+=GRID_SIZE*GRID_SIZE)
+        for (Boid** ref = &grid[index][0]; ref != grid[index].end; ++ref)
         {
-            float distance = abs2(*(grid[i]->vertex) - *(boid.vertex));
-            if (grid[i] == &boid) continue;
+            float distance = abs2(*((*ref)->vertex) - *(boid.vertex));
+            if (*ref == &boid) continue;
             if (furthestIndex < 0){
-                neighbours[++furthestIndex] = grid[i];
+                neighbours[++furthestIndex] = *ref;
                 neighbourDistances[furthestIndex] = distance;
             }
             else if ((furthestIndex+1 < NEIGHBOURS_CONSIDERED) || (distance < neighbourDistances[furthestIndex]))
@@ -116,7 +104,7 @@ namespace Grid{
                     if ((--j < 0) || (distance > neighbourDistances[j]))
                     {
                         neighbourDistances[j+1] = distance;
-                        neighbours[j+1] = grid[i];
+                        neighbours[j+1] = *ref;
                         break;
                     }else{
                         neighbourDistances[j+1] = neighbourDistances[j];

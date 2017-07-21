@@ -1,5 +1,6 @@
 #include "Boid.h"
 #include "utils.h"
+#include "conf.h"
 
 void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
 {
@@ -31,7 +32,7 @@ void Boid::update(float dt)
 
     Boid* neighbours[NEIGHBOURS_CONSIDERED+1] = {};
     Grid::findNeighbours(*this, neighbours);
-    vec acc;
+    vec acc = separation(neighbours) + alignment(neighbours, dt) + cohesion(neighbours);
     vel += acc*dt;
     vec newPos = vertex[0] + vel*dt;
     if (maxDim(newPos) < 1)
@@ -46,4 +47,34 @@ void Boid::update(float dt)
     //for (int i=0; i<BOID_POINTS; ++i)
     //    (vertex+2*i) += vel*dt;
 
+}
+
+vec Boid::cohesion(Boid** neighbours)const
+{
+    vec averagePos;
+    for (uint8_t i=0; neighbours[i] && (i < NEIGHBOURS_CONSIDERED); ++i){
+        averagePos += *(neighbours[i]->vertex);
+    }
+    return (averagePos - *vertex) * conf::cohesion_weight;
+}
+
+vec Boid::alignment(Boid** neighbours, float dt)const
+{
+    vec averageVel;
+    for (uint8_t i=0; neighbours[i] && (i < NEIGHBOURS_CONSIDERED); ++i){
+        averageVel += neighbours[i]->vel;
+    }
+    return (averageVel - vel) * dt * conf::alignment_weight;
+}
+
+vec Boid::separation(Boid** neighbours)const
+{
+    vec acc;
+    for (uint8_t i=0; neighbours[i] && (i < NEIGHBOURS_CONSIDERED); ++i){
+        vec diff = *vertex - *(neighbours[i]->vertex);
+        float dist2 = abs2(diff);
+        if (dist2 < COMFORT_ZONE*COMFORT_ZONE)
+            acc += diff / dist2;
+    }
+    return acc * conf::separation_weight;
 }

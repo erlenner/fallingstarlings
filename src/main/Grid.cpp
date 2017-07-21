@@ -73,10 +73,10 @@ namespace Grid{
             }
             ++squareRadius;
         }
-        std::cout << &boid << ":\t";
-        for (uint32_t i=0; i<NEIGHBOURS_CONSIDERED; ++i)
-            std::cout << neighbours[i] << "\t";
-        std::cout << "\n";
+        //std::cout << &boid << ":\t";
+        //for (uint32_t i=0; i<NEIGHBOURS_CONSIDERED; ++i)
+        //    std::cout << neighbours[i] << "\t";
+        //std::cout << "\n";
     }
 
     inline void insertNeighbours(uint32_t index, Boid& boid, Boid** neighbours)

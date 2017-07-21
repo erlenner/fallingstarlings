@@ -7,6 +7,9 @@
 #define BOID_POINTS 3
 #define BOID_LENGTH .02
 #define BOID_WIDTH .005
+
+#define COMFORT_ZONE .02
+
 #include "Grid.h"
 
 
@@ -28,4 +31,10 @@ public:
     void init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel);
 
     void update(float dt);
+
+private:
+
+    vec cohesion(Boid** neighbours)const;
+    vec alignment(Boid** neighbours, float dt)const;
+    vec separation(Boid** neighbours)const;
 };

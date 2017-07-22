@@ -1,14 +1,7 @@
 #pragma once
 #include <vector>
 #include "vec.h"
-
-#define NEIGHBOURS_CONSIDERED 7
-
-#define BOID_POINTS 3
-#define BOID_LENGTH .02
-#define BOID_WIDTH .005
-
-#define COMFORT_ZONE .02
+#include "conf.h"
 
 #include "Grid.h"
 

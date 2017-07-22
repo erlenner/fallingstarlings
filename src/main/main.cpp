@@ -2,6 +2,7 @@
 #include "openglWp.h"
 #include "Boid.h"
 #include "utils.h"
+#include "conf.h"
 
 #define N_BOIDS 7
 
@@ -11,9 +12,9 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<unsigned char> indices;
 
-    vertices.reserve(N_BOIDS*BOID_POINTS*2);
-    colors.reserve(N_BOIDS*BOID_POINTS*4);
-    indices.reserve(N_BOIDS*BOID_POINTS);
+    vertices.reserve(N_BOIDS*conf::boid_points*2);
+    colors.reserve(N_BOIDS*conf::boid_points*4);
+    indices.reserve(N_BOIDS*conf::boid_points);
 
     float now, before, dt;
     before = now = secs();

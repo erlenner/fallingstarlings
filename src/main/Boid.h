@@ -9,14 +9,10 @@
 
 class Boid
 {
+protected:
     vec* vertex;
     vec vel;
     uint32_t gridIndex;
-
-    friend void Grid::insert(Boid& boid);
-    friend void Grid::update(Boid& boid);
-    friend void Grid::findNeighbours(Boid& boid, Boid** neighbours);
-    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, Boid** neighbours);
 
 public:
 
@@ -30,4 +26,9 @@ private:
     vec cohesion(Boid** neighbours)const;
     vec alignment(Boid** neighbours, float dt)const;
     vec separation(Boid** neighbours)const;
+
+    friend void Grid::insert(Boid& boid);
+    friend void Grid::update(Boid& boid);
+    friend void Grid::findNeighbours(Boid& boid, Boid** neighbours);
+    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, Boid** neighbours);
 };

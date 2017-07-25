@@ -33,8 +33,19 @@ void Boid::update(float dt)
     Grid::findNeighbours(*this, neighbours);
     vec acc = separation(neighbours) + alignment(neighbours, dt) + cohesion(neighbours);
     vel += acc*dt;
+    float size2 = abs2(vel);
+    if (size2 > conf::boid_max_speed*conf::boid_max_speed)
+        vel *= conf::boid_max_speed / sqrt(size2);
     vec newPos = vertex[0] + vel*dt;
-    if (maxDim(newPos) < 1)
+    if (newPos.x * newPos.x > 1){
+        vel.x *= -1;
+        vertex[0] += vel*dt;
+    }
+    else if (newPos.y * newPos.y > 1){
+        vel.y *= -1;
+        vertex[0] += vel*dt;
+    }
+    else
         vertex[0] = newPos;
 
     float speed = abs(vel);
@@ -44,8 +55,7 @@ void Boid::update(float dt)
         vertex[2] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(velNormed.y, -velNormed.x);
     }
     //for (int i=0; i<conf::boid_points; ++i)
-    //    (vertex+2*i) += vel*dt;
-
+    //    *(vertex+i) += vel*dt;
 }
 
 vec Boid::cohesion(Boid** neighbours)const

@@ -17,8 +17,8 @@ namespace conf{
     constexpr uint8_t neighbours_considered = 7;
 
     constexpr float comfort_zone        = .03;
-    constexpr float cohesion_weight     = 1;
-    constexpr float alignment_weight    = 3;
+    constexpr float cohesion_weight     = 1000;
+    constexpr float alignment_weight    = 2;
     constexpr float separation_weight   = .01;
 
     constexpr float boid_max_speed      = .5;
@@ -27,7 +27,7 @@ namespace conf{
     constexpr float grid_step                   = .002;
     constexpr uint32_t grid_size                = 1000;
     constexpr uint32_t map_size                 = 2;
-    constexpr uint32_t max_boids                = 10;
+    constexpr uint32_t max_boids                = 100;
     constexpr uint32_t max_square_radius_search = 75;
 
 

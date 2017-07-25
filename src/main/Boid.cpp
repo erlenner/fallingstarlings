@@ -1,7 +1,7 @@
 #include "Boid.h"
 #include "utils.h"
 
-void Boid::init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
+void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
 {
     this->vel=vel;
     indices.push_back(vertices.size()/2);

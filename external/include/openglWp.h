@@ -18,7 +18,7 @@ GLuint elements;
 
 uint32_t width, height;
 
-int initWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<unsigned char>& indices)
+int initWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) return 1;
 
@@ -93,7 +93,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     return 0;
 }
 
-int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<unsigned char>& indices)
+int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
 {
 
     //glClearColor(0.0,0.0,0.0,0.0);
@@ -115,8 +115,8 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
     //glDrawArrays(GL_TRIANGLES, 0, 3);
     // indices:vbo
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLubyte)*indices.size(), indices.data(), GL_STATIC_DRAW);
-    glDrawElements(GL_TRIANGLES, vertices.size()/2, GL_UNSIGNED_BYTE, 0);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_STATIC_DRAW);
+    glDrawElements(GL_TRIANGLES, vertices.size()/2, GL_UNSIGNED_INT, 0);
 
     SDL_GL_SwapWindow(window);
     return 0;

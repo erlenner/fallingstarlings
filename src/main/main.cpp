@@ -5,14 +5,14 @@
 #include "utils.h"
 #include "conf.h"
 
-#define N_BOIDS 17
+#define N_BOIDS 200
 #define N_LEADS 1
 
 int main(int argc, char *argv[])
 {
     std::vector<float> vertices;
     std::vector<float> colors;
-    std::vector<unsigned char> indices;
+    std::vector<uint32_t> indices;
 
     vertices.reserve(   N_BOIDS*conf::boid_points*2 + N_LEADS*conf::lead_points*2);
     colors.reserve(     N_BOIDS*conf::boid_points*4 + N_LEADS*conf::lead_points*4);
@@ -24,22 +24,21 @@ int main(int argc, char *argv[])
     std::cout << "boids:\n";
     std::vector<Boid> boids(N_BOIDS);
     for (uint32_t i=0; i<N_BOIDS; ++i){
-        static vec initPos, velInit(.001,.001);
-        
+        static vec initPos, velInit(0,0);
+
         float angle = (std::rand() % 360) * 3.14f / 180.f;
-        float vectorSize = .05 + (std::rand() % 100) / 1e3;
+        float vectorSize = .05 + (std::rand() % 400) / 2e3;
         initPos = vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
         boids[i].init(vertices, indices, colors, initPos, velInit);
-        std::cout << &(boids[i]) << "\n";
-        initPos += vec(.05,.15);
+        //std::cout << &(boids[i]) << "\n";
     }
 
     std::cout << "leads:\n";
     std::vector<Lead> leads(N_LEADS);
     for (uint32_t i=0; i<N_LEADS; ++i){
         leads[i].init(vertices, indices, colors, vec(0,0), vec(0,0));
-        std::cout << &(leads[i]) << "\n";
+        //std::cout << &(leads[i]) << "\n";
     }
 
     //std::cout << "vertices:\n";
@@ -66,7 +65,8 @@ int main(int argc, char *argv[])
                 case SDL_MOUSEBUTTONUP:
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    leads[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                    if (!leads.empty())
+                        leads[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
                 break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         dt = now - before;
         before = now;
 
-        //std::cout << "rate:\t" << 1/dt << "\n";
+        std::cout << "rate:\t" << 1/dt << "\n";
 
         for (auto& boid : boids){
             boid.update(dt);

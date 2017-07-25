@@ -17,7 +17,7 @@ protected:
 public:
 
     Boid(){}
-    void init(std::vector<float>& vertices, std::vector<unsigned char>& indices, std::vector<float>& colors, const vec& pos, const vec& vel);
+    void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel);
 
     void update(float dt);
 

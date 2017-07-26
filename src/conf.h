@@ -16,10 +16,10 @@ namespace conf{
 // SWARM DYNAMICS
     constexpr uint8_t neighbours_considered = 7;
 
-    constexpr float comfort_zone        = .03;
-    constexpr float cohesion_weight     = 1000;
-    constexpr float alignment_weight    = 2;
-    constexpr float separation_weight   = .01;
+    constexpr float comfort_zone        = .06;
+    constexpr float cohesion_weight     = 1200;
+    constexpr float alignment_weight    = 3000;
+    constexpr float separation_weight   = 5;
 
     constexpr float boid_max_speed      = .5;
 

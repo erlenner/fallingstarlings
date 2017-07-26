@@ -64,7 +64,7 @@ vec Boid::cohesion(Boid** neighbours)const
     for (uint8_t i=0; neighbours[i] && (i < conf::neighbours_considered); ++i){
         averagePos += *(neighbours[i]->vertex);
     }
-    return (averagePos - *vertex) * conf::cohesion_weight;
+    return (averagePos/conf::neighbours_considered - *vertex) * conf::cohesion_weight;
 }
 
 vec Boid::alignment(Boid** neighbours, float dt)const
@@ -73,7 +73,7 @@ vec Boid::alignment(Boid** neighbours, float dt)const
     for (uint8_t i=0; neighbours[i] && (i < conf::neighbours_considered); ++i){
         averageVel += neighbours[i]->vel;
     }
-    return (averageVel - vel) * dt * conf::alignment_weight;
+    return (averageVel/conf::neighbours_considered - vel) * dt * conf::alignment_weight;
 }
 
 vec Boid::separation(Boid** neighbours)const
@@ -83,7 +83,7 @@ vec Boid::separation(Boid** neighbours)const
         vec diff = *vertex - *(neighbours[i]->vertex);
         float dist2 = abs2(diff);
         if (dist2 < conf::comfort_zone*conf::comfort_zone)
-            acc += diff / dist2;
+            acc += diff / sqrt(dist2);
     }
     return acc * conf::separation_weight;
 }

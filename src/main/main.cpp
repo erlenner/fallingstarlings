@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     std::cout << "boids:\n";
     std::vector<Boid> boids(N_BOIDS);
     for (uint32_t i=0; i<N_BOIDS; ++i){
-        static vec initPos, velInit(0,0);
+        static vec initPos, velInit(.1,.1);
 
         float angle = (std::rand() % 360) * 3.14f / 180.f;
         float vectorSize = .05 + (std::rand() % 400) / 2e3;

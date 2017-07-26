@@ -17,7 +17,7 @@ void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     vertices.push_back(pos.x-conf::lead_width);
     vertices.push_back(pos.y+conf::lead_length);
 
-    colors.insert(colors.end(), {1.0, 0.0, 0.0, 1.0});
+    colors.insert(colors.end(), {0.0, 0.0, 1.0, 1.0});
     colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
     colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
 

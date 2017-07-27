@@ -4,22 +4,22 @@ namespace conf{
 
 // BOIDS
     constexpr uint8_t lead_points   = 3;
-    constexpr float lead_length     = .02;
-    constexpr float lead_width      = .005;
+    constexpr float lead_length     = .03;
+    constexpr float lead_width      = .0075;
     constexpr float lead_speed  = .5;
 
 // BOIDS
     constexpr uint8_t boid_points   = 3;
-    constexpr float boid_length     = .02;
-    constexpr float boid_width      = .005;
+    constexpr float boid_length     = .03;
+    constexpr float boid_width      = .0075;
 
 // SWARM DYNAMICS
     constexpr uint8_t neighbours_considered = 7;
 
     constexpr float comfort_zone        = .06;
-    constexpr float cohesion_weight     = 1200;
-    constexpr float alignment_weight    = 3000;
-    constexpr float separation_weight   = 5;
+    constexpr float cohesion_weight     = 10;
+    constexpr float alignment_weight    = 1;
+    constexpr float separation_weight   = 1;
 
     constexpr float boid_max_speed      = .5;
 

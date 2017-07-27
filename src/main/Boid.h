@@ -5,6 +5,7 @@
 
 #include "Grid.h"
 
+class Lead;
 
 
 class Boid
@@ -19,12 +20,12 @@ public:
     Boid(){}
     void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel);
 
-    void update(float dt);
+    void update(float dt, const std::vector<Lead> leads);
 
 private:
 
     vec cohesion(Boid** neighbours)const;
-    vec alignment(Boid** neighbours, float dt)const;
+    vec alignment(Boid** neighbours)const;
     vec separation(Boid** neighbours)const;
 
     friend void Grid::insert(Boid& boid);

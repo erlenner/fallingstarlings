@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
         static vec initPos, velInit(.1,.1);
 
         float angle = (std::rand() % 360) * 3.14f / 180.f;
-        float vectorSize = .05 + (std::rand() % 400) / 2e3;
+        float vectorSize = .05 + (std::rand() % 500) / 2e3;
         initPos = vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
         boids[i].init(vertices, indices, colors, initPos, velInit);
@@ -85,10 +85,12 @@ int main(int argc, char *argv[])
         dt = now - before;
         before = now;
 
-        std::cout << "rate:\t" << 1/dt << "\n";
+        float rate = 1/dt;
+        if (rate < 55)
+        std::cout << "rate:\t" << rate << "\n";
 
         for (auto& boid : boids){
-            boid.update(dt);
+            boid.update(dt, leads);
         }
         for (auto& lead : leads){
             lead.update(dt);

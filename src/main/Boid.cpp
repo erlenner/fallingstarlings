@@ -1,5 +1,6 @@
 #include "Boid.h"
 #include "utils.h"
+#include "Lead.h"
 
 void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
 {
@@ -25,17 +26,19 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     Grid::insert(*this);
 }
 
-void Boid::update(float dt)
+void Boid::update(float dt, const std::vector<Lead> leads)
 {
     Grid::update(*this);
 
-    Boid* neighbours[conf::neighbours_considered+1] = {};
+    Boid* neighbours[conf::neighbours_considered+leads.size()] = {};
     Grid::findNeighbours(*this, neighbours);
-    vec acc = separation(neighbours) + alignment(neighbours, dt) + cohesion(neighbours);
-    vel += acc*dt;
-    float size2 = abs2(vel);
+    for (uint8_t i = 0; i < leads.size(); ++i)
+        neighbours[i] = (Boid*)leads.data() + i;
+    vec newVel = separation(neighbours) + alignment(neighbours) + cohesion(neighbours) / 3;
+    float size2 = abs2(newVel);
     if (size2 > conf::boid_max_speed*conf::boid_max_speed)
-        vel *= conf::boid_max_speed / sqrt(size2);
+        newVel *= conf::boid_max_speed / sqrt(size2);
+    vel = newVel;
     vec newPos = vertex[0] + vel*dt;
     if (newPos.x * newPos.x > 1){
         vel.x *= -1;
@@ -47,6 +50,8 @@ void Boid::update(float dt)
     }
     else
         vertex[0] = newPos;
+
+    //std::cout << *vertex << "\t";
 
     float speed = abs(vel);
     if (speed > 0){
@@ -64,26 +69,37 @@ vec Boid::cohesion(Boid** neighbours)const
     for (uint8_t i=0; neighbours[i] && (i < conf::neighbours_considered); ++i){
         averagePos += *(neighbours[i]->vertex);
     }
-    return (averagePos/conf::neighbours_considered - *vertex) * conf::cohesion_weight;
+    vec force = averagePos/conf::neighbours_considered - *vertex;
+    float size2 = abs2(force);
+    if (size2 > 0)
+        return  (force * conf::boid_max_speed / sqrt(size2) - vel) * conf::cohesion_weight;
+    return vec(0,0);
 }
 
-vec Boid::alignment(Boid** neighbours, float dt)const
+vec Boid::alignment(Boid** neighbours)const
 {
     vec averageVel;
     for (uint8_t i=0; neighbours[i] && (i < conf::neighbours_considered); ++i){
         averageVel += neighbours[i]->vel;
     }
-    return (averageVel/conf::neighbours_considered - vel) * dt * conf::alignment_weight;
+    vec force = averageVel/conf::neighbours_considered - vel;
+    float size2 = abs2(force);
+    if (size2 > 0)
+        return (force * conf::boid_max_speed / sqrt(size2) - vel) * conf::alignment_weight;
+    return vec(0,0);
 }
 
 vec Boid::separation(Boid** neighbours)const
 {
-    vec acc;
+    vec force;
     for (uint8_t i=0; neighbours[i] && (i < conf::neighbours_considered); ++i){
         vec diff = *vertex - *(neighbours[i]->vertex);
         float dist2 = abs2(diff);
         if (dist2 < conf::comfort_zone*conf::comfort_zone)
-            acc += diff / sqrt(dist2);
+            force += diff / dist2;
     }
-    return acc * conf::separation_weight;
+    float size2 = abs2(force);
+    if (size2 > 0)
+        return (force * conf::boid_max_speed / sqrt(size2) - vel) * conf::separation_weight;
+    return vec(0,0);
 }

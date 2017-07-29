@@ -52,4 +52,5 @@ void Lead::update(float dt)
         vertex[1] = vertex[0] - velNormed * conf::lead_length + conf::lead_width * vec(-velNormed.y, velNormed.x);
         vertex[2] = vertex[0] - velNormed * conf::lead_length + conf::lead_width * vec(velNormed.y, -velNormed.x);
     }
+    vel = vec(0,0);
 }

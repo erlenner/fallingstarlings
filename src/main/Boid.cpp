@@ -1,6 +1,7 @@
 #include "Boid.h"
 #include "utils.h"
 #include "Lead.h"
+#include "mat.h"
 
 void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
 {
@@ -34,10 +35,17 @@ void Boid::update(float dt, const std::vector<Lead> leads)
     Grid::findNeighbours(*this, neighbours);
     for (uint8_t i = 0; i < leads.size(); ++i)
         neighbours[i] = (Boid*)leads.data() + i;
-    std::cout << "s:\t" << abs(separation(neighbours)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours)) << "\n";
+    //std::cout << "s:\t" << abs(separation(neighbours)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours)) << "\n";
     vec force = limit((separation(neighbours) + alignment(neighbours) + cohesion(neighbours)) / 3, conf::max_force);
-    vel = limit(vel + force * dt, conf::boid_max_speed);
-    std::cout << "vel: " << abs(vel) << "\n";
+    vec newVel = vel + force * dt;
+    const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
+    const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
+    if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit){ // 0.25 = sin(30 degrees)^2
+        newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
+        std::cout << "denied:\t" << vel <<  << "\n";
+    }
+    vel = limit(newVel, conf::boid_max_speed);
+    //std::cout << "vel: " << abs(vel) << "\n";
     vec newPos = vertex[0] + vel*dt;
     if (newPos.x * newPos.x > 1){
         vel.x *= -1;

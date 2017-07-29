@@ -9,7 +9,7 @@ struct vec
     vec(): x(0),y(0){}
     vec(float x, float y): x(x),y(y){}
     vec(const vec& rhs): x(rhs.x),y(rhs.y){}
-    vec(const float* rhs): x(rhs[0]),y(rhs[1]){}
+    vec(float* rhs): x(rhs[0]),y(rhs[1]){}
 
     vec operator=(const vec& rhs){ x=rhs.x; y=rhs.y; return *this; }
     float operator*(const vec& rhs)const{ return x*rhs.x+y*rhs.y; }
@@ -21,17 +21,21 @@ struct vec
     vec operator+=(const vec& rhs){ x+=rhs.x; y+=rhs.y; return *this; }
     vec operator-(const vec& rhs)const{ return vec(x-rhs.x,y-rhs.y); }
     vec operator-=(const vec& rhs){ x-=rhs.x; y-=rhs.y; return *this; }
+    vec limit(float sizeLimit){ float size2=x*x+y*y; return (size2 > sizeLimit*sizeLimit) ? *this *= (sizeLimit / sqrt(size2)) : *this; }
+    friend vec limit(const vec& vecc, float sizeLimit){ float size2=abs2(vecc); return (size2 > sizeLimit*sizeLimit) ? vecc * (sizeLimit / sqrt(size2)) : vecc; }
+    friend vec norm(const vec& vecc){ float size2=abs2(vecc); return (size2 > 0) ? vecc / sqrt(size2) : vecc; }
     friend float abs2(const vec& vecc){ return vecc.x*vecc.x+vecc.y*vecc.y; }
     friend float abs(const vec& vecc){ return sqrt(vecc.x*vecc.x+vecc.y*vecc.y); }
     friend float maxDim(const vec& vecc){ return vecc.x*vecc.x > vecc.y*vecc.y ? vecc.x : vecc.y; }
-    friend vec norm(const vec& vecc){ float size2=abs2(vecc); return (size2 > 0) ? vecc / sqrt(size2) : vecc; }
-    friend vec limit(const vec& vecc, float sizeLimit){ float size2=abs2(vecc); return (size2 > sizeLimit*sizeLimit) ? vecc * (sizeLimit / sqrt(size2)) : vecc; }
     bool operator==(const vec& rhs)const{ return (x==rhs.x)&&(y==rhs.y); }
     bool operator<(const vec& rhs)const{ return abs2(*this)<abs2(rhs); }
     bool operator>(const vec& rhs)const{ return abs2(*this)>abs2(rhs); }
     friend vec operator^(const vec& lhs, const vec& rhs){ return vec(lhs.x*rhs.x, lhs.y*rhs.y); }
     friend vec operator*(float lhs, const vec& rhs){ return rhs*lhs; }
     friend std::ostream& operator<<(std::ostream& os, const vec& vecc){ os << vecc.x << "," << vecc.y; return os; }
+    friend float sinAngleDiff2(const vec& a, const vec& b){ float cross = a.x*b.y-a.y*b.x; return cross*cross/(abs2(a)*abs2(b)); }
+
+    friend struct mat;
 
 // safe bool (https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool)
 private:

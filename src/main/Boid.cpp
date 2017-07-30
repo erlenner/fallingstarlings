@@ -40,10 +40,8 @@ void Boid::update(float dt, const std::vector<Lead> leads)
     vec newVel = vel + force * dt;
     const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
     const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
-    if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit){ // 0.25 = sin(30 degrees)^2
+    if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit) // 0.25 = sin(30 degrees)^2
         newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
-        std::cout << "denied:\t" << vel <<  << "\n";
-    }
     vel = limit(newVel, conf::boid_max_speed);
     //std::cout << "vel: " << abs(vel) << "\n";
     vec newPos = vertex[0] + vel*dt;

@@ -5,25 +5,22 @@
 #include "utils.h"
 #include "conf.h"
 
-#define N_BOIDS 200
-#define N_LEADS 1
-
 int main(int argc, char *argv[])
 {
     std::vector<float> vertices;
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    vertices.reserve(   N_BOIDS*conf::boid_points*2 + N_LEADS*conf::lead_points*2);
-    colors.reserve(     N_BOIDS*conf::boid_points*4 + N_LEADS*conf::lead_points*4);
-    indices.reserve(    N_BOIDS*conf::boid_points   + N_LEADS*conf::lead_points);
+    vertices.reserve(   conf::n_boids*conf::boid_points*2 + conf::n_leads*conf::lead_points*2);
+    colors.reserve(     conf::n_boids*conf::boid_points*4 + conf::n_leads*conf::lead_points*4);
+    indices.reserve(    conf::n_boids*conf::boid_points   + conf::n_leads*conf::lead_points);
 
     float now, before, dt;
     before = now = secs();
 
     std::cout << "boids:\n";
-    std::vector<Boid> boids(N_BOIDS);
-    for (uint32_t i=0; i<N_BOIDS; ++i){
+    std::vector<Boid> boids(conf::n_boids);
+    for (uint32_t i=0; i<conf::n_boids; ++i){
         static vec initPos, velInit(.1,.1);
 
         float angle = (std::rand() % 360) * 3.14f / 180.f;
@@ -31,14 +28,14 @@ int main(int argc, char *argv[])
         initPos = vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
         boids[i].init(vertices, indices, colors, initPos, velInit);
-        //std::cout << &(boids[i]) << "\n";
+        std::cout << &(boids[i]) << "\n";
     }
 
     std::cout << "leads:\n";
-    std::vector<Lead> leads(N_LEADS);
-    for (uint32_t i=0; i<N_LEADS; ++i){
+    std::vector<Lead> leads(conf::n_leads);
+    for (uint32_t i=0; i<conf::n_leads; ++i){
         leads[i].init(vertices, indices, colors, vec(0,0), vec(0,0));
-        //std::cout << &(leads[i]) << "\n";
+        std::cout << &(leads[i]) << "\n";
     }
 
     //std::cout << "vertices:\n";

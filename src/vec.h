@@ -43,8 +43,8 @@ private:
     void this_type_does_not_support_comparisons() const {}
 public:
     operator bool_type() const {
-      return (x || y) ?
-        &vec::this_type_does_not_support_comparisons : 0;
+        return (x || y) ?
+            &vec::this_type_does_not_support_comparisons : 0;
     }
 };
 

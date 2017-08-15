@@ -7,6 +7,7 @@
 
 class Lead;
 
+enum Faction : uint8_t {STARLING, AUK};
 
 class Boid
 {
@@ -14,6 +15,7 @@ protected:
     vec* vertex;
     vec vel;
     uint32_t gridIndex;
+    Faction faction;
 
 public:
 
@@ -24,12 +26,14 @@ public:
 
 private:
 
-    vec cohesion(Boid** neighbours)const;
-    vec alignment(Boid** neighbours)const;
-    vec separation(Boid** neighbours)const;
+    vec cohesion(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const;
+    vec alignment(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const;
+    vec separation(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const;
 
     friend void Grid::insert(Boid& boid);
     friend void Grid::update(Boid& boid);
-    friend void Grid::findNeighbours(Boid& boid, Boid** neighbours);
-    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, Boid** neighbours);
+    friend void Grid::findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes);
+    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes);
+    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends);
+    friend void Grid::insertFriend(Boid** ref, Boid& boid, array<Boid*, conf::neighbours_considered>& friends);
 };

@@ -7,8 +7,7 @@ namespace Grid{
     static std::vector<array<Boid*, conf::max_boids>> grid(conf::grid_size*conf::grid_size);
 
     // helpers
-    static float neighbourDistances[conf::neighbours_considered+1];
-    static int32_t furthestIndex;
+    static array<float, conf::neighbours_considered> friendDistances;
 
     void insert(Boid& boid)
     {
@@ -30,16 +29,22 @@ namespace Grid{
         }
     }
 
-    void findNeighbours(Boid& boid, Boid** neighbours)
+    void findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes)
     {
-        std::fill_n(neighbours, conf::neighbours_considered+1, nullptr);
-        std::fill_n(neighbourDistances, conf::neighbours_considered+1, 0);
-        furthestIndex = -1;
+        friendDistances.clear();
 
-        insertNeighbours(boid.gridIndex, boid, neighbours);
+        insertNeighbours(boid.gridIndex,                        boid, friends, foes);
+        insertNeighbours(boid.gridIndex + 1,                    boid, friends, foes);
+        insertNeighbours(boid.gridIndex - 1,                    boid, friends, foes);
+        insertNeighbours(boid.gridIndex + conf::grid_size,      boid, friends, foes);
+        insertNeighbours(boid.gridIndex - conf::grid_size,      boid, friends, foes);
+        insertNeighbours(boid.gridIndex + conf::grid_size + 1,  boid, friends, foes);
+        insertNeighbours(boid.gridIndex + conf::grid_size - 1,  boid, friends, foes);
+        insertNeighbours(boid.gridIndex - conf::grid_size + 1,  boid, friends, foes);
+        insertNeighbours(boid.gridIndex - conf::grid_size - 1,  boid, friends, foes);
 
-        uint32_t squareRadius = 1;
-        while ((furthestIndex+1 < conf::neighbours_considered) && (squareRadius < conf::max_square_radius_search)){
+        uint32_t squareRadius = 2;
+        while ((friends.size() < conf::neighbours_considered) && (squareRadius < conf::max_square_radius_search)){
             for (uint8_t i = 0; i < 4; ++i)
             {
                 uint32_t limit;
@@ -66,54 +71,70 @@ namespace Grid{
                         {index = boid.gridIndex - (squareRadius - 1 - j) * conf::grid_size + squareRadius;
                         break;}
                     }
-                    uint32_t xIndex = index % conf::grid_size;
-                    uint32_t yIndex = index / conf::grid_size;
-                    if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) continue;
-                    insertNeighbours(index, boid, neighbours);
+                    insertNeighbours(index, boid, friends);
                 }
             }
             ++squareRadius;
         }
-        //std::cout << &boid << ":\t";
-        //for (uint32_t i=0; i<conf::neighbours_considered; ++i)
-        //    std::cout << neighbours[i] << "\t";
-        //std::cout << "\n";
+        //std::cout << &boid << ":\t" << friends << "\n";
     }
 
-    inline void insertNeighbours(uint32_t index, Boid& boid, Boid** neighbours)
+    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes)
     {
+        uint32_t xIndex = index % conf::grid_size;
+        uint32_t yIndex = index / conf::grid_size;
+        if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) return;
         for (Boid** ref = &grid[index][0]; ref != grid[index].end; ++ref)
         {
-            float distance = abs2(*((*ref)->vertex) - *(boid.vertex));
-            if (*ref == &boid) continue;
-            if (furthestIndex < 0){
-                neighbours[++furthestIndex] = *ref;
-                neighbourDistances[furthestIndex] = distance;
-            }
-            else if ((furthestIndex+1 < conf::neighbours_considered) || (distance < neighbourDistances[furthestIndex]))
+            if ((*ref)->faction == boid.faction)
             {
-                if (furthestIndex > 0){
-                    neighbours[furthestIndex+1] = neighbours[furthestIndex];
-                    neighbourDistances[furthestIndex+1] = neighbourDistances[furthestIndex];
-                }
-                if (furthestIndex+1 < conf::neighbours_considered)
-                    ++furthestIndex;
+                if (*ref == &boid) continue;
+                insertFriend(ref, boid, friends);
+            }
+            else
+                foes.push_back(*ref);
+        }
+    }
 
-                for (int8_t j = furthestIndex;;)
-                {
-                    //std::cout << "fI:\t" << furthestIndex << "\n";
-                    if ((--j < 0) || (distance > neighbourDistances[j]))
-                    {
-                        neighbourDistances[j+1] = distance;
-                        neighbours[j+1] = *ref;
-                        break;
-                    }else{
-                        neighbourDistances[j+1] = neighbourDistances[j];
-                        neighbours[j+1] = neighbours[j];
-                    }
-                }
+    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends)
+    {
+        uint32_t xIndex = index % conf::grid_size;
+        uint32_t yIndex = index / conf::grid_size;
+        if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) return;
+        for (Boid** ref = &grid[index][0]; ref != grid[index].end; ++ref)
+        {
+            if ((*ref)->faction == boid.faction)
+            {
+                if (*ref == &boid) continue;
+                insertFriend(ref, boid, friends);
             }
         }
     }
 
+    inline void insertFriend(Boid** ref, Boid& boid, array<Boid*, conf::neighbours_considered>& friends)
+    {
+        float distance = abs2(*((*ref)->vertex) - *(boid.vertex));
+        if (friends.empty()){
+            friends.push_back(*ref);
+            friendDistances.push_back(distance);
+        }
+        else if ((friends.size() < conf::neighbours_considered) || (distance < friendDistances.back()))
+        {
+            friends.push_back(friends.back());
+            friendDistances.push_back(friendDistances.back());
+
+            for (int8_t j = friends.size()-1;;)
+            {
+                if ((--j < 0) || (distance > friendDistances[j]))
+                {
+                    friendDistances[j+1] = distance;
+                    friends[j+1] = *ref;
+                    break;
+                }else{
+                    friendDistances[j+1] = friendDistances[j];
+                    friends[j+1] = friends[j];
+                }
+            }
+        }
+    }
 }

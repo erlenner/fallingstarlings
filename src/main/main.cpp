@@ -32,11 +32,10 @@ int main(int argc, char *argv[])
     }
 
     std::cout << "leads:\n";
-    std::vector<Lead> leads(conf::n_leads);
-    for (uint32_t i=0; i<conf::n_leads; ++i){
-        leads[i].init(vertices, indices, colors, vec(0,0), vec(0,0));
-        std::cout << &(leads[i]) << "\n";
-    }
+    array<Lead, conf::n_leads> leads;
+    leads.push_back(Lead());
+    leads[0].init(vertices, indices, colors, vec(0,0), vec(0,0));
+    std::cout << &(leads[0]) << "\n";
 
     //std::cout << "vertices:\n";
     //for (int i=0; i<vertices.size(); ++i){
@@ -86,6 +85,7 @@ int main(int argc, char *argv[])
         if (rate < 55)
         std::cout << "rate:\t" << rate << "\n";
 
+        std::cout << "l0:\t" << &(leads[0]) << "\n";
         for (auto& boid : boids){
             boid.update(dt, leads);
         }

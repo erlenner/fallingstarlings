@@ -27,23 +27,27 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     Grid::insert(*this);
 }
 
-void Boid::update(float dt, const std::vector<Lead> leads)
+void Boid::update(float dt, const array<Lead,conf::n_leads>& leads)
 {
     Grid::update(*this);
 
-    array<Boid*, conf::neighbours_considered> friends;
+    array<Boid*, conf::neighbours_considered+1> friends;
     array<Boid*, conf::max_boids*9> foes;
     Grid::findNeighbours(*this, friends, foes);
     array<Boid*, conf::neighbours_considered + conf::n_leads> neighbours;
     neighbours.push_back(friends.data, friends.size());
-    for (uint8_t i = 0; i < leads.size(); ++i)
-        neighbours.push_back((Boid*)leads.data() + i);
+    std::cout << "n0: " << &(leads[0]) << "\t" << (Boid*)&(leads[0]) << "\n";
+    neighbours.push_back((Boid*)&leads[0]);
+    //for (Boid&& lead : leads)
+    //    neighbours.push_back(&lead);
+    //for (uint8_t i = 0; i < leads.size(); ++i)
+    //    neighbours.push_back((Boid*)(leads.data() + i));
     //std::cout << "s:\t" << abs(separation(neighbours)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours)) << "\n";
 
-    std::cout << this << ":\t";
-    for (uint32_t i=0; i<neighbours.size(); ++i)
-        std::cout << neighbours[i] << "\t";
-    std::cout << "\n";
+    //std::cout << this << ":\t";
+    //for (uint32_t i=0; i<neighbours.size(); ++i)
+    //    std::cout << neighbours[i] << "\t";
+    //std::cout << "\n";
 
     vec force = limit((separation(neighbours) + alignment(neighbours) + cohesion(neighbours)) / 3, conf::max_force);
     vec newVel = vel + force * dt;
@@ -80,9 +84,12 @@ void Boid::update(float dt, const std::vector<Lead> leads)
 vec Boid::cohesion(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const
 {
     vec averagePos;
+    std::cout << "n: " << neighbours << "\n";
     for (uint8_t i=0; i < neighbours.size(); ++i){
+        std::cout << neighbours[i] << "\t";
         averagePos += *(neighbours[i]->vertex);
     }
+    std::cout << "\n";
     return limit((averagePos/conf::neighbours_considered - *vertex) * conf::cohesion_weight, conf::max_force);
 }
 

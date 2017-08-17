@@ -7,7 +7,7 @@ namespace Grid{
     static std::vector<array<Boid*, conf::max_boids>> grid(conf::grid_size*conf::grid_size);
 
     // helpers
-    static array<float, conf::neighbours_considered> friendDistances;
+    static array<float, conf::neighbours_considered+1> friendDistances;
 
     void insert(Boid& boid)
     {
@@ -29,7 +29,7 @@ namespace Grid{
         }
     }
 
-    void findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes)
+    void findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& foes)
     {
         friendDistances.clear();
 
@@ -79,12 +79,12 @@ namespace Grid{
         //std::cout << &boid << ":\t" << friends << "\n";
     }
 
-    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes)
+    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& foes)
     {
         uint32_t xIndex = index % conf::grid_size;
         uint32_t yIndex = index / conf::grid_size;
         if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) return;
-        for (Boid** ref = &grid[index][0]; ref != grid[index].end; ++ref)
+        for (Boid** ref = grid[index].begin(); ref != grid[index].end(); ++ref)
         {
             if ((*ref)->faction == boid.faction)
             {
@@ -96,12 +96,12 @@ namespace Grid{
         }
     }
 
-    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends)
+    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends)
     {
         uint32_t xIndex = index % conf::grid_size;
         uint32_t yIndex = index / conf::grid_size;
         if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) return;
-        for (Boid** ref = &grid[index][0]; ref != grid[index].end; ++ref)
+        for (Boid** ref = grid[index].begin(); ref != grid[index].end(); ++ref)
         {
             if ((*ref)->faction == boid.faction)
             {
@@ -111,7 +111,7 @@ namespace Grid{
         }
     }
 
-    inline void insertFriend(Boid** ref, Boid& boid, array<Boid*, conf::neighbours_considered>& friends)
+    inline void insertFriend(Boid** ref, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends)
     {
         float distance = abs2(*((*ref)->vertex) - *(boid.vertex));
         if (friends.empty()){

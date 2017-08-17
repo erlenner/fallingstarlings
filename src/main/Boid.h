@@ -22,7 +22,7 @@ public:
     Boid(){}
     void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel);
 
-    void update(float dt, const std::vector<Lead> leads);
+    void update(float dt, const array<Lead,conf::n_leads>& leads);
 
 private:
 
@@ -32,8 +32,8 @@ private:
 
     friend void Grid::insert(Boid& boid);
     friend void Grid::update(Boid& boid);
-    friend void Grid::findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes);
-    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends, array<Boid*, conf::max_boids*9>& foes);
-    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered>& friends);
-    friend void Grid::insertFriend(Boid** ref, Boid& boid, array<Boid*, conf::neighbours_considered>& friends);
+    friend void Grid::findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& foes);
+    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& foes);
+    friend void Grid::insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends);
+    friend void Grid::insertFriend(Boid** ref, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends);
 };

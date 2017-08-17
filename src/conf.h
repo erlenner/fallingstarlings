@@ -10,7 +10,7 @@ namespace conf{
     constexpr float lead_speed  = .7;
 
 // BOIDS
-    constexpr uint8_t n_boids       = 10;
+    constexpr uint8_t n_boids       = 50;
     constexpr uint8_t boid_points   = 3;
     constexpr float boid_length     = .03;
     constexpr float boid_width      = .0075;

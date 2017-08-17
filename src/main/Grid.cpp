@@ -83,7 +83,7 @@ namespace Grid{
     {
         uint32_t xIndex = index % conf::grid_size;
         uint32_t yIndex = index / conf::grid_size;
-        if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) return;
+        if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0) || (!grid[index])) return;
         for (Boid** ref = grid[index].begin(); ref != grid[index].end(); ++ref)
         {
             if ((*ref)->faction == boid.faction)

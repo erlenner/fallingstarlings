@@ -36,7 +36,6 @@ void Boid::update(float dt, const array<Lead,conf::n_leads>& leads)
     Grid::findNeighbours(*this, friends, foes);
     array<Boid*, conf::neighbours_considered + conf::n_leads> neighbours;
     neighbours.push_back(friends.data, friends.size());
-    std::cout << "n0: " << &(leads[0]) << "\t" << (Boid*)&(leads[0]) << "\n";
     neighbours.push_back((Boid*)&leads[0]);
     //for (Boid&& lead : leads)
     //    neighbours.push_back(&lead);
@@ -84,12 +83,9 @@ void Boid::update(float dt, const array<Lead,conf::n_leads>& leads)
 vec Boid::cohesion(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const
 {
     vec averagePos;
-    std::cout << "n: " << neighbours << "\n";
     for (uint8_t i=0; i < neighbours.size(); ++i){
-        std::cout << neighbours[i] << "\t";
         averagePos += *(neighbours[i]->vertex);
     }
-    std::cout << "\n";
     return limit((averagePos/conf::neighbours_considered - *vertex) * conf::cohesion_weight, conf::max_force);
 }
 

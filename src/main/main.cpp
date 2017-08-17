@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
         if (rate < 55)
         std::cout << "rate:\t" << rate << "\n";
 
-        std::cout << "l0:\t" << &(leads[0]) << "\n";
         for (auto& boid : boids){
             boid.update(dt, leads);
         }

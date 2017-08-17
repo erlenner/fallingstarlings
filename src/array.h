@@ -21,16 +21,14 @@ struct array{
 
     T* push_back(const T& value){
         if (_end != data + N)
-            *_end = value;
-        //std::cout << "e: " << _end << "\n";
-        return ++_end;
+            *(_end++) = value;
+        return _end;
     }
 
     T* push_back(T& value){
-        if (_end != data + N)
-            *_end = value;
-        //std::cout << "e: " << _end << "\n";
-        return ++_end;
+        if (_end != begin() + N)
+            *(_end++) = value;
+        return _end;
     }
 
     T* push_back(T* otherData, uint32_t n){
@@ -97,4 +95,14 @@ struct array{
     //    memcpy(cat._end, rhs.data, rhs.size());
     //    return cat;
     //}
+
+// safe bool (https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Safe_bool)
+private:
+    typedef void (array::*bool_type)() const;
+    void this_type_does_not_support_comparisons() const {}
+public:
+    operator bool_type() const {
+        return size() ?
+            &array::this_type_does_not_support_comparisons : 0;
+    }
 };

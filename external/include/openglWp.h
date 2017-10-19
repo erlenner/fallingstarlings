@@ -27,14 +27,23 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     width = displayMode.w;
     height = displayMode.h;
 
-    width = 640; height = 480;
-
+    //width = 640; height = 480;
     window = SDL_CreateWindow("My Game Window",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         //displayMode.w, displayMode.h,
         width, height,
         SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL/* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
+
+    int idx = SDL_GetWindowDisplayIndex( window );
+    SDL_Rect bounds;
+    SDL_GetDisplayBounds( idx, &bounds );
+    SDL_SetWindowBordered( window, SDL_FALSE );
+    SDL_SetWindowPosition( window, bounds.x, bounds.y );
+    SDL_SetWindowSize( window, bounds.w, bounds.h );
+
+    width = bounds.w; height = bounds.h;
+
 
     glContext = SDL_GL_CreateContext(window);
     if (glContext == NULL)

@@ -3,8 +3,10 @@
 #include "Lead.h"
 #include "mat.h"
 
-void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
+void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction faction)
 {
+    this->faction = faction;
+
     this->vel=vel;
     indices.push_back(vertices.size()/2);
     indices.push_back(1+vertices.size()/2);
@@ -27,20 +29,18 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     Grid::insert(*this);
 }
 
-void Boid::update(float dt, const array<Lead,conf::n_leads>& leads)
+void Boid::update(float dt, const array<Lead*, conf::max_leads>& leads)
 {
     Grid::update(*this);
 
     array<Boid*, conf::neighbours_considered+1> friends;
     array<Boid*, conf::max_boids*9> foes;
     Grid::findNeighbours(*this, friends, foes);
-    array<Boid*, conf::neighbours_considered + conf::n_leads> neighbours;
+    array<Boid*, conf::neighbours_considered + conf::max_leads> neighbours;
+
     neighbours.push_back(friends.data, friends.size());
-    neighbours.push_back((Boid*)&leads[0]);
-    //for (Boid&& lead : leads)
-    //    neighbours.push_back(&lead);
-    //for (uint8_t i = 0; i < leads.size(); ++i)
-    //    neighbours.push_back((Boid*)(leads.data() + i));
+    neighbours.push_back((Boid**)leads.data, leads.size());
+    neighbours.trim_value(nullptr);
     //std::cout << "s:\t" << abs(separation(neighbours)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours)) << "\n";
 
     //std::cout << this << ":\t";
@@ -55,7 +55,7 @@ void Boid::update(float dt, const array<Lead,conf::n_leads>& leads)
     if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit) // 0.25 = sin(30 degrees)^2
         newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
     vel = limit(newVel, conf::boid_max_speed);
-    //std::cout << "vel: " << abs(vel) << "\n";
+
     vec newPos = vertex[0] + vel*dt;
     if (newPos.x * newPos.x > 1){
         vel.x *= -1;
@@ -68,8 +68,6 @@ void Boid::update(float dt, const array<Lead,conf::n_leads>& leads)
     else
         vertex[0] = newPos;
 
-    //std::cout << *vertex << "\t";
-
     float speed = abs(vel);
     if (speed > 0){
         vec velNormed = vel / speed;
@@ -80,25 +78,23 @@ void Boid::update(float dt, const array<Lead,conf::n_leads>& leads)
     //    *(vertex+i) += vel*dt;
 }
 
-vec Boid::cohesion(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const
+vec Boid::cohesion(const array<Boid*, conf::neighbours_considered + conf::max_leads>& neighbours)const
 {
     vec averagePos;
-    for (uint8_t i=0; i < neighbours.size(); ++i){
+    for (uint8_t i=0; i < neighbours.size(); ++i)
         averagePos += *(neighbours[i]->vertex);
-    }
     return limit((averagePos/conf::neighbours_considered - *vertex) * conf::cohesion_weight, conf::max_force);
 }
 
-vec Boid::alignment(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const
+vec Boid::alignment(const array<Boid*, conf::neighbours_considered + conf::max_leads>& neighbours)const
 {
     vec averageVel;
-    for (uint8_t i=0; i < neighbours.size(); ++i){
+    for (uint8_t i=0; i < neighbours.size(); ++i)
         averageVel += neighbours[i]->vel;
-    }
     return limit((averageVel/conf::neighbours_considered - vel) * conf::alignment_weight, conf::max_force);
 }
 
-vec Boid::separation(const array<Boid*, conf::neighbours_considered + conf::n_leads>& neighbours)const
+vec Boid::separation(const array<Boid*, conf::neighbours_considered + conf::max_leads>& neighbours)const
 {
     vec force;
     uint8_t tooClose = 0;

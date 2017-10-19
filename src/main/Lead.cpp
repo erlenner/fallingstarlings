@@ -1,7 +1,9 @@
 #include "Lead.h"
 
-void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel)
+void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction faction)
 {
+    this->faction = faction;
+
     this->vel=vel;
     indices.push_back(vertices.size()/2);
     indices.push_back(1+vertices.size()/2);

@@ -7,35 +7,38 @@
 
 int main(int argc, char *argv[])
 {
-    std::vector<float> vertices;
-    std::vector<float> colors;
-    std::vector<uint32_t> indices;
-
-    vertices.reserve(   conf::n_boids*conf::boid_points*2 + conf::n_leads*conf::lead_points*2);
-    colors.reserve(     conf::n_boids*conf::boid_points*4 + conf::n_leads*conf::lead_points*4);
-    indices.reserve(    conf::n_boids*conf::boid_points   + conf::n_leads*conf::lead_points);
 
     float now, before, dt;
     before = now = secs();
 
+
+    std::vector<float> vertices;
+    std::vector<float> colors;
+    std::vector<uint32_t> indices;
+
+    const uint32_t n_boids_a = 10, n_leads_a = 1;
+
+    add_capacity(n_boids_a, conf::boid_points, vertices, colors, indices);
+    add_capacity(n_leads_a, conf::lead_points, vertices, colors, indices);
+
     std::cout << "boids:\n";
-    std::vector<Boid> boids(conf::n_boids);
-    for (uint32_t i=0; i<conf::n_boids; ++i){
-        static vec initPos, velInit(.1,.1);
+    std::vector<Boid> boids(n_boids_a);
+    initialize_boids(boids.data(), n_boids_a, STARLING, vertices, colors, indices);
+    for (auto& boid : boids)
+        std::cout << &boid << "\t";
+    std::cout << "\n";
 
-        float angle = (std::rand() % 360) * 3.14f / 180.f;
-        float vectorSize = .05 + (std::rand() % 500) / 2e3;
-        initPos = vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
-
-        boids[i].init(vertices, indices, colors, initPos, velInit);
-        std::cout << &(boids[i]) << "\n";
-    }
 
     std::cout << "leads:\n";
-    array<Lead, conf::n_leads> leads;
+    array<Lead, n_leads_a> leads;
     leads.push_back(Lead());
-    leads[0].init(vertices, indices, colors, vec(0,0), vec(0,0));
-    std::cout << &(leads[0]) << "\n";
+    leads[0].init(vertices, indices, colors, vec(0,0), vec(0,0), STARLING);
+    array<Lead*, n_leads_a> lead_refs;
+    for (auto& lead : leads)
+        lead_refs.push_back(&lead);
+    for (auto& lead : leads)
+        std::cout << &lead << "\t";
+    std::cout << "\n";
 
     //std::cout << "vertices:\n";
     //for (int i=0; i<vertices.size(); ++i){
@@ -47,6 +50,7 @@ int main(int argc, char *argv[])
     //std::cout << "colors:\n";
     //for (int i=0; i<colors.size(); ++i)
     //    std::cout << colors[i] << "\t";
+
 
     initWp(vertices, colors, indices);
 
@@ -85,16 +89,13 @@ int main(int argc, char *argv[])
         if (rate < 55)
         std::cout << "rate:\t" << rate << "\n";
 
-        for (auto& boid : boids){
-            boid.update(dt, leads);
-        }
-        for (auto& lead : leads){
+        for (auto& boid : boids)
+            boid.update(dt, lead_refs);
+        for (auto& lead : leads)
             lead.update(dt);
-        }
-
         updateWp(vertices, colors, indices);
 
-        //SDL_Delay(10);
+        SDL_Delay(10);
     }
 
     SDL_GL_DeleteContext(glContext);

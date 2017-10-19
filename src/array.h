@@ -44,19 +44,21 @@ struct array{
     //        *ref = *(ref + 1);
     //}
 
-    void erase(T* reference){
+    T* erase(T* reference){
         --_end;
         for (T* ref = reference; ref != _end; ++ref)
             *ref = *(ref + 1);
+        return reference;
     }
 
-    void erase(const T& value){
+    T* erase(const T& value){
         for (T* ref = data; ref != _end;)
             if (*ref == value){
-                erase(ref);
+                return erase(ref);
                 break;
             }else
                 ++ref;
+        return _end;
     }
 
     void insert(const T& value, T* reference){
@@ -65,6 +67,16 @@ struct array{
         for (T* ref = reference+1; ref != _end; ++ref)
             *ref = *(ref - 1);
         *reference = value;
+    }
+
+    T* trim_value(T value){
+        while (_end != data){
+            if (*(_end-1) == value)
+                --_end;
+            else
+                return _end;
+        }
+        return _end;
     }
 
     void clear(){ _end = &data[0]; }

@@ -6,6 +6,7 @@ CFLAGS += -Wall
 CFLAGS += -ggdb
 
 INCLUDES += -I$(TUP_CWD)/src
+INCLUDES += -I$(TUP_CWD)/src/main
 INCLUDES += -I$(TUP_CWD)/external/include
 INCLUDES += -I/usr/local/include
 

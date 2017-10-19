@@ -3,14 +3,13 @@
 namespace conf{
 
 // LEADS
-    constexpr uint8_t n_leads       = 1;
-    constexpr uint8_t lead_points   = 3;
-    constexpr float lead_length     = .03;
-    constexpr float lead_width      = .0075;
-    constexpr float lead_speed  = .7;
+    constexpr uint8_t max_leads         = 1;
+    constexpr uint8_t lead_points       = 3;
+    constexpr float lead_length         = .03;
+    constexpr float lead_width          = .0075;
+    constexpr float lead_speed          = .7;
 
 // BOIDS
-    constexpr uint8_t n_boids       = 50;
     constexpr uint8_t boid_points   = 3;
     constexpr float boid_length     = .03;
     constexpr float boid_width      = .0075;
@@ -26,7 +25,7 @@ namespace conf{
     constexpr float boid_max_speed          = .7;
     constexpr float max_force               = 100;
     constexpr float max_separation_force    = 120;
-    constexpr float vel_max_rot_deg         = 60;
+    constexpr float vel_max_rot_deg         = 30;
 
 // GRID
     constexpr float grid_step                   = .002;

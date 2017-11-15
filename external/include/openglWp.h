@@ -1,6 +1,7 @@
 //gcc sdl2-opengl-sample.c -o sdl2-opengl-sample -Wall -std=c99 -I/usr/local/include/SDL2 -lSDL2 -I/usr/include/GL -lGL -lGLEW -Wall
-#include <GL/glew.h>
 #include <SDL2/SDL.h>
+#define GLEW_STATIC
+#include <GL/glew.h>
 #include <vector>
 
 SDL_Window* window;
@@ -20,20 +21,22 @@ uint32_t width, height;
 
 int initWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
 {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) return 1;
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) return 1;
 
-    SDL_DisplayMode displayMode;
-    SDL_GetCurrentDisplayMode(0, &displayMode);
-    width = displayMode.w;
-    height = displayMode.h;
+    //SDL_DisplayMode displayMode;
+    //SDL_GetCurrentDisplayMode(0, &displayMode);
+    width = 512;
+    height = 512;
+    //width = displayMode.w;
+    //height = displayMode.h;
 
-    //width = 640; height = 480;
-    window = SDL_CreateWindow("My Game Window",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
+    window = SDL_CreateWindow("Falling Starlings", 0, 0,
+        //SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        //SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         //displayMode.w, displayMode.h,
         width, height,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL/* | SDL_WINDOW_FULLSCREEN_DESKTOP*/);
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+        //SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     int idx = SDL_GetWindowDisplayIndex( window );
     SDL_Rect bounds;
@@ -52,6 +55,8 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
         return 0;
     }
 
+    SDL_SetWindowFullscreen(window, SDL_FALSE);
+
     const unsigned char *version = glGetString(GL_VERSION);
     if (version == NULL) 
     {
@@ -59,7 +64,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
         return 1;
     }
 
-    SDL_GL_MakeCurrent(window, glContext);
+    //SDL_GL_MakeCurrent(window, glContext);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -99,18 +104,20 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     //glOrtho(0, width, height, 0, -1, 1);
     //glMatrixMode(GL_MODELVIEW);
 
+    glUseProgram(shaderProgram);
+    glViewport(0, 0, width, height);
+    glClearColor(0.0,0.0,0.0,1.0);
+
     return 0;
 }
 
 int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
 {
 
-    //glClearColor(0.0,0.0,0.0,0.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glBindVertexArray(vao);
 
-    glUseProgram(shaderProgram);
     // vertex_vbo
     glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);

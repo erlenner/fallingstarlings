@@ -1,4 +1,5 @@
 #include "Lead.h"
+#include "utils.h"
 
 void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction faction)
 {
@@ -39,11 +40,14 @@ void Lead::update(float dt)
 
     float dist2 = abs2(togo);
     vec newVel;
-    if (dist2 > 0) newVel = togo * (conf::lead_speed) / sqrt(dist2);
+    if (dist2 > SQUARE(conf::lead_speed*dt))
+        newVel = togo * (conf::lead_speed) / sqrt(dist2);
+    else
+        newVel = togo / dt;
 
     vec newPos = vertex[0] + newVel*dt;
 
-    if ((togo.x * (dest.x - newPos.x) > 0) && (togo.y * (dest.y - newPos.y) > 0)){
+    if (1){// ((togo.x * (dest.x - newPos.x) > 0) && (togo.y * (dest.y - newPos.y) > 0)){
         *vertex = newPos;
         vel = newVel;
     }

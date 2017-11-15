@@ -5,6 +5,10 @@
 #include "conf.h"
 #include "Boid.h"
 
+#define IS_SET(var,pos) ((var) & (1<<(pos)))
+
+ #define SQUARE(var) ((var) * (var))
+
 inline float secs()
 { return (float)SDL_GetTicks() / 1e3; }
 

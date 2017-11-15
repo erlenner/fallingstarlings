@@ -28,8 +28,8 @@ namespace conf{
     constexpr float vel_max_rot_deg         = 30;
 
 // GRID
-    constexpr float grid_step                   = .002;
-    constexpr uint32_t grid_size                = 1000;
+    constexpr float grid_step                   = .02;
+    constexpr uint32_t grid_size                = 100;
     constexpr uint32_t map_size                 = 2;
     constexpr uint32_t max_boids                = 100;
     constexpr uint32_t max_square_radius_search = 75;

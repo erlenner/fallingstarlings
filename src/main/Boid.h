@@ -29,9 +29,9 @@ public:
 
 private:
 
-    vec cohesion(const array<Boid*, conf::neighbours_considered + conf::max_leads>& neighbours)const;
-    vec alignment(const array<Boid*, conf::neighbours_considered + conf::max_leads>& neighbours)const;
-    vec separation(const array<Boid*, conf::neighbours_considered + conf::max_leads>& neighbours)const;
+    vec cohesion(const array<Boid*, conf::neighbours_considered>& neighbours, const array<Lead*, conf::max_leads>& leads)const;
+    vec alignment(const array<Boid*, conf::neighbours_considered>& neighbours)const;
+    vec separation(const array<Boid*, conf::neighbours_considered>& neighbours, const array<Lead*, conf::max_leads>& leads)const;
 
     friend void Grid::insert(Boid& boid);
     friend void Grid::update(Boid& boid);

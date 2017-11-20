@@ -17,14 +17,15 @@ namespace conf{
 // SWARM DYNAMICS
     const uint8_t neighbours_considered = 7;
 
-    const float comfort_zone            = .03;
+    const float comfort_zone            = .045;
     const float cohesion_weight         = 75;
     const float alignment_weight        = 50;
     const float separation_weight       = .6;
+    const float lead_weight             = 10;
 
     const float boid_max_speed          = .7;
     const float max_force               = 100;
-    const float max_separation_force    = 120;
+    const float max_separation_force    = 300;
     const float vel_max_rot_deg         = 30;
 
 // GRID

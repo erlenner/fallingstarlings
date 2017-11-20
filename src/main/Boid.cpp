@@ -52,7 +52,7 @@ void Boid::update(float dt, const array<Lead*, conf::max_leads>& leads)
     vec newVel = vel + force * dt;
     const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
     const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
-    if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit) // 0.25 = sin(30 degrees)^2
+    if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit)
         newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
     vel = limit(newVel, conf::boid_max_speed);
 

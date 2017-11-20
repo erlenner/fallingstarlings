@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 10, n_leads_a = 1;
+    const uint32_t n_boids_a = 512, n_leads_a = 1;
 
     add_capacity(n_boids_a, conf::boid_points, vertices, colors, indices);
     add_capacity(n_leads_a, conf::lead_points, vertices, colors, indices);
@@ -56,6 +56,14 @@ int main(int argc, char *argv[])
 
     char done = 0;
     while (!done){
+        now = secs();
+        dt = now - before;
+        before = now;
+
+        float rate = 1/dt;
+        //if (rate < 55)
+        std::cout << "rate:\t" << rate << "\n";
+
         SDL_Event e;
         while ( SDL_PollEvent(&e) ) {
             switch (e.type) {
@@ -80,22 +88,23 @@ int main(int argc, char *argv[])
                 break;
             }
         }
-
+        std::cout << "-1:\t" << secs() - now << "\n";
         now = secs();
-        dt = now - before;
-        before = now;
-
-        float rate = 1/dt;
-        if (rate < 55)
-        std::cout << "rate:\t" << rate << "\n";
 
         for (auto& boid : boids)
             boid.update(dt, lead_refs);
+        std::cout << "0:\t" << secs() - now << "\n";
+        now = secs();
         for (auto& lead : leads)
             lead.update(dt);
+        std::cout << "1:\t" << secs() - now << "\n";
+        now = secs();
         updateWp(vertices, colors, indices);
+        std::cout << "2:\t" << secs() - now << "\n";
+        now = secs();
 
-        SDL_Delay(10);
+
+        //SDL_Delay(10);
     }
 
     SDL_GL_DeleteContext(glContext);

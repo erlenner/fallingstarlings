@@ -4,6 +4,8 @@
 #include <GL/glew.h>
 #include <vector>
 
+#define  WGL_SWAP_METHOD_ARB WGL_SWAP_EXCHANGE_ARB
+
 SDL_Window* window;
 SDL_GLContext glContext;
 
@@ -116,7 +118,7 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindVertexArray(vao);
+    //glBindVertexArray(vao);
 
     // vertex_vbo
     glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);

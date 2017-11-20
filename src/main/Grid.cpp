@@ -135,6 +135,8 @@ namespace Grid{
                     friends[j+1] = friends[j];
                 }
             }
+            friends.limit_size(conf::neighbours_considered);
+            friendDistances.limit_size(conf::neighbours_considered);
         }
     }
 }

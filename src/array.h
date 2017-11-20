@@ -79,6 +79,12 @@ struct array{
         return _end;
     }
 
+    T* limit_size(uint32_t n){
+        if (size() > n)
+            return _end = begin() + n;
+        return _end;
+    }
+
     void clear(){ _end = &data[0]; }
 
     void fill(const T& value){

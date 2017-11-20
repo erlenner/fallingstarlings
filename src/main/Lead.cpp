@@ -47,10 +47,8 @@ void Lead::update(float dt)
 
     vec newPos = vertex[0] + newVel*dt;
 
-    if (1){// ((togo.x * (dest.x - newPos.x) > 0) && (togo.y * (dest.y - newPos.y) > 0)){
-        *vertex = newPos;
-        vel = newVel;
-    }
+    *vertex = newPos;
+    vel = newVel;
 
     float speed = abs(vel);
     if (speed > 0){
@@ -58,5 +56,5 @@ void Lead::update(float dt)
         vertex[1] = vertex[0] - velNormed * conf::lead_length + conf::lead_width * vec(-velNormed.y, velNormed.x);
         vertex[2] = vertex[0] - velNormed * conf::lead_length + conf::lead_width * vec(velNormed.y, -velNormed.x);
     }
-    vel = vec(0,0);
+    //vel = vec(0,0);
 }

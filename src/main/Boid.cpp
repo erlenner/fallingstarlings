@@ -74,8 +74,6 @@ void Boid::update(float dt, const array<Lead*, conf::max_leads>& leads)
         vertex[1] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(-velNormed.y, velNormed.x);
         vertex[2] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(velNormed.y, -velNormed.x);
     }
-    //for (int i=0; i<conf::boid_points; ++i)
-    //    *(vertex+i) += vel*dt;
 }
 
 vec Boid::cohesion(const array<Boid*, conf::neighbours_considered + conf::max_leads>& neighbours)const

@@ -44,7 +44,7 @@ namespace Grid{
         insertNeighbours(boid.gridIndex - conf::grid_size - 1,  boid, friends, foes);
 
         uint32_t squareRadius = 2;
-        while ((friends.size() < conf::neighbours_considered) && (squareRadius < conf::max_square_radius_search)){
+        while ((friends.size() < conf::neighbours_considered) && (squareRadius < conf::max_square_radius_search_distance)){
             for (uint8_t i = 0; i < 4; ++i)
             {
                 uint32_t limit;

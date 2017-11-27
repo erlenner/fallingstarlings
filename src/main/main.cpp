@@ -8,8 +8,9 @@
 int main(int argc, char *argv[])
 {
 
-    float now, before, dt;
-    before = now = secs();
+    float now, before, dt, freq;
+    before = now = SDL_GetPerformanceCounter();
+    freq = SDL_GetPerformanceFrequency();
 
 
     std::vector<float> vertices;
@@ -56,13 +57,6 @@ int main(int argc, char *argv[])
 
     char done = 0;
     while (!done){
-        now = secs();
-        dt = now - before;
-        before = now;
-
-        float rate = 1/dt;
-        //if (rate < 55)
-        std::cout << "rate:\t" << rate << "\n";
 
         SDL_Event e;
         while ( SDL_PollEvent(&e) ) {
@@ -89,11 +83,26 @@ int main(int argc, char *argv[])
             }
         }
 
+        freq = SDL_GetPerformanceFrequency();
+        now = SDL_GetPerformanceCounter();
+        dt = (now - before) / (float)freq;
+        if (dt < .017){
+            SDL_Delay(17 - 1000*dt);
+            now = SDL_GetPerformanceCounter();
+            dt = (now - before) / (float)freq;
+        }
+        before = now;
+
+        float rate = 1/dt;
+        //if (rate < 55)
+        std::cout << "rate:\t" << rate << "\n";
+
+        updateWp(vertices, colors, indices);
+
         for (auto& boid : boids)
             boid.update(dt, lead_refs);
         for (auto& lead : leads)
             lead.update(dt);
-        updateWp(vertices, colors, indices);
 
 
         //SDL_Delay(10);

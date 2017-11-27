@@ -3,6 +3,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <vector>
+#include "conf.h"
 
 #define  WGL_SWAP_METHOD_ARB WGL_SWAP_EXCHANGE_ARB
 
@@ -109,6 +110,8 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     glUseProgram(shaderProgram);
     glViewport(0, 0, width, height);
     glClearColor(0.0,0.0,0.0,1.0);
+
+    SDL_GL_SetSwapInterval(conf::use_vsync);
 
     return 0;
 }

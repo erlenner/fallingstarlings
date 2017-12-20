@@ -11,6 +11,14 @@ struct array{
 
     array(){ _end = &data[0]; }
 
+    array(std::initializer_list<T> initialize){
+        auto startIt = initialize.begin();
+        auto endIt = initialize.end();
+        for (auto it = startIt; it != endIt; ++it)
+            data[std::distance(startIt,it)] = *it;
+        _end = data + std::distance(startIt,endIt);
+    }
+
     T& operator[](uint32_t index){ return data[index]; }
     const T& operator[](uint32_t index)const{ return data[index]; }
 
@@ -18,6 +26,14 @@ struct array{
     T* end(){ return _end; }
 
     T& back(){ return *(_end-1); }
+
+    T* fill(){ _end = data + N; return _end; }
+
+    T* fill(const T& value){
+        for (auto& dat : data)
+            dat = value;
+        return _end = data + N;
+    }
 
     T* push_back(const T& value){
         if (_end != data + N)
@@ -87,14 +103,13 @@ struct array{
 
     void clear(){ _end = &data[0]; }
 
-    void fill(const T& value){
-        for (auto& dat : data)
-            dat = value;
-    }
-
     uint32_t size()const{ return _end - data; }
 
     bool empty()const{ return _end == data; }
+
+    friend array& operator<<(array& lhs, const array& rhs){ lhs.push_back(rhs, rhs.size()); return lhs; }
+
+    friend T& operator<<(array& lhs, const T& rhs){ lhs.push_back(rhs); return lhs; }
 
     friend std::ostream& operator<<(std::ostream& os, const array& ar){ for (uint32_t i=0;i<ar.size();++i)os << ar[i] << ","; return os; }
 

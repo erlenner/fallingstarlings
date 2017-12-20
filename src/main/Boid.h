@@ -22,16 +22,16 @@ public:
     Boid() : vertex(nullptr){}
     void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction faction);
 
-    void update(float dt, const array<Lead*, conf::max_leads>& leads);
+    void update(float dt, Lead* leads, uint8_t n_leads);
 
     bool operator==(const Boid& rhs)
     { return rhs.vertex == vertex; }
 
 private:
 
-    vec cohesion(const array<Boid*, conf::neighbours_considered>& neighbours, const array<Lead*, conf::max_leads>& leads)const;
+    vec cohesion(const array<Boid*, conf::neighbours_considered>& neighbours, Lead* leads, uint8_t n_leads)const;
     vec alignment(const array<Boid*, conf::neighbours_considered>& neighbours)const;
-    vec separation(const array<Boid*, conf::neighbours_considered>& neighbours, const array<Lead*, conf::max_leads>& leads)const;
+    vec separation(const array<Boid*, conf::neighbours_considered>& neighbours, Lead* leads, uint8_t n_leads)const;
 
     friend void Grid::insert(Boid& boid);
     friend void Grid::update(Boid& boid);

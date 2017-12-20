@@ -29,7 +29,7 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     Grid::insert(*this);
 }
 
-void Boid::update(float dt, const array<Lead*, conf::max_leads>& leads)
+void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 {
     Grid::update(*this);
 
@@ -47,7 +47,7 @@ void Boid::update(float dt, const array<Lead*, conf::max_leads>& leads)
     //    std::cout << neighbours[i] << "\t";
     //std::cout << "\n";
 
-    vec force = limit((separation(neighbours, leads) + alignment(neighbours) + cohesion(neighbours, leads)) / 3, conf::max_force);
+    vec force = limit((separation(neighbours, leads, n_leads) + alignment(neighbours) + cohesion(neighbours, leads, n_leads)) / 3, conf::max_force);
     vec newVel = vel + force * dt;
     const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
     const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
@@ -75,14 +75,14 @@ void Boid::update(float dt, const array<Lead*, conf::max_leads>& leads)
     }
 }
 
-vec Boid::cohesion(const array<Boid*, conf::neighbours_considered>& neighbours, const array<Lead*, conf::max_leads>& leads)const
+vec Boid::cohesion(const array<Boid*, conf::neighbours_considered>& neighbours, Lead* leads, uint8_t n_leads)const
 {
     vec averagePos;
     for (uint8_t i=0; i < neighbours.size(); ++i)
         averagePos += *(neighbours[i]->vertex);
-    for (uint8_t i=0; i < leads.size(); ++i)
-        averagePos += conf::lead_weight*(*(leads[i]->vertex));
-    return limit((averagePos/(conf::neighbours_considered+leads.size()*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_force);
+    for (uint8_t i=0; i < n_leads; ++i)
+        averagePos += conf::lead_weight*(*(leads[i].vertex));
+    return limit((averagePos/(conf::neighbours_considered+n_leads*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_force);
 }
 
 vec Boid::alignment(const array<Boid*, conf::neighbours_considered>& neighbours)const
@@ -93,7 +93,7 @@ vec Boid::alignment(const array<Boid*, conf::neighbours_considered>& neighbours)
     return limit((averageVel/conf::neighbours_considered - vel) * conf::alignment_weight, conf::max_force);
 }
 
-vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours, const array<Lead*, conf::max_leads>& leads)const
+vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours, Lead* leads, uint8_t n_leads)const
 {
     vec force;
     float tooClose = 0;
@@ -107,9 +107,9 @@ vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours
             }
         }
     }
-    for (uint8_t i=0; i < leads.size(); ++i){
+    for (uint8_t i=0; i < n_leads; ++i){
         for (uint8_t j=0; j<conf::lead_points; ++j){
-            vec diff = *vertex - *(leads[i]->vertex+j);
+            vec diff = *vertex - *(leads[i].vertex+j);
             float dist2 = abs2(diff);
             if (dist2 < conf::comfort_zone*conf::comfort_zone){
                 force += conf::lead_weight * diff / dist2;

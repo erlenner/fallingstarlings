@@ -18,28 +18,31 @@ int main(int argc, char *argv[])
     std::vector<uint32_t> indices;
 
     const uint32_t n_boids_a = 150, n_leads_a = 1;
+    const uint32_t n_boids_b = 150, n_leads_b = 1;
 
     add_capacity(n_boids_a, conf::boid_points, vertices, colors, indices);
     add_capacity(n_leads_a, conf::lead_points, vertices, colors, indices);
+    add_capacity(n_boids_b, conf::boid_points, vertices, colors, indices);
+    add_capacity(n_leads_b, conf::lead_points, vertices, colors, indices);
 
+    std::vector<Boid> boids_a(n_boids_a);
+    initialize_boids(boids_a.data(), n_boids_a, vec(.5,.5), STARLING, vertices, colors, indices);
     std::cout << "boids:\n";
-    std::vector<Boid> boids(n_boids_a);
-    initialize_boids(boids.data(), n_boids_a, vec(.5,.5), STARLING, vertices, colors, indices);
-    for (auto& boid : boids)
+    for (auto& boid : boids_a)
         std::cout << &boid << "\t";
     std::cout << "\n";
+    std::vector<Boid> boids_b(n_boids_b);
+    initialize_boids(boids_b.data(), n_boids_b, vec(0,0), STARLING, vertices, colors, indices);
 
 
+    array<Lead, n_leads_a> leads_a = { Lead() };
+    leads_a[0].init(vertices, indices, colors, vec(.5,.5), STARLING);
     std::cout << "leads:\n";
-    array<Lead, n_leads_a> leads;
-    leads.push_back(Lead());
-    leads[0].init(vertices, indices, colors, vec(.5,.5), STARLING);
-    array<Lead*, n_leads_a> lead_refs;
-    for (auto& lead : leads)
-        lead_refs.push_back(&lead);
-    for (auto& lead : leads)
+    for (auto& lead : leads_a)
         std::cout << &lead << "\t";
     std::cout << "\n";
+    array<Lead, n_leads_b> leads_b = { Lead() };
+    leads_b[0].init(vertices, indices, colors, vec(0,0), STARLING);
 
     //std::cout << "vertices:\n";
     //for (int i=0; i<vertices.size(); ++i){
@@ -67,8 +70,8 @@ int main(int argc, char *argv[])
                 case SDL_MOUSEBUTTONUP:
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    if (!leads.empty())
-                        leads[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                    if (!leads_a.empty())
+                        leads_a[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
                 break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
@@ -99,9 +102,13 @@ int main(int argc, char *argv[])
 
         updateWp(vertices, colors, indices);
 
-        for (auto& boid : boids)
-            boid.update(dt, lead_refs);
-        for (auto& lead : leads)
+        for (auto& boid : boids_a)
+            boid.update(dt, leads_a.data, n_leads_a);
+        for (auto& lead : leads_a)
+            lead.update(dt);
+        for (auto& boid : boids_b)
+            boid.update(dt, leads_b.data, n_leads_b);
+        for (auto& lead : leads_b)
             lead.update(dt);
 
 

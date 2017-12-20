@@ -7,7 +7,7 @@ class Lead : public Boid
 
 public:
 
-    void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, Faction faction);
+    void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, BoidState state);
 
     void steer(vec dest);
 

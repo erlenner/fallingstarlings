@@ -40,7 +40,7 @@ namespace conf{
     const uint32_t max_square_radius_search_distance = 20 * boid_length / grid_step;
 
 // FACTIONS
-    const uint8_t n_factions = 5;
+    const uint8_t n_states = 5;
 
 
 

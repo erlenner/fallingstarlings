@@ -107,7 +107,7 @@ namespace Grid{
         if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) return;
         for (Boid** ref = grid[index].begin(); ref != grid[index].end(); ++ref)
         {
-            if ((*ref)->faction == boid.faction)
+            if ((*ref)->state == boid.state)
             {
                 if (*ref == &boid) continue;
                 insertFriend(ref, boid, friends);

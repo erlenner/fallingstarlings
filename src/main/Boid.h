@@ -8,7 +8,7 @@
 
 class Lead;
 
-enum Faction : uint8_t {DEAD = 0, DYING = 1, STARLING = 2, AUK = conf::n_factions+3};
+enum BoidState : uint8_t {DEAD = 0, DYING = 1, STARLING = 2, AUK = conf::n_states+3};
 
 class Boid
 {
@@ -17,12 +17,12 @@ public:
     col* color;
     vec vel;
     uint32_t gridIndex;
-    Faction faction;
+    BoidState state;
 
 public:
 
     Boid() : vertex(nullptr){}
-    void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction faction);
+    void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, BoidState state);
 
     void update(float dt, Lead* leads, uint8_t n_leads);
 

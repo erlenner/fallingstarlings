@@ -3,9 +3,9 @@
 #include "Lead.h"
 #include "mat.h"
 
-void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction faction)
+void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, BoidState state)
 {
-    this->faction = faction;
+    this->state = state;
 
     this->vel=vel;
     indices.push_back(vertices.size()/2);
@@ -21,9 +21,21 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     vertices.push_back(pos.y+conf::boid_length);
 
     color = reinterpret_cast<col*>(&(*colors.end()));
-    colors.insert(colors.end(), {1, 0, 0, 1});
-    colors.insert(colors.end(), {1, 1, 1, 1});
-    colors.insert(colors.end(), {1, 1, 1, 1});
+
+    switch (state){
+    case STARLING:
+        colors.insert(colors.end(), {1, 0, 0, 1});
+        colors.insert(colors.end(), {1, 1, 1, 1});
+        colors.insert(colors.end(), {1, 1, 1, 1});
+        break;
+    case AUK:
+        colors.insert(colors.end(), {0, 0, 1, 1});
+        colors.insert(colors.end(), {1, 1, 1, 1});
+        colors.insert(colors.end(), {1, 1, 1, 1});
+        break;
+    default:
+        break;
+    }
 
 
     Grid::insert(*this);
@@ -31,7 +43,7 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
 
 void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 {
-    if (!faction)
+    if (!state)
         return;
 
     Grid::update(*this);
@@ -61,7 +73,7 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         vel = limit(newVel, conf::boid_max_speed);
     }
 
-    if (faction == DYING)
+    if (state == DYING)
         die();
 
     vec newPos = vertex[0] + vel*dt;
@@ -132,13 +144,12 @@ vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours
 bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
 {
     bool collided = false;
-    bool dead = false;
     for (uint32_t i=0; i<immediates.size(); ++i){
 
         // immediate collides with current boid
-        if ((faction != DYING) && point_in_boid(*(immediates[i]->vertex), *this)){
+        if ((state != DYING) && point_in_boid(*(immediates[i]->vertex), *this)){
             if (!allies(*this, *(immediates[i])))
-                faction = DYING;
+                state = DYING;
             else if (float predSpeed = abs2(vel)){
                 immediates[i]->vel += vel;
                 vel *= (vel.x * immediates[i]->vel.x + vel.y * immediates[i]->vel.y) / predSpeed;
@@ -154,7 +165,7 @@ bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
         // current boid collides with immediate
         if (!allies(*this, *(immediates[i])) && point_in_boid(*vertex, *(immediates[i]))){
 
-            immediates[i]->faction = DYING;
+            immediates[i]->state = DYING;
             collided = true;
         }
 
@@ -166,7 +177,7 @@ void Boid::die(){
 
     Grid::remove(*this);
 
-    faction = DEAD;
+    state = DEAD;
 
     for (uint8_t i=0; i<conf::boid_points; ++i)
         color[i] = col(0,0,0,0);
@@ -174,5 +185,5 @@ void Boid::die(){
 
 bool allies(const Boid& lhs, const Boid& rhs)
 {
-    return (lhs.faction % conf::n_factions) == (rhs.faction % conf::n_factions);
+    return (lhs.state % conf::n_states) == (rhs.state % conf::n_states);
 }

@@ -12,48 +12,54 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     indices.push_back(1+vertices.size()/2);
     indices.push_back(2+vertices.size()/2);
 
+    vertex = reinterpret_cast<vec*>(&(*vertices.end()));
     vertices.push_back(pos.x);
-    vertex = reinterpret_cast<vec*>(&vertices.back());
     vertices.push_back(pos.y);
-
     vertices.push_back(pos.x+conf::boid_width);
     vertices.push_back(pos.y+conf::boid_length);
-
     vertices.push_back(pos.x-conf::boid_width);
     vertices.push_back(pos.y+conf::boid_length);
 
+    color = reinterpret_cast<col*>(&(*colors.end()));
     colors.insert(colors.end(), {1.0, 0.0, 0.0, 1.0});
     colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
     colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
+
 
     Grid::insert(*this);
 }
 
 void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 {
+    if (!faction)
+        return;
+
     Grid::update(*this);
 
     array<Boid*, conf::neighbours_considered+1> friends;
-    array<Boid*, conf::max_boids*9> foes;
-    Grid::findNeighbours(*this, friends, foes);
+    array<Boid*, conf::max_boids*9> immediates;
+    Grid::findNeighbours(*this, friends, immediates);
     array<Boid*, conf::neighbours_considered> neighbours;
 
-    neighbours.push_back(friends.data, friends.size());
-    neighbours.trim_value(nullptr);
-    //std::cout << "s:\t" << abs(separation(neighbours)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours)) << "\n";
+    if (!collision(immediates)){
 
-    //std::cout << this << ":\t";
-    //for (uint32_t i=0; i<neighbours.size(); ++i)
-    //    std::cout << neighbours[i] << "\t";
-    //std::cout << "\n";
+        neighbours.push_back(friends.data, friends.size());
+        neighbours.trim_value(nullptr);
+        //std::cout << "s:\t" << abs(separation(neighbours)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours)) << "\n";
 
-    vec force = limit((separation(neighbours, leads, n_leads) + alignment(neighbours) + cohesion(neighbours, leads, n_leads)) / 3, conf::max_force);
-    vec newVel = vel + force * dt;
-    const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
-    const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
-    if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit)
-        newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
-    vel = limit(newVel, conf::boid_max_speed);
+        //std::cout << this << ":\t";
+        //for (uint32_t i=0; i<neighbours.size(); ++i)
+        //    std::cout << neighbours[i] << "\t";
+        //std::cout << "\n";
+
+        vec force = limit((separation(neighbours, leads, n_leads) + alignment(neighbours) + cohesion(neighbours, leads, n_leads)) / 3, conf::max_force);
+        vec newVel = vel + force * dt;
+        const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
+        const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
+        if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit)
+            newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
+        vel = limit(newVel, conf::boid_max_speed);
+    }
 
     vec newPos = vertex[0] + vel*dt;
     if (newPos.x * newPos.x > 1){
@@ -118,4 +124,54 @@ vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours
         }
     }
     return tooClose ? limit(force * (conf::separation_weight / tooClose), conf::max_separation_force) : force;
+}
+
+bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
+{
+    for (uint32_t i=0; i<immediates.size(); ++i){
+
+        vec v = *(immediates[i]->vertex);
+        vec v0 = vertex[0];
+        vec v1 = vertex[1] - v0;
+        vec v2 = vertex[2] - v0;
+
+        float a = ((v.x*v2.y-v.y*v2.x)-(v0.x*v2.y-v0.y*v2.x))
+                     /(v1.x*v2.y-v1.y*v2.x);
+
+        float b = ((v.x*v1.y-v.y*v1.x)-(v0.x*v1.y-v0.y*v1.x))
+                    /(v1.x*v2.y-v1.y*v2.x)*(-1);
+
+        if ((a > 0) && (b > 0) && ((a + b) < 1)){
+            if (!allies(*this, *(immediates[i])))
+                die();
+            else{
+                float predSpeed = abs2(vel);
+                if (predSpeed > 0){
+                    immediates[i]->vel += vel;
+                    vel *= (vel.x * immediates[i]->vel.x + vel.y * immediates[i]->vel.y) / predSpeed;
+                    immediates[i]->vel -= vel;
+                } else {
+                    vel = immediates[i]->vel;
+                    immediates[i]->vel = vec(0,0);
+                }
+            }
+            return true;
+        }
+    }
+    return 0;
+}
+
+void Boid::die(){
+
+    Grid::remove(*this);
+
+    faction = DEAD;
+
+    for (uint8_t i=0; i<conf::boid_points; ++i)
+        color[i] = col(0,0,0,0);
+}
+
+bool allies(const Boid& lhs, const Boid& rhs)
+{
+    return (lhs.faction % conf::n_factions) == (rhs.faction % conf::n_factions);
 }

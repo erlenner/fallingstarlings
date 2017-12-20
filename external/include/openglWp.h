@@ -107,6 +107,9 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     //glOrtho(0, width, height, 0, -1, 1);
     //glMatrixMode(GL_MODELVIEW);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
     glUseProgram(shaderProgram);
     glViewport(0, 0, width, height);
     glClearColor(0.0,0.0,0.0,1.0);

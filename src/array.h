@@ -54,6 +54,14 @@ struct array{
         return _end;
     }
 
+    T* push_back(std::initializer_list<T> initialize){
+        auto startIt = initialize.begin();
+        auto endIt = initialize.end();
+        for (auto it = startIt; it != endIt; ++it)
+            *(_end + std::distance(startIt,it)) = *it;
+        _end += std::distance(startIt,endIt);
+    }
+
     //void erase(uint32_t index){
     //    --_end;
     //    for (T* ref = data + index; ref != _end; ++ref)
@@ -106,6 +114,8 @@ struct array{
     uint32_t size()const{ return _end - data; }
 
     bool empty()const{ return _end == data; }
+
+    friend array& operator>>(array& lhs, uint32_t shift_n){ lhs._end -= shift_n; return lhs; }
 
     friend array& operator<<(array& lhs, const array& rhs){ lhs.push_back(rhs, rhs.size()); return lhs; }
 

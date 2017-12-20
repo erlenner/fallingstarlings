@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         std::cout << &boid << "\t";
     std::cout << "\n";
     std::vector<Boid> boids_b(n_boids_b);
-    initialize_boids(boids_b.data(), n_boids_b, vec(0,0), STARLING, vertices, colors, indices);
+    initialize_boids(boids_b.data(), n_boids_b, vec(0,0), AUK, vertices, colors, indices);
 
 
     array<Lead, n_leads_a> leads_a = { Lead() };
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
         std::cout << &lead << "\t";
     std::cout << "\n";
     array<Lead, n_leads_b> leads_b = { Lead() };
-    leads_b[0].init(vertices, indices, colors, vec(0,0), STARLING);
+    leads_b[0].init(vertices, indices, colors, vec(0,0), AUK);
 
     //std::cout << "vertices:\n";
     //for (int i=0; i<vertices.size(); ++i){

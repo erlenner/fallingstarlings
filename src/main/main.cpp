@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     std::cout << "boids:\n";
     std::vector<Boid> boids(n_boids_a);
-    initialize_boids(boids.data(), n_boids_a, STARLING, vertices, colors, indices);
+    initialize_boids(boids.data(), n_boids_a, vec(.5,.5), STARLING, vertices, colors, indices);
     for (auto& boid : boids)
         std::cout << &boid << "\t";
     std::cout << "\n";
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     std::cout << "leads:\n";
     array<Lead, n_leads_a> leads;
     leads.push_back(Lead());
-    leads[0].init(vertices, indices, colors, vec(0,0), vec(0,0), STARLING);
+    leads[0].init(vertices, indices, colors, vec(.5,.5), STARLING);
     array<Lead*, n_leads_a> lead_refs;
     for (auto& lead : leads)
         lead_refs.push_back(&lead);

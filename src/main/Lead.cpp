@@ -1,11 +1,11 @@
 #include "Lead.h"
 #include "utils.h"
 
-void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction faction)
+void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, Faction faction)
 {
     this->faction = faction;
 
-    this->vel=vel;
+    this->vel=vec(0,0);
     indices.push_back(vertices.size()/2);
     indices.push_back(1+vertices.size()/2);
     indices.push_back(2+vertices.size()/2);
@@ -13,6 +13,8 @@ void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     vertices.push_back(pos.x);
     vertex = reinterpret_cast<vec*>(&vertices.back());
     vertices.push_back(pos.y);
+
+    dest = pos;
 
     vertices.push_back(pos.x+conf::lead_width);
     vertices.push_back(pos.y+conf::lead_length);

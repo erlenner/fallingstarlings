@@ -23,7 +23,7 @@ namespace conf{
 
     const float comfort_zone            = .045;
     const float cohesion_weight         = 75;
-    const float alignment_weight        = 50;
+    const float alignment_weight        = 30;
     const float separation_weight       = .6;
     const float lead_weight             = 10;
 

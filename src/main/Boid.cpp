@@ -98,19 +98,23 @@ vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours
     vec force;
     float tooClose = 0;
     for (uint8_t i=0; i < neighbours.size(); ++i){
-        vec diff = *vertex - *(neighbours[i]->vertex);
-        float dist2 = abs2(diff);
-        if (dist2 < conf::comfort_zone*conf::comfort_zone){
-            force += diff / dist2;
-            ++tooClose;
+        for (uint8_t j=0; j<conf::boid_points; ++j){
+            vec diff = *vertex - *(neighbours[i]->vertex+j);
+            float dist2 = abs2(diff);
+            if (dist2 < conf::comfort_zone*conf::comfort_zone){
+                force += diff / dist2;
+                ++tooClose;
+            }
         }
     }
     for (uint8_t i=0; i < leads.size(); ++i){
-        vec diff = *vertex - *(leads[i]->vertex);
-        float dist2 = abs2(diff);
-        if (dist2 < conf::comfort_zone*conf::comfort_zone){
-            force += conf::lead_weight * diff / dist2;
-            tooClose += conf::lead_weight;
+        for (uint8_t j=0; j<conf::lead_points; ++j){
+            vec diff = *vertex - *(leads[i]->vertex+j);
+            float dist2 = abs2(diff);
+            if (dist2 < conf::comfort_zone*conf::comfort_zone){
+                force += conf::lead_weight * diff / dist2;
+                tooClose += conf::lead_weight;
+            }
         }
     }
     return tooClose ? limit(force * (conf::separation_weight / tooClose), conf::max_separation_force) : force;

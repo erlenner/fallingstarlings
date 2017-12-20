@@ -38,14 +38,14 @@ inline void add_capacity(uint32_t add_boids, uint32_t n_points, std::vector<floa
     indices     .reserve(n_boids * n_points);
 }
 
-inline void initialize_boids(Boid* boids, uint32_t n_boids, Faction faction, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
+inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center, Faction faction, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
 {
     for (uint32_t i=0; i<n_boids; ++i){
         static vec initPos, velInit(.1,.1);
 
         float angle = (std::rand() % 360) * 3.14f / 180.f;
         float vectorSize = .05 + (std::rand() % 500) / 2e3;
-        initPos = vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
+        initPos = center + vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
         boids[i].init(vertices, indices, colors, initPos, velInit, faction);
     }

@@ -21,9 +21,9 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     vertices.push_back(pos.y+conf::boid_length);
 
     color = reinterpret_cast<col*>(&(*colors.end()));
-    colors.insert(colors.end(), {1.0, 0.0, 0.0, 1.0});
-    colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
-    colors.insert(colors.end(), {1.0, 1.0, 1.0, 1.0});
+    colors.insert(colors.end(), {1, 0, 0, 1});
+    colors.insert(colors.end(), {1, 1, 1, 1});
+    colors.insert(colors.end(), {1, 1, 1, 1});
 
 
     Grid::insert(*this);
@@ -60,6 +60,9 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
         vel = limit(newVel, conf::boid_max_speed);
     }
+
+    if (faction == DYING)
+        die();
 
     vec newPos = vertex[0] + vel*dt;
     if (newPos.x * newPos.x > 1){
@@ -128,37 +131,35 @@ vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours
 
 bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
 {
+    bool collided = false;
+    bool dead = false;
     for (uint32_t i=0; i<immediates.size(); ++i){
 
-        vec v = *(immediates[i]->vertex);
-        vec v0 = vertex[0];
-        vec v1 = vertex[1] - v0;
-        vec v2 = vertex[2] - v0;
-
-        float a = ((v.x*v2.y-v.y*v2.x)-(v0.x*v2.y-v0.y*v2.x))
-                     /(v1.x*v2.y-v1.y*v2.x);
-
-        float b = ((v.x*v1.y-v.y*v1.x)-(v0.x*v1.y-v0.y*v1.x))
-                    /(v1.x*v2.y-v1.y*v2.x)*(-1);
-
-        if ((a > 0) && (b > 0) && ((a + b) < 1)){
+        // immediate collides with current boid
+        if ((faction != DYING) && point_in_boid(*(immediates[i]->vertex), *this)){
             if (!allies(*this, *(immediates[i])))
-                die();
-            else{
-                float predSpeed = abs2(vel);
-                if (predSpeed > 0){
-                    immediates[i]->vel += vel;
-                    vel *= (vel.x * immediates[i]->vel.x + vel.y * immediates[i]->vel.y) / predSpeed;
-                    immediates[i]->vel -= vel;
-                } else {
-                    vel = immediates[i]->vel;
-                    immediates[i]->vel = vec(0,0);
-                }
+                faction = DYING;
+            else if (float predSpeed = abs2(vel)){
+                immediates[i]->vel += vel;
+                vel *= (vel.x * immediates[i]->vel.x + vel.y * immediates[i]->vel.y) / predSpeed;
+                immediates[i]->vel -= vel;
+            } else {
+                vel = immediates[i]->vel;
+                immediates[i]->vel = vec(0,0);
             }
-            return true;
+
+            collided = true;
         }
+
+        // current boid collides with immediate
+        if (!allies(*this, *(immediates[i])) && point_in_boid(*vertex, *(immediates[i]))){
+
+            immediates[i]->faction = DYING;
+            collided = true;
+        }
+
     }
-    return 0;
+    return collided;
 }
 
 void Boid::die(){

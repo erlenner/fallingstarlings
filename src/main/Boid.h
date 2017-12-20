@@ -8,7 +8,7 @@
 
 class Lead;
 
-enum Faction : uint8_t {DEAD = 0, STARLING = 1, AUK = conf::n_factions+2};
+enum Faction : uint8_t {DEAD = 0, DYING = 1, STARLING = 2, AUK = conf::n_factions+3};
 
 class Boid
 {

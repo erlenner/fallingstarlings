@@ -21,8 +21,11 @@ struct vec
     vec operator+=(const vec& rhs){ x+=rhs.x; y+=rhs.y; return *this; }
     vec operator-(const vec& rhs)const{ return vec(x-rhs.x,y-rhs.y); }
     vec operator-=(const vec& rhs){ x-=rhs.x; y-=rhs.y; return *this; }
-    vec limit(float sizeLimit){ float size2=x*x+y*y; return (size2 > sizeLimit*sizeLimit) ? *this *= (sizeLimit / sqrt(size2)) : *this; }
-    friend vec limit(const vec& vecc, float sizeLimit){ float size2=abs2(vecc); return (size2 > sizeLimit*sizeLimit) ? vecc * (sizeLimit / sqrt(size2)) : vecc; }
+    vec limit_sup(float sizeLimit){ float size2=x*x+y*y; return (size2 > sizeLimit*sizeLimit) ? *this *= (sizeLimit / sqrt(size2)) : *this; }
+    vec limit_inf(float sizeLimit){ float size2=x*x+y*y; return (size2 < sizeLimit*sizeLimit) ? *this *= (sizeLimit / sqrt(size2)) : *this; }
+    friend vec limit_sup(const vec& vecc, float sizeLimit){ float size2=abs2(vecc); return (size2 > sizeLimit*sizeLimit) ? vecc * (sizeLimit / sqrt(size2)) : vecc; }
+    friend vec limit_inf(const vec& vecc, float sizeLimit){ float size2=abs2(vecc); return (size2 < sizeLimit*sizeLimit) ? vecc * (sizeLimit / sqrt(size2)) : vecc; }
+    friend vec limit(const vec& vecc, float lowerLimit, float upperLimit){ float size2=abs2(vecc); return (size2 > upperLimit*upperLimit) ? vecc * (upperLimit / sqrt(size2)) : ((size2 < lowerLimit*lowerLimit) ? vecc * (lowerLimit / sqrt(size2)) : vecc); }
     friend vec norm(const vec& vecc){ float size2=abs2(vecc); return (size2 > 0) ? vecc / sqrt(size2) : vecc; }
     friend float abs2(const vec& vecc){ return vecc.x*vecc.x+vecc.y*vecc.y; }
     friend float abs(const vec& vecc){ return sqrt(vecc.x*vecc.x+vecc.y*vecc.y); }

@@ -22,12 +22,13 @@ namespace conf{
     const uint8_t neighbours_considered = 7;
 
     const float comfort_zone            = .045;
-    const float cohesion_weight         = 75;
-    const float alignment_weight        = 30;
-    const float separation_weight       = .6;
-    const float lead_weight             = 10;
+    const float cohesion_weight         = 25;
+    const float alignment_weight        = 20;
+    const float separation_weight       = .2;
+    const float lead_weight             = 4;
 
     const float boid_max_speed          = .7;
+    const float boid_min_speed          = .3;
     const float max_force               = 100;
     const float max_separation_force    = 300;
     const float vel_max_rot_deg         = 30;

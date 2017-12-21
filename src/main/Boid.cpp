@@ -57,20 +57,20 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 
         neighbours.push_back(friends.data, friends.size());
         neighbours.trim_value(nullptr);
-        //std::cout << "s:\t" << abs(separation(neighbours)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours)) << "\n";
+        std::cout << "s:\t" << abs(separation(neighbours, leads, n_leads)) << "\ta:\t" << abs(alignment(neighbours)) << "\tc:\t" << abs(cohesion(neighbours, leads, n_leads)) << "\n";
 
         //std::cout << this << ":\t";
         //for (uint32_t i=0; i<neighbours.size(); ++i)
         //    std::cout << neighbours[i] << "\t";
         //std::cout << "\n";
 
-        vec force = limit((separation(neighbours, leads, n_leads) + alignment(neighbours) + cohesion(neighbours, leads, n_leads)) / 3, conf::max_force);
+        vec force = limit_sup((separation(neighbours, leads, n_leads) + alignment(neighbours) + cohesion(neighbours, leads, n_leads)) / 3, conf::max_force);
         vec newVel = vel + force * dt;
         const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
         const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
         if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit)
             newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
-        vel = limit(newVel, conf::boid_max_speed);
+        vel = limit(newVel, conf::boid_min_speed, conf::boid_max_speed);
     }
 
     if (state == DYING)
@@ -103,7 +103,7 @@ vec Boid::cohesion(const array<Boid*, conf::neighbours_considered>& neighbours, 
         averagePos += *(neighbours[i]->vertex);
     for (uint8_t i=0; i < n_leads; ++i)
         averagePos += conf::lead_weight*(*(leads[i].vertex));
-    return limit((averagePos/(conf::neighbours_considered+n_leads*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_force);
+    return limit_sup((averagePos/(conf::neighbours_considered+n_leads*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_force);
 }
 
 vec Boid::alignment(const array<Boid*, conf::neighbours_considered>& neighbours)const
@@ -111,7 +111,7 @@ vec Boid::alignment(const array<Boid*, conf::neighbours_considered>& neighbours)
     vec averageVel;
     for (uint8_t i=0; i < neighbours.size(); ++i)
         averageVel += neighbours[i]->vel;
-    return limit((averageVel/conf::neighbours_considered - vel) * conf::alignment_weight, conf::max_force);
+    return limit_sup((averageVel/conf::neighbours_considered - vel) * conf::alignment_weight, conf::max_force);
 }
 
 vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours, Lead* leads, uint8_t n_leads)const
@@ -138,7 +138,7 @@ vec Boid::separation(const array<Boid*, conf::neighbours_considered>& neighbours
             }
         }
     }
-    return tooClose ? limit(force * (conf::separation_weight / tooClose), conf::max_separation_force) : force;
+    return tooClose ? limit_sup(force * (conf::separation_weight / tooClose), conf::max_separation_force) : force;
 }
 
 bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)

@@ -44,7 +44,7 @@ inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center, BoidStat
         static vec initPos, velInit(.1,.1);
 
         float angle = (std::rand() % 360) * 3.14f / 180.f;
-        float vectorSize = .05 + (std::rand() % 500) / 2e3;
+        float vectorSize = .05 + (std::rand() % 1000) / 2e3;
         initPos = center + vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
         boids[i].init(vertices, indices, colors, initPos, velInit, state);

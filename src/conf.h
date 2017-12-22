@@ -31,8 +31,8 @@ namespace conf{
     const float conflict_flee_cohesion_gain     = 5;
     const float conflict_attack_cohesion_gain   = 5;
 
-    const float boid_max_speed          = .7;
-    const float boid_min_speed          = .3;
+    const float boid_max_speed          = .8;
+    const float boid_min_speed          = .4;
     const float max_force               = 100;
     const float max_separation_force    = 300;
     const float vel_max_rot_deg         = 30;

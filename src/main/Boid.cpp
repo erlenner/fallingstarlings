@@ -43,6 +43,9 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
 
 void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 {
+    //if (isnan(vertex->x) || isnan(vertex->y))
+    //    std::cout << "nan\t" << this << "\n";
+
     if (!state)
         return;
 

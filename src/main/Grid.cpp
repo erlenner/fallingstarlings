@@ -34,19 +34,19 @@ namespace Grid{
         grid[boid.gridIndex].erase(&boid);
     }
 
-    void findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& immediates)
+    void findNeighbours(Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& immediates, array<Boid*, conf::neighbours_considered*2>& foes)
     {
         friendDistances.clear();
 
-        insertNeighbours(boid.gridIndex,                        boid, friends, immediates);
-        insertNeighbours(boid.gridIndex + 1,                    boid, friends, immediates);
-        insertNeighbours(boid.gridIndex - 1,                    boid, friends, immediates);
-        insertNeighbours(boid.gridIndex + conf::grid_size,      boid, friends, immediates);
-        insertNeighbours(boid.gridIndex - conf::grid_size,      boid, friends, immediates);
-        insertNeighbours(boid.gridIndex + conf::grid_size + 1,  boid, friends, immediates);
-        insertNeighbours(boid.gridIndex + conf::grid_size - 1,  boid, friends, immediates);
-        insertNeighbours(boid.gridIndex - conf::grid_size + 1,  boid, friends, immediates);
-        insertNeighbours(boid.gridIndex - conf::grid_size - 1,  boid, friends, immediates);
+        insertNeighbours(boid.gridIndex,                        boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex + 1,                    boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex - 1,                    boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex + conf::grid_size,      boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex - conf::grid_size,      boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex + conf::grid_size + 1,  boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex + conf::grid_size - 1,  boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex - conf::grid_size + 1,  boid, friends, immediates, foes);
+        insertNeighbours(boid.gridIndex - conf::grid_size - 1,  boid, friends, immediates, foes);
 
         uint32_t squareRadius = 2;
         while ((friends.size() < conf::neighbours_considered) && (squareRadius < conf::max_square_radius_search_distance)){
@@ -76,7 +76,7 @@ namespace Grid{
                         {index = boid.gridIndex - (squareRadius - 1 - j) * conf::grid_size + squareRadius;
                         break;}
                     }
-                    insertNeighbours(index, boid, friends);
+                    insertNeighbours(index, boid, friends, foes);
                 }
             }
             ++squareRadius;
@@ -84,7 +84,7 @@ namespace Grid{
         //std::cout << &boid << ":\t" << friends << "\n";
     }
 
-    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& immediates)
+    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::max_boids*9>& immediates, array<Boid*, conf::neighbours_considered*2>& foes)
     {
         uint32_t xIndex = index % conf::grid_size;
         uint32_t yIndex = index / conf::grid_size;
@@ -95,23 +95,25 @@ namespace Grid{
             {
                 if (*ref == &boid) continue;
                 insertFriend(ref, boid, friends);
-            }
+            }else
+                foes.push_back(*ref);
             immediates.push_back(*ref);
         }
     }
 
-    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends)
+    inline void insertNeighbours(uint32_t index, Boid& boid, array<Boid*, conf::neighbours_considered+1>& friends, array<Boid*, conf::neighbours_considered*2>& foes)
     {
         uint32_t xIndex = index % conf::grid_size;
         uint32_t yIndex = index / conf::grid_size;
         if ((xIndex >= conf::grid_size) || (xIndex < 0) || (yIndex >= conf::grid_size) || (yIndex < 0)) return;
         for (Boid** ref = grid[index].begin(); ref != grid[index].end(); ++ref)
         {
-            if ((*ref)->state == boid.state)
+            if (allies(**ref, boid))
             {
                 if (*ref == &boid) continue;
                 insertFriend(ref, boid, friends);
-            }
+            }else
+                foes.push_back(*ref);
         }
     }
 

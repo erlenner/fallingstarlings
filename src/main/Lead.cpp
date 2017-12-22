@@ -26,7 +26,7 @@ void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     colors.insert(colors.end(), {1, 1, 1, 1});
     colors.insert(colors.end(), {1, 1, 1, 1});
 
-    Grid::insert(*this);
+    //Grid::insert(*this);
 }
 
 void Lead::steer(vec dest)
@@ -36,7 +36,7 @@ void Lead::steer(vec dest)
 
 void Lead::update(float dt)
 {
-    Grid::update(*this);
+    //Grid::update(*this);
 
     vec togo = dest - *vertex;
 

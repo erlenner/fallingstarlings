@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
         float rate = 1/dt;
         //if (rate < 55)
-        //std::cout << "rate:\t" << rate << "\n";
+        std::cout << "rate:\t" << rate << "\n";
 
         updateWp(vertices, colors, indices);
 

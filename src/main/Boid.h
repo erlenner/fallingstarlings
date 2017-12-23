@@ -31,7 +31,8 @@ public:
     bool operator==(const Boid& rhs)
     { return rhs.vertex == vertex; }
 
-    friend bool allies(const Boid& lhs, const Boid& rhs);
+    friend bool allies(const Boid& lhs, const Boid& rhs)
+    { return (lhs.state % conf::n_states) == (rhs.state % conf::n_states); }
 
 private:
 

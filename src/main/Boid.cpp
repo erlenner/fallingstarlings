@@ -186,7 +186,6 @@ bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
             immediates[i]->state = DYING;
             collided = true;
         }
-
     }
     return collided;
 }
@@ -200,9 +199,4 @@ void Boid::die()
 
     for (uint8_t i=0; i<conf::boid_points; ++i)
         color[i] = col(0,0,0,0);
-}
-
-bool allies(const Boid& lhs, const Boid& rhs)
-{
-    return (lhs.state % conf::n_states) == (rhs.state % conf::n_states);
 }

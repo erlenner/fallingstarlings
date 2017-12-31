@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 5, n_leads_a = 0;
+    const uint32_t n_boids_a = 100, n_leads_a = 0;
     //const uint32_t n_boids_b = 1, n_leads_b = 1;
 
     add_capacity(n_boids_a, conf::starling_points, conf::starling_index_entries, vertices, colors, indices);
@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
                 case SDL_MOUSEBUTTONUP:
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    if (!leads_a.empty())
-                        leads_a[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                    //if (!leads_a.empty())
+                    //    leads_a[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
                 break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {

@@ -128,19 +128,19 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
 
     // vertex_vbo
     glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
     glEnableVertexAttribArray(0);
     // color_vbo
     glBindBuffer(GL_ARRAY_BUFFER, color_vbo); //we're "using" this one now
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
     glEnableVertexAttribArray(1);
     //glDrawArrays(GL_TRIANGLES, 0, 3);
     // indices:vbo
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_STATIC_DRAW);
-    glDrawElements(GL_TRIANGLES, vertices.size()/2, GL_UNSIGNED_INT, 0);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_DYNAMIC_DRAW);
+    glDrawElements(GL_TRIANGLES, sizeof(uint32_t)*indices.size(), GL_UNSIGNED_INT, 0);
 
     SDL_GL_SwapWindow(window);
     return 0;

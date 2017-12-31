@@ -9,7 +9,7 @@ struct array{
     T data[N] = {};
     T* _end;
 
-    array(){ _end = &data[0]; }
+    array(){ _end = data; }
 
     array(std::initializer_list<T> initialize){
         auto startIt = initialize.begin();

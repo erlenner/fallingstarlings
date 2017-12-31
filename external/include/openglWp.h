@@ -10,8 +10,6 @@
 SDL_Window* window;
 SDL_GLContext glContext;
 
-int initWp();
-int updateWp();
 GLuint BuildShaderProgram(const char *vsPath, const char *fsPath);
 GLuint CreateShader(GLenum eShaderType, const char *strShaderFile);
 GLuint shaderProgram;
@@ -110,6 +108,8 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
+    glEnable(GL_DEPTH_TEST);
+
     glUseProgram(shaderProgram);
     glViewport(0, 0, width, height);
     glClearColor(0.0,0.0,0.0,1.0);
@@ -122,7 +122,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
 int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
 {
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //glBindVertexArray(vao);
 

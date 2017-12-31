@@ -8,30 +8,33 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     this->state = state;
 
     this->vel=vel;
-    indices.push_back(vertices.size()/2);
-    indices.push_back(1+vertices.size()/2);
-    indices.push_back(2+vertices.size()/2);
 
     vertex = reinterpret_cast<vec*>(&(*vertices.end()));
-    vertices.push_back(pos.x);
-    vertices.push_back(pos.y);
-    vertices.push_back(pos.x+conf::boid_width);
-    vertices.push_back(pos.y+conf::boid_length);
-    vertices.push_back(pos.x-conf::boid_width);
-    vertices.push_back(pos.y+conf::boid_length);
-
     color = reinterpret_cast<col*>(&(*colors.end()));
 
     switch (state){
     case STARLING:
+        for (auto indexOffset : conf::starling_index_offsets)
+            indices.push_back(vertices.size()/2 + indexOffset);
+        for (uint8_t i=0; i<conf::starling_points; ++i)
+            push_back_vec(vertices, pos + reinterpret_cast<const vec*>(conf::starling_vertex_offsets)[i]);
+        colors.insert(colors.end(), conf::starling_colors, conf::starling_colors + conf::starling_points*4);
+        break;
+    case AUK:
+        indices.push_back(vertices.size()/2);
+        indices.push_back(1+vertices.size()/2);
+        indices.push_back(2+vertices.size()/2);
+
         colors.insert(colors.end(), {1, 0, 0, 1});
         colors.insert(colors.end(), {1, 1, 1, 1});
         colors.insert(colors.end(), {1, 1, 1, 1});
-        break;
-    case AUK:
-        colors.insert(colors.end(), {0, 0, 1, 1});
-        colors.insert(colors.end(), {1, 1, 1, 1});
-        colors.insert(colors.end(), {1, 1, 1, 1});
+
+        vertices.push_back(pos.x);
+        vertices.push_back(pos.y);
+        vertices.push_back(pos.x+conf::boid_width);
+        vertices.push_back(pos.y+conf::boid_length);
+        vertices.push_back(pos.x-conf::boid_width);
+        vertices.push_back(pos.y+conf::boid_length);
         break;
     default:
         break;
@@ -106,8 +109,14 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
     float speed = abs(vel);
     if (speed > 0){
         vec velNormed = vel / speed;
-        vertex[1] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(-velNormed.y, velNormed.x);
-        vertex[2] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(velNormed.y, -velNormed.x);
+        //vertex[1] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(-velNormed.y, velNormed.x);
+        //vertex[2] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(velNormed.y, -velNormed.x);
+
+        mat velocityProjection = {  velNormed.y,    velNormed.x,
+                                    -velNormed.x,   velNormed.y };
+        for (uint8_t i=1; i < conf::starling_points; ++i)
+            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(conf::starling_vertex_offsets)[i];
+        //    vertex[i] += vel*dt;
     }
 }
 

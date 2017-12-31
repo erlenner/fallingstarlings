@@ -37,6 +37,8 @@ struct vec
     friend vec operator*(float lhs, const vec& rhs){ return rhs*lhs; }
     friend std::ostream& operator<<(std::ostream& os, const vec& vecc){ os << vecc.x << "," << vecc.y; return os; }
     friend float sinAngleDiff2(const vec& a, const vec& b){ float cross = a.x*b.y-a.y*b.x; return cross*cross/(abs2(a)*abs2(b)); }
+    friend vec* begin(float* ref){ return reinterpret_cast<vec*>(ref); }
+    friend void push_back_vec(std::vector<float>& vector, const vec& vecc){ vector.push_back(vecc.x); vector.push_back(vecc.y); }
 
     friend struct mat;
 

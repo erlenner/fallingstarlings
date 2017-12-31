@@ -28,14 +28,14 @@ inline float sq(float n)
 { return n*n; }
 
 
-inline void add_capacity(uint32_t add_boids, uint32_t n_points, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
+inline void add_capacity(uint32_t add_boids, uint8_t n_points, uint8_t n_indices, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
 {
     static uint32_t n_boids = 0;
     n_boids += add_boids;
 
     vertices    .reserve(n_boids * n_points * 2);
     colors      .reserve(n_boids * n_points * 4);
-    indices     .reserve(n_boids * n_points);
+    indices     .reserve(n_boids * n_indices);
 }
 
 inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center, BoidState state, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)

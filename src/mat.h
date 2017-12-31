@@ -26,6 +26,7 @@ struct mat
 
     vec operator*(const vec& rhs)const{ return vec(m00*rhs.x+m01*rhs.y, m10*rhs.x+m11*rhs.y); }
 
+    friend mat operator*(float lhs, const mat& rhs){ return rhs * lhs; }
 
     friend std::ostream& operator<<(std::ostream& os, const mat& matt){ os << matt.m00 << "," << matt.m01 << "," << matt.m10 << "," << matt.m11; return os; }
 };

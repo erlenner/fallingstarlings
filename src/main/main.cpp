@@ -17,13 +17,13 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 200, n_leads_a = 1;
-    const uint32_t n_boids_b = 300, n_leads_b = 1;
+    const uint32_t n_boids_a = 5, n_leads_a = 0;
+    //const uint32_t n_boids_b = 1, n_leads_b = 1;
 
-    add_capacity(n_boids_a, conf::boid_points, vertices, colors, indices);
-    add_capacity(n_leads_a, conf::lead_points, vertices, colors, indices);
-    add_capacity(n_boids_b, conf::boid_points, vertices, colors, indices);
-    add_capacity(n_leads_b, conf::lead_points, vertices, colors, indices);
+    add_capacity(n_boids_a, conf::starling_points, conf::starling_index_entries, vertices, colors, indices);
+    //add_capacity(n_leads_a, conf::lead_points, conf::lead_points, vertices, colors, indices);
+    //add_capacity(n_boids_b, conf::boid_points, vertices, colors, indices);
+    //add_capacity(n_leads_b, conf::lead_points, vertices, colors, indices);
 
     std::vector<Boid> boids_a(n_boids_a);
     initialize_boids(boids_a.data(), n_boids_a, vec(.5,.5), STARLING, vertices, colors, indices);
@@ -31,29 +31,32 @@ int main(int argc, char *argv[])
     for (auto& boid : boids_a)
         std::cout << &boid << "\t";
     std::cout << "\n";
-    std::vector<Boid> boids_b(n_boids_b);
-    initialize_boids(boids_b.data(), n_boids_b, vec(-.5,-.5), AUK, vertices, colors, indices);
+    //std::vector<Boid> boids_b(n_boids_b);
+    //initialize_boids(boids_b.data(), n_boids_b, vec(-.5,-.5), AUK, vertices, colors, indices);
 
 
-    array<Lead, n_leads_a> leads_a = { Lead() };
-    leads_a[0].init(vertices, indices, colors, vec(.5,.5), STARLING);
-    std::cout << "leads:\n";
-    for (auto& lead : leads_a)
-        std::cout << &lead << "\t";
-    std::cout << "\n";
-    array<Lead, n_leads_b> leads_b = { Lead() };
-    leads_b[0].init(vertices, indices, colors, vec(-.5,-.5), AUK);
+    array<Lead, n_leads_a> leads_a = { };
+    //leads_a[0].init(vertices, indices, colors, vec(.5,.5), STARLING);
+    //std::cout << "leads:\n";
+    //for (auto& lead : leads_a)
+    //    std::cout << &lead << "\t";
+    //std::cout << "\n";
+    //array<Lead, n_leads_b> leads_b = { Lead() };
+    //leads_b[0].init(vertices, indices, colors, vec(-.5,-.5), AUK);
 
-    //std::cout << "vertices:\n";
-    //for (int i=0; i<vertices.size(); ++i){
-    //    std::cout << vertices[i] << "\t";
-    //    if(i%12==11) std::cout << "\n";
-    //std::cout << "indices:\n";
-    //for (int i=0; i<indices.size(); ++i)
-    //    std::cout << (int)indices[i] << "\t";
-    //std::cout << "colors:\n";
-    //for (int i=0; i<colors.size(); ++i)
-    //    std::cout << colors[i] << "\t";
+    std::cout << "\nvertices:\n";
+    for (uint32_t i=0; i<vertices.size(); ++i){
+        std::cout << vertices[i] << "\t";
+        if(i%12==11) std::cout << "\n";
+    }
+    std::cout << "\nindices:\n";
+    for (uint32_t i=0; i<indices.size(); ++i)
+        std::cout << (int)indices[i] << "\t";
+    std::cout << "\ncolors:\n";
+    for (uint32_t i=0; i<colors.size(); ++i)
+        std::cout << colors[i] << "\t";
+    std::cout << "\nN:\n";
+    std::cout << n_boids_a << "\t" << vertices.size() << "\t" << colors.size() << "\t" << indices.size() << "\n";
 
 
     initWp(vertices, colors, indices);
@@ -98,7 +101,7 @@ int main(int argc, char *argv[])
 
         float rate = 1/dt;
         //if (rate < 55)
-        std::cout << "rate:\t" << rate << "\n";
+        //std::cout << "rate:\t" << rate << "\n";
 
         updateWp(vertices, colors, indices);
 
@@ -106,10 +109,10 @@ int main(int argc, char *argv[])
             boid.update(dt, leads_a.data, n_leads_a);
         for (auto& lead : leads_a)
             lead.update(dt);
-        for (auto& boid : boids_b)
-            boid.update(dt, leads_b.data, n_leads_b);
-        for (auto& lead : leads_b)
-            lead.update(dt);
+        //for (auto& boid : boids_b)
+        //    boid.update(dt, leads_b.data, n_leads_b);
+        //for (auto& lead : leads_b)
+        //    lead.update(dt);
 
 
         //SDL_Delay(10);

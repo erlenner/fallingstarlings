@@ -52,17 +52,17 @@ namespace conf{
     const uint8_t starling_index_entries    = 15;
     const float starling_side               = .01;
     const float starling_vertex_offsets[] = {
-        0 * starling_side,  0 * starling_side,
-        1 * starling_side,  1 * starling_side,
-        -1 * starling_side, 1 * starling_side,
-        0 * starling_side,  2 * starling_side,
-        2 * starling_side,  2 * starling_side,
-        0 * starling_side,  4 * starling_side,
-        -2 * starling_side, 2 * starling_side,
-        2 * starling_side,  0 * starling_side,
-        3 * starling_side,  2 * starling_side,
-        -3 * starling_side, 2 * starling_side,
-        -2 * starling_side, 0 * starling_side,
+        0 * starling_side,      0 * starling_side,
+        .5 * starling_side,     1.5 * starling_side,
+        -.5 * starling_side,    1.5 * starling_side,
+        0 * starling_side,      2 * starling_side,
+        .6 * starling_side,    2 * starling_side,
+        0 * starling_side,      4 * starling_side,
+        -.6 * starling_side,   2 * starling_side,
+        1.5 * starling_side,    1.5 * starling_side,
+        2.5 * starling_side,    3.5 * starling_side,
+        -2.5 * starling_side,   3.5 * starling_side,
+        -1.5 * starling_side,   1.5 * starling_side,
     };
     const float starling_colors[] = {
         1,  0,  0,  1,

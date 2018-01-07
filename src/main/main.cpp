@@ -17,46 +17,39 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 100, n_leads_a = 0;
-    //const uint32_t n_boids_b = 1, n_leads_b = 1;
+    const uint32_t n_boids_a = 100, n_leads_a = 1;
+    const uint32_t n_boids_b = 0, n_leads_b = 1;
 
-    add_capacity(n_boids_a, conf::starling_points, conf::starling_index_entries, vertices, colors, indices);
-    //add_capacity(n_leads_a, conf::lead_points, conf::lead_points, vertices, colors, indices);
-    //add_capacity(n_boids_b, conf::boid_points, vertices, colors, indices);
-    //add_capacity(n_leads_b, conf::lead_points, vertices, colors, indices);
+    add_capacity(n_leads_a, conf::lead_points, conf::lead_points, vertices, colors, indices);
 
     std::vector<Boid> boids_a(n_boids_a);
-    initialize_boids(boids_a.data(), n_boids_a, vec(.5,.5), STARLING, vertices, colors, indices);
-    std::cout << "boids:\n";
-    for (auto& boid : boids_a)
-        std::cout << &boid << "\t";
-    std::cout << "\n";
-    //std::vector<Boid> boids_b(n_boids_b);
-    //initialize_boids(boids_b.data(), n_boids_b, vec(-.5,-.5), AUK, vertices, colors, indices);
+    initialize_boids(boids_a.data(), n_boids_a, vec(.5,.5), &starling, vertices, colors, indices);
+    //std::cout << "boids:\n";
+    //for (auto& boid : boids_a)
+    //    std::cout << &boid << "\t";
+    //std::cout << "\n";
 
 
-    array<Lead, n_leads_a> leads_a = { };
-    //leads_a[0].init(vertices, indices, colors, vec(.5,.5), STARLING);
+    array<Lead, n_leads_a> leads_a = { Lead() };
+    leads_a[0].init(vertices, indices, colors, vec(.5,.5), &starling);
     //std::cout << "leads:\n";
     //for (auto& lead : leads_a)
     //    std::cout << &lead << "\t";
     //std::cout << "\n";
-    //array<Lead, n_leads_b> leads_b = { Lead() };
-    //leads_b[0].init(vertices, indices, colors, vec(-.5,-.5), AUK);
 
-    std::cout << "\nvertices:\n";
-    for (uint32_t i=0; i<vertices.size(); ++i){
-        std::cout << vertices[i] << "\t";
-        if(i%12==11) std::cout << "\n";
-    }
-    std::cout << "\nindices:\n";
-    for (uint32_t i=0; i<indices.size(); ++i)
-        std::cout << (int)indices[i] << "\t";
-    std::cout << "\ncolors:\n";
-    for (uint32_t i=0; i<colors.size(); ++i)
-        std::cout << colors[i] << "\t";
-    std::cout << "\nN:\n";
-    std::cout << n_boids_a << "\t" << vertices.size() << "\t" << colors.size() << "\t" << indices.size() << "\n";
+    //std::cout << "\nvertices:\n";
+    //for (uint32_t i=0; i<vertices.size(); ++i){
+    //    std::cout << vertices[i] << "\t";
+    //    if(i%12==11) std::cout << "\n";
+    //}
+    //std::cout << "\nindices:\n";
+    //for (uint32_t i=0; i<indices.size(); ++i)
+    //    std::cout << (int)indices[i] << "\t";
+    //std::cout << "\ncolors:\n";
+    //for (uint32_t i=0; i<colors.size(); ++i)
+    //    std::cout << colors[i] << "\t";
+    //std::cout << "\nN:\n";
+    //std::cout << n_boids_a << "\t" << vertices.size() << "\t" << colors.size() << "\t" << indices.size() << "\n";
 
 
     initWp(vertices, colors, indices);
@@ -73,8 +66,8 @@ int main(int argc, char *argv[])
                 case SDL_MOUSEBUTTONUP:
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    //if (!leads_a.empty())
-                    //    leads_a[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                    if (!leads_a.empty())
+                        leads_a[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
                 break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
@@ -109,10 +102,6 @@ int main(int argc, char *argv[])
             boid.update(dt, leads_a.data, n_leads_a);
         for (auto& lead : leads_a)
             lead.update(dt);
-        //for (auto& boid : boids_b)
-        //    boid.update(dt, leads_b.data, n_leads_b);
-        //for (auto& lead : leads_b)
-        //    lead.update(dt);
 
 
         //SDL_Delay(10);

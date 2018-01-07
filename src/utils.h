@@ -16,8 +16,6 @@ inline float secs32()
 { return (float)SDL_GetTicks() / 1e3; }
 
 
-//enum State : int { DEAD = 0, ALIVE };
-
 inline float deg_rad(float deg)
 { return deg * M_PI / 180; }
 
@@ -28,18 +26,19 @@ inline float sq(float n)
 { return n*n; }
 
 
-inline void add_capacity(uint32_t add_boids, uint8_t n_points, uint8_t n_indices, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
+inline void add_capacity(uint32_t add_boids, uint8_t n_vertices, uint8_t n_indices, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
 {
     static uint32_t n_boids = 0;
     n_boids += add_boids;
 
-    vertices    .reserve(n_boids * n_points * 2);
-    colors      .reserve(n_boids * n_points * 4);
+    vertices    .reserve(n_boids * n_vertices * 2);
+    colors      .reserve(n_boids * n_vertices * 4);
     indices     .reserve(n_boids * n_indices);
 }
 
-inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center, BoidState state, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
+inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center,  Faction const * faction, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
 {
+    add_capacity(n_boids, faction->n_vertices, faction->n_indices, vertices, colors, indices);
     for (uint32_t i=0; i<n_boids; ++i){
         static vec initPos, velInit(.1,.1);
 
@@ -47,7 +46,7 @@ inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center, BoidStat
         float vectorSize = .05 + (std::rand() % 1000) / 2e3;
         initPos = center + vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
-        boids[i].init(vertices, indices, colors, initPos, velInit, state);
+        boids[i].init(vertices, indices, colors, initPos, velInit, faction);
     }
 }
 

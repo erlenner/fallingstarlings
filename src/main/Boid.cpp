@@ -3,38 +3,29 @@
 #include "Lead.h"
 #include "mat.h"
 
-void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, BoidState state)
+void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction const * faction)
 {
-    this->state = state;
+    this->faction = faction;
 
     this->vel=vel;
 
     vertex = reinterpret_cast<vec*>(&(*vertices.end()));
     color = reinterpret_cast<col*>(&(*colors.end()));
 
-    switch (state){
+    switch (faction->id){
     case STARLING:
-        for (auto indexOffset : conf::starling_index_offsets)
-            indices.push_back(vertices.size()/2 + indexOffset);
-        for (uint8_t i=0; i<conf::starling_points; ++i)
-            push_back_vec(vertices, pos + reinterpret_cast<const vec*>(conf::starling_vertex_offsets)[i]);
-        colors.insert(colors.end(), conf::starling_colors, conf::starling_colors + conf::starling_points*4);
+        for (uint8_t i=0; i<starling.n_indices; ++i)
+            indices.push_back(vertices.size()/2 + starling.index_offsets[i]);
+        for (uint8_t i=0; i<starling.n_vertices; ++i)
+            push_back_vec(vertices, pos + reinterpret_cast<const vec*>(starling.vertex_offsets)[i]);
+        colors.insert(colors.end(), starling.colors, starling.colors + starling.n_vertices*4);
         break;
     case AUK:
-        indices.push_back(vertices.size()/2);
-        indices.push_back(1+vertices.size()/2);
-        indices.push_back(2+vertices.size()/2);
-
-        colors.insert(colors.end(), {1, 0, 0, 1});
-        colors.insert(colors.end(), {1, 1, 1, 1});
-        colors.insert(colors.end(), {1, 1, 1, 1});
-
-        vertices.push_back(pos.x);
-        vertices.push_back(pos.y);
-        vertices.push_back(pos.x+conf::boid_width);
-        vertices.push_back(pos.y+conf::boid_length);
-        vertices.push_back(pos.x-conf::boid_width);
-        vertices.push_back(pos.y+conf::boid_length);
+        for (auto indexOffset : conf::auk_index_offsets)
+            indices.push_back(vertices.size()/2 + indexOffset);
+        for (uint8_t i=0; i<conf::auk_points; ++i)
+            push_back_vec(vertices, pos + reinterpret_cast<const vec*>(conf::auk_vertex_offsets)[i]);
+        colors.insert(colors.end(), conf::auk_colors, conf::auk_colors + conf::auk_points*4);
         break;
     default:
         break;
@@ -114,8 +105,8 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 
         mat velocityProjection = {  velNormed.y,    velNormed.x,
                                     -velNormed.x,   velNormed.y };
-        for (uint8_t i=1; i < conf::starling_points; ++i)
-            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(conf::starling_vertex_offsets)[i];
+        for (uint8_t i=1; i < starling.n_vertices; ++i)
+            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(starling.vertex_offsets)[i];
         //    vertex[i] += vel*dt;
     }
 }
@@ -146,7 +137,7 @@ vec Boid::separation(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_l
     vec force;
     float tooClose = 0;
     for (uint8_t i=0; i < neighbours.size(); ++i){
-        for (uint8_t j=0; j<conf::boid_points; ++j){
+        for (uint8_t j=0; j<faction->n_vertices; ++j){
             vec diff = *vertex - *(neighbours[i]->vertex+j);
             float dist2 = abs2(diff);
             if (dist2 < conf::comfort_zone*conf::comfort_zone){
@@ -176,7 +167,7 @@ bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
         // immediate collides with current boid
         if ((state != DYING) && point_in_boid(*(immediates[i]->vertex), *this)){
             if (!allies(*this, *(immediates[i])))
-                state = DYING;
+                state= DYING;
             else if (float predSpeed = abs2(vel)){
                 immediates[i]->vel += vel;
                 vel *= (vel.x * immediates[i]->vel.x + vel.y * immediates[i]->vel.y) / predSpeed;
@@ -206,6 +197,6 @@ void Boid::die()
 
     state = DEAD;
 
-    for (uint8_t i=0; i<conf::boid_points; ++i)
+    for (uint8_t i=0; i<faction->n_vertices; ++i)
         color[i] = col(0,0,0,0);
 }

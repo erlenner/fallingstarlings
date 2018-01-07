@@ -13,11 +13,6 @@ namespace conf{
     const float lead_width          = .0075;
     const float lead_speed          = .7;
 
-// BOIDS
-    const uint8_t boid_points   = 3;
-    const float boid_length     = .03;
-    const float boid_width      = .0075;
-
 // SWARM DYNAMICS
     const uint8_t neighbours_considered = 7;
 
@@ -42,44 +37,12 @@ namespace conf{
     const uint32_t map_size                 = 2;
     const float grid_step                   = (float)map_size / (float)grid_size;
     const uint32_t max_boids                = 100;
-    const uint32_t max_square_radius_search_distance = 7 * boid_length / grid_step;
+    const uint32_t max_square_radius_search_distance = 7 * .03 / grid_step;
 
 // STATES
-    const uint8_t n_states = 10;
+    const uint8_t n_factions = 10;
 
-// starling
-    const uint8_t starling_points           = 11;
-    const uint8_t starling_index_entries    = 15;
-    const float starling_side               = .01;
-    const float starling_vertex_offsets[] = {
-        0 * starling_side,      0 * starling_side,
-        .5 * starling_side,     1.5 * starling_side,
-        -.5 * starling_side,    1.5 * starling_side,
-        0 * starling_side,      2 * starling_side,
-        .6 * starling_side,    2 * starling_side,
-        0 * starling_side,      4 * starling_side,
-        -.6 * starling_side,   2 * starling_side,
-        1.5 * starling_side,    1.5 * starling_side,
-        2.5 * starling_side,    3.5 * starling_side,
-        -2.5 * starling_side,   3.5 * starling_side,
-        -1.5 * starling_side,   1.5 * starling_side,
-    };
-    const float starling_colors[] = {
-        1,  0,  0,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-        1,  1,  1,  1,
-    };
-    const uint32_t starling_index_offsets[] = {0,1,2,2,1,3,4,5,6,3,7,8,3,9,10};
-
-// auk
+// AUK
     const uint8_t auk_points            = 3;
     const uint8_t auk_index_entries     = 3;
     const float auk_side                = .03;

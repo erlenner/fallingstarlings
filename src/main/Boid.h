@@ -3,12 +3,13 @@
 #include "vec.h"
 #include "col.h"
 #include "conf.h"
+#include "Faction.h"
 
 #include "Grid.h"
 
-class Lead;
+enum BoidState : int8_t {DYING = -1, DEAD, ALIVE};
 
-enum BoidState : uint8_t {DEAD = 0, DYING = 1, STARLING = 2, AUK = conf::n_states+3};
+class Lead;
 
 class Boid
 {
@@ -17,12 +18,13 @@ public:
     col* color;
     vec vel;
     uint32_t gridIndex;
-    BoidState state;
+    Faction const * faction;
+    BoidState state = ALIVE;
 
 public:
 
     Boid() : vertex(nullptr){}
-    void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, BoidState state);
+    void init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, const vec& vel, Faction const * faction);
 
     void update(float dt, Lead* leads, uint8_t n_leads);
 
@@ -32,7 +34,7 @@ public:
     { return rhs.vertex == vertex; }
 
     friend bool allies(const Boid& lhs, const Boid& rhs)
-    { return (lhs.state % conf::n_states) == (rhs.state % conf::n_states); }
+    { return (lhs.faction->id % conf::n_factions) == (rhs.faction->id % conf::n_factions); }
 
 private:
 

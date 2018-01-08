@@ -107,7 +107,6 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
                                     -velNormed.x,   velNormed.y };
         for (uint8_t i=1; i < starling.n_vertices; ++i)
             vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(starling.vertex_offsets)[i];
-        //    vertex[i] += vel*dt;
     }
 }
 
@@ -147,7 +146,7 @@ vec Boid::separation(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_l
         }
     }
     for (uint8_t i=0; i < n_leads; ++i){
-        for (uint8_t j=0; j<conf::lead_points; ++j){
+        for (uint8_t j=0; j<leads[i].faction->n_vertices; ++j){
             vec diff = *vertex - *(leads[i].vertex+j);
             float dist2 = abs2(diff);
             if (dist2 < conf::comfort_zone*conf::comfort_zone){
@@ -165,23 +164,25 @@ bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
     for (uint32_t i=0; i<immediates.size(); ++i){
 
         // immediate collides with current boid
-        if ((state != DYING) && point_in_boid(*(immediates[i]->vertex), *this)){
+        if ((state != DYING) && faction->point_in_boid(*(immediates[i]->vertex), *this)){
             if (!allies(*this, *(immediates[i])))
                 state= DYING;
-            else if (float predSpeed = abs2(vel)){
-                immediates[i]->vel += vel;
-                vel *= (vel.x * immediates[i]->vel.x + vel.y * immediates[i]->vel.y) / predSpeed;
-                immediates[i]->vel -= vel;
+            else if (vec centerDiff = vertex[faction->center_index] - immediates[i]->vertex[faction->center_index]){
+                std::cout << "collided";
+                // https://en.wikipedia.org/wiki/Elastic_collision
+                vec momentMultiplicator =  2 * (((vel-immediates[i]->vel)*centerDiff) / ((faction->weight+immediates[i]->faction->weight) * abs2(centerDiff))) * centerDiff;
+                vel                 -= momentMultiplicator * immediates[i]->faction->weight;
+                immediates[i]->vel  -= momentMultiplicator * faction->weight;
             } else {
-                vel = immediates[i]->vel;
-                immediates[i]->vel = vec(0,0);
+                vel = (2/(1+faction->weight/immediates[i]->faction->weight)) * immediates[i]->vel;
+                immediates[i]->vel = ((1-faction->weight/immediates[i]->faction->weight)/(1+faction->weight/immediates[i]->faction->weight)) * immediates[i]->vel;
             }
 
             collided = true;
         }
 
         // current boid collides with immediate
-        if (!allies(*this, *(immediates[i])) && point_in_boid(*vertex, *(immediates[i]))){
+        if (!allies(*this, *(immediates[i])) && immediates[i]->faction->point_in_boid(*vertex, *(immediates[i]))){
 
             immediates[i]->state = DYING;
             collided = true;
@@ -199,4 +200,9 @@ void Boid::die()
 
     for (uint8_t i=0; i<faction->n_vertices; ++i)
         color[i] = col(0,0,0,0);
+}
+
+bool allies(const Boid& lhs, const Boid& rhs)
+{
+    return (lhs.faction->id % conf::n_factions) == (rhs.faction->id % conf::n_factions);
 }

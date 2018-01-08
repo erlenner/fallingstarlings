@@ -10,6 +10,7 @@
 enum BoidState : int8_t {DYING = -1, DEAD, ALIVE};
 
 class Lead;
+class Faction;
 
 class Boid
 {
@@ -33,8 +34,7 @@ public:
     bool operator==(const Boid& rhs)
     { return rhs.vertex == vertex; }
 
-    friend bool allies(const Boid& lhs, const Boid& rhs)
-    { return (lhs.faction->id % conf::n_factions) == (rhs.faction->id % conf::n_factions); }
+    friend bool allies(const Boid& lhs, const Boid& rhs);
 
 private:
 

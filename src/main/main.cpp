@@ -18,20 +18,21 @@ int main(int argc, char *argv[])
     std::vector<uint32_t> indices;
 
     const uint32_t n_boids_a = 100, n_leads_a = 1;
-    const uint32_t n_boids_b = 0, n_leads_b = 1;
 
     add_capacity(n_leads_a, conf::lead_points, conf::lead_points, vertices, colors, indices);
 
     std::vector<Boid> boids_a(n_boids_a);
-    initialize_boids(boids_a.data(), n_boids_a, vec(.5,.5), &starling, vertices, colors, indices);
+    initialize_boids(boids_a.data(), n_boids_a, {.5,.5}, &starling, vertices, colors, indices);
+
+    array<Lead, n_leads_a> leads_a = { Lead() };
+    leads_a[0].init(vertices, indices, colors, {.5,.5}, &starling);
+
     //std::cout << "boids:\n";
     //for (auto& boid : boids_a)
     //    std::cout << &boid << "\t";
     //std::cout << "\n";
 
 
-    array<Lead, n_leads_a> leads_a = { Lead() };
-    leads_a[0].init(vertices, indices, colors, vec(.5,.5), &starling);
     //std::cout << "leads:\n";
     //for (auto& lead : leads_a)
     //    std::cout << &lead << "\t";
@@ -94,7 +95,7 @@ int main(int argc, char *argv[])
 
         float rate = 1/dt;
         //if (rate < 55)
-        //std::cout << "rate:\t" << rate << "\n";
+        std::cout << "rate:\t" << rate << "\n";
 
         updateWp(vertices, colors, indices);
 

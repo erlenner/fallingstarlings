@@ -1,32 +1,23 @@
 #include "Lead.h"
 #include "utils.h"
+#include "mat.h"
 
 void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, Faction const * faction)
 {
     this->faction = faction;
+ 
+    this->vel=vel;
+ 
+    vertex = reinterpret_cast<vec*>(&(*vertices.end()));
+    color = reinterpret_cast<col*>(&(*colors.end()));
+ 
+    for (uint8_t i=0; i<starling.n_indices; ++i)
+        indices.push_back(vertices.size()/2 + starling.index_offsets[i]);
+    for (uint8_t i=0; i<starling.n_vertices; ++i)
+        push_back_vec(vertices, pos + reinterpret_cast<const vec*>(starling.vertex_offsets)[i]);
+    colors.insert(colors.end(), starling.colors, starling.colors + starling.n_vertices*4);
 
-    this->vel=vec(0,0);
-    indices.push_back(vertices.size()/2);
-    indices.push_back(1+vertices.size()/2);
-    indices.push_back(2+vertices.size()/2);
-
-    vertices.push_back(pos.x);
-    vertex = reinterpret_cast<vec*>(&vertices.back());
-    vertices.push_back(pos.y);
-
-    dest = pos;
-
-    vertices.push_back(pos.x+conf::lead_width);
-    vertices.push_back(pos.y+conf::lead_length);
-
-    vertices.push_back(pos.x-conf::lead_width);
-    vertices.push_back(pos.y+conf::lead_length);
-
-    colors.insert(colors.end(), {0, 1, 0, 1});
-    colors.insert(colors.end(), {1, 1, 1, 1});
-    colors.insert(colors.end(), {1, 1, 1, 1});
-
-    //Grid::insert(*this);
+    Grid::insert(*this);
 }
 
 void Lead::steer(vec dest)
@@ -36,7 +27,7 @@ void Lead::steer(vec dest)
 
 void Lead::update(float dt)
 {
-    //Grid::update(*this);
+    Grid::update(*this);
 
     vec togo = dest - *vertex;
 
@@ -55,8 +46,10 @@ void Lead::update(float dt)
     float speed = abs(vel);
     if (speed > 0){
         vec velNormed = vel / speed;
-        vertex[1] = vertex[0] - velNormed * conf::lead_length + conf::lead_width * vec(-velNormed.y, velNormed.x);
-        vertex[2] = vertex[0] - velNormed * conf::lead_length + conf::lead_width * vec(velNormed.y, -velNormed.x);
+        mat velocityProjection = {  velNormed.y,    velNormed.x,
+                                        -velNormed.x,   velNormed.y };
+        for (uint8_t i=1; i < starling.n_vertices; ++i)
+            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(starling.vertex_offsets)[i];
     }
-    //vel = vec(0,0);
+
 }

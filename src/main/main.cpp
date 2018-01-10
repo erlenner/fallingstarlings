@@ -8,10 +8,9 @@
 int main(int argc, char *argv[])
 {
 
-    float now, before, dt, freq;
+    double dt;
+    uint64_t now, before;
     before = now = SDL_GetPerformanceCounter();
-    freq = SDL_GetPerformanceFrequency();
-
 
     std::vector<float> vertices;
     std::vector<float> colors;
@@ -83,19 +82,16 @@ int main(int argc, char *argv[])
             }
         }
 
-        freq = SDL_GetPerformanceFrequency();
         now = SDL_GetPerformanceCounter();
-        dt = (now - before) / (float)freq;
+        dt = (double)(now - before) / SDL_GetPerformanceFrequency();
         if (dt < .017){
             SDL_Delay(17 - 1000*dt);
             now = SDL_GetPerformanceCounter();
-            dt = (now - before) / (float)freq;
+            dt = (double)(now - before) / SDL_GetPerformanceFrequency();
         }
         before = now;
 
-        float rate = 1/dt;
-        //if (rate < 55)
-        std::cout << "rate:\t" << rate << "\n";
+        std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
 
         updateWp(vertices, colors, indices);
 
@@ -103,9 +99,6 @@ int main(int argc, char *argv[])
             boid.update(dt, leads_a.data, n_leads_a);
         for (auto& lead : leads_a)
             lead.update(dt);
-
-
-        //SDL_Delay(10);
     }
 
     SDL_GL_DeleteContext(glContext);

@@ -1,7 +1,6 @@
 #include "Lead.h"
 #include "utils.h"
 #include "mat.h"
-#include "mutexctrl.h"
 
 void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, Faction const * faction)
 {
@@ -23,14 +22,14 @@ void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
 
 void Lead::steer(vec dest)
 {
-    writeConcurrent(this->dest, dest, LEAD_DEST);
+    this->dest = dest;
 }
 
 void Lead::update(float dt)
 {
     Grid::update(*this);
 
-    vec togo = readConcurrent(dest, LEAD_DEST) - *vertex;
+    vec togo = dest - *vertex;
 
     float dist2 = abs2(togo);
     vec newVel;

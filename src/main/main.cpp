@@ -7,14 +7,15 @@
 #include "Lead.h"
 #include "utils.h"
 #include "conf.h"
+#include "mutexctrl.h"
 
-bool shouldStop = 0;
+bool shouldStop = false;
 
 std::vector<std::thread> threads;
 
 void cleanup(int signum){
 
-    shouldStop=1;
+    shouldStop = true;
 }
 
 void pollControls(Lead& lead){
@@ -24,20 +25,23 @@ void pollControls(Lead& lead){
         while ( SDL_PollEvent(&e) ) {
             switch (e.type) {
                 case SDL_QUIT:
-                    shouldStop = 1;
+                    shouldStop = true;
                 break;
                 case SDL_MOUSEBUTTONUP:
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    lead.steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                    {
+                        locker l(LEAD_DEST, 0);
+                        lead.steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                    }
                 break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
                         case SDLK_ESCAPE:
-                            shouldStop = 1;
+                            shouldStop = true;
                         break;
                         case SDLK_CAPSLOCK:
-                            shouldStop = 1;
+                            shouldStop = true;
                         break;
                     }
                 break;
@@ -57,15 +61,25 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 100, n_leads_a = 1;
+    const uint32_t n_boids_a = 10, n_leads_a = 1;
+    //const uint32_t n_boids_b = 10, n_leads_b = 1;
 
-    add_capacity(n_leads_a, conf::lead_points, conf::lead_points, vertices, colors, indices);
 
     std::vector<Boid> boids_a(n_boids_a);
     initialize_boids(boids_a.data(), n_boids_a, {.5,.5}, &starling, vertices, colors, indices);
-
     array<Lead, n_leads_a> leads_a = { Lead() };
     leads_a[0].init(vertices, indices, colors, {.5,.5}, &starling);
+
+    //std::vector<Boid> boids_b(n_boids_b);
+    //initialize_boids(boids_b.data(), n_boids_b, {-.5,-.5}, &starling, vertices, colors, indices);
+    //array<Lead, n_leads_b> leads_b = { Lead() };
+    //leads_b[0].init(vertices, indices, colors, {-.5,-.5}, &starling);
+
+    add_capacity(n_leads_a, conf::lead_points, conf::lead_points, vertices, colors, indices);
+    add_capacity(n_boids_a, starling.n_vertices, starling.n_indices, vertices, colors, indices);
+
+    //add_capacity(n_leads_b, conf::lead_points, conf::lead_points, vertices, colors, indices);
+    //add_capacity(n_boids_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
 
     //std::cout << "boids:\n";
     //for (auto& boid : boids_a)
@@ -113,8 +127,13 @@ int main(int argc, char *argv[])
 
         updateWp(vertices, colors, indices);
 
+        //for (auto& boid : boids_b)
+        //    boid.update(dt, leads_b.data, n_leads_b);
+        //for (auto& lead : leads_b)
+        //    lead.update(dt);
         for (auto& boid : boids_a)
             boid.update(dt, leads_a.data, n_leads_a);
+        locker l(0, LEAD_DEST);
         for (auto& lead : leads_a)
             lead.update(dt);
     }

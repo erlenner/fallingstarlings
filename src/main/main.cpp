@@ -1,9 +1,50 @@
 #include <iostream>
+#include <thread>
+#include <signal.h>
+#include <unistd.h>
 #include "openglWp.h"
 #include "Boid.h"
 #include "Lead.h"
 #include "utils.h"
 #include "conf.h"
+
+bool shouldStop = 0;
+
+std::vector<std::thread> threads;
+
+void cleanup(int signum){
+
+    shouldStop=1;
+}
+
+void pollControls(Lead& lead){
+    while (!shouldStop){
+
+        SDL_Event e;
+        while ( SDL_PollEvent(&e) ) {
+            switch (e.type) {
+                case SDL_QUIT:
+                    shouldStop = 1;
+                break;
+                case SDL_MOUSEBUTTONUP:
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+                    lead.steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                break;
+                case SDL_KEYDOWN:
+                    switch (e.key.keysym.sym) {
+                        case SDLK_ESCAPE:
+                            shouldStop = 1;
+                        break;
+                        case SDLK_CAPSLOCK:
+                            shouldStop = 1;
+                        break;
+                    }
+                break;
+            }
+        }
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -51,36 +92,13 @@ int main(int argc, char *argv[])
     //std::cout << "\nN:\n";
     //std::cout << n_boids_a << "\t" << vertices.size() << "\t" << colors.size() << "\t" << indices.size() << "\n";
 
-
     initWp(vertices, colors, indices);
 
-    char done = 0;
-    while (!done){
+    threads.push_back(std::thread(pollControls, std::ref(leads_a[0])));
 
-        SDL_Event e;
-        while ( SDL_PollEvent(&e) ) {
-            switch (e.type) {
-                case SDL_QUIT:
-                    done = 1;
-                break;
-                case SDL_MOUSEBUTTONUP:
-                    int x, y;
-                    SDL_GetMouseState(&x, &y);
-                    if (!leads_a.empty())
-                        leads_a[0].steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
-                break;
-                case SDL_KEYDOWN:
-                    switch (e.key.keysym.sym) {
-                        case SDLK_ESCAPE:
-                            done = 1;
-                        break;
-                        case SDLK_CAPSLOCK:
-                            done = 1;
-                        break;
-                    }
-                break;
-            }
-        }
+    signal(SIGINT, cleanup);
+
+    while (!shouldStop){
 
         now = SDL_GetPerformanceCounter();
         dt = (double)(now - before) / SDL_GetPerformanceFrequency();

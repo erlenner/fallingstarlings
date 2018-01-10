@@ -4,7 +4,7 @@ namespace conf{
 
 // SDL / OPENGL
 
-    const int use_vsync = 0;
+    const int use_vsync = 1;
 
 // LEADS
     const uint8_t max_leads         = 1;
@@ -18,7 +18,7 @@ namespace conf{
 
     const float comfort_zone                = .045;
     const float cohesion_weight             = 25;
-    const float alignment_weight            = 20;
+    const float alignment_weight            = 30;
     const float separation_weight           = .3;
     const float lead_weight                 = 4;
 

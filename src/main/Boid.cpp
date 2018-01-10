@@ -166,9 +166,8 @@ bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
         // immediate collides with current boid
         if ((state != DYING) && faction->point_in_boid(*(immediates[i]->vertex), *this)){
             if (!allies(*this, *(immediates[i])))
-                state= DYING;
+                state = DYING;
             else if (vec centerDiff = vertex[faction->center_index] - immediates[i]->vertex[faction->center_index]){
-                std::cout << "collided";
                 // https://en.wikipedia.org/wiki/Elastic_collision
                 vec momentMultiplicator =  2 * (((vel-immediates[i]->vel)*centerDiff) / ((faction->weight+immediates[i]->faction->weight) * abs2(centerDiff))) * centerDiff;
                 vel                 -= momentMultiplicator * immediates[i]->faction->weight;

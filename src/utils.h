@@ -38,7 +38,6 @@ inline void add_capacity(uint32_t add_boids, uint8_t n_vertices, uint8_t n_indic
 
 inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center,  Faction const * faction, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
 {
-    add_capacity(n_boids, faction->n_vertices, faction->n_indices, vertices, colors, indices);
     for (uint32_t i=0; i<n_boids; ++i){
         static vec initPos, velInit(.1,.1);
 

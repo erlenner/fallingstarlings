@@ -61,25 +61,27 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 10, n_leads_a = 1;
-    //const uint32_t n_boids_b = 10, n_leads_b = 1;
-
+    const uint32_t n_boids_a = 100, n_leads_a = 1;
+    const uint32_t n_boids_b = 10, n_leads_b = 1;
 
     std::vector<Boid> boids_a(n_boids_a);
-    initialize_boids(boids_a.data(), n_boids_a, {.5,.5}, &starling, vertices, colors, indices);
     array<Lead, n_leads_a> leads_a = { Lead() };
-    leads_a[0].init(vertices, indices, colors, {.5,.5}, &starling);
 
-    //std::vector<Boid> boids_b(n_boids_b);
-    //initialize_boids(boids_b.data(), n_boids_b, {-.5,-.5}, &starling, vertices, colors, indices);
-    //array<Lead, n_leads_b> leads_b = { Lead() };
-    //leads_b[0].init(vertices, indices, colors, {-.5,-.5}, &starling);
+    std::vector<Boid> boids_b(n_boids_b);
+    array<Lead, n_leads_b> leads_b = { Lead() };
 
-    add_capacity(n_leads_a, conf::lead_points, conf::lead_points, vertices, colors, indices);
+    add_capacity(n_leads_a, starling.n_vertices, starling.n_indices, vertices, colors, indices);
     add_capacity(n_boids_a, starling.n_vertices, starling.n_indices, vertices, colors, indices);
 
-    //add_capacity(n_leads_b, conf::lead_points, conf::lead_points, vertices, colors, indices);
-    //add_capacity(n_boids_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
+    add_capacity(n_leads_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
+    add_capacity(n_boids_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
+
+
+    initialize_boids(boids_a.data(), n_boids_a, {.5,.5}, &starling, vertices, colors, indices);
+    leads_a[0].init(vertices, indices, colors, {.5,.5}, &starling);
+
+    initialize_boids(boids_b.data(), n_boids_b, {-.5,-.5}, &starling, vertices, colors, indices);
+    leads_b[0].init(vertices, indices, colors, {-.5,-.5}, &starling);
 
     //std::cout << "boids:\n";
     //for (auto& boid : boids_a)
@@ -127,15 +129,17 @@ int main(int argc, char *argv[])
 
         updateWp(vertices, colors, indices);
 
-        //for (auto& boid : boids_b)
-        //    boid.update(dt, leads_b.data, n_leads_b);
-        //for (auto& lead : leads_b)
-        //    lead.update(dt);
+        for (auto& boid : boids_b)
+            boid.update(dt, leads_b.data, n_leads_b);
+        for (auto& lead : leads_b)
+            lead.update(dt);
         for (auto& boid : boids_a)
             boid.update(dt, leads_a.data, n_leads_a);
-        locker l(0, LEAD_DEST);
-        for (auto& lead : leads_a)
-            lead.update(dt);
+        {
+            locker l(0, LEAD_DEST);
+            for (auto& lead : leads_a)
+                lead.update(dt);
+        }
     }
 
     SDL_GL_DeleteContext(glContext);

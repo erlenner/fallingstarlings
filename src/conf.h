@@ -28,7 +28,7 @@ namespace conf{
 
     const float boid_max_speed          = .8;
     const float boid_min_speed          = .4;
-    const float max_force               = 100;
+    const float max_force               = 10;
     const float max_separation_force    = 300;
     const float vel_max_rot_deg         = 30;
 

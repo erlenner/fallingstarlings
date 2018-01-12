@@ -42,24 +42,9 @@ inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center,  Faction
         static vec initPos, velInit(.1,.1);
 
         float angle = (std::rand() % 360) * 3.14f / 180.f;
-        float vectorSize = .05 + (std::rand() % 1000) / 2e3;
+        float vectorSize = .05 + (std::rand() % 600) / 2e3;
         initPos = center + vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
         boids[i].init(vertices, indices, colors, initPos, velInit, faction);
     }
-}
-
-inline bool point_in_boid(vec v, const Boid& boid)
-{
-        vec v0 = boid.vertex[0];
-        vec v1 = boid.vertex[1] - v0;
-        vec v2 = boid.vertex[2] - v0;
-
-        float a = ((v.x*v2.y-v.y*v2.x)-(v0.x*v2.y-v0.y*v2.x))
-                     /(v1.x*v2.y-v1.y*v2.x);
-
-        float b = ((v.x*v1.y-v.y*v1.x)-(v0.x*v1.y-v0.y*v1.x))
-                    /(v1.x*v2.y-v1.y*v2.x)*(-1);
-
-        return (a > 0) && (b > 0) && ((a + b) < 1);
 }

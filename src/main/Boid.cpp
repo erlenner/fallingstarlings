@@ -138,10 +138,12 @@ vec Boid::separation(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_l
     for (uint8_t i=0; i < neighbours.size(); ++i){
         for (uint8_t j=0; j<faction->n_vertices; ++j){
             vec diff = *vertex - *(neighbours[i]->vertex+j);
-            float dist2 = abs2(diff);
-            if (dist2 < conf::comfort_zone*conf::comfort_zone){
-                force += diff / dist2;
-                ++tooClose;
+            if (diff){
+                float dist2 = abs2(diff);
+                if (dist2 < conf::comfort_zone*conf::comfort_zone){
+                    force += diff / dist2;
+                    ++tooClose;
+                }
             }
         }
     }
@@ -170,11 +172,11 @@ bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)
             else if (vec centerDiff = vertex[faction->center_index] - immediates[i]->vertex[faction->center_index]){
                 // https://en.wikipedia.org/wiki/Elastic_collision
                 vec momentMultiplicator =  2 * (((vel-immediates[i]->vel)*centerDiff) / ((faction->weight+immediates[i]->faction->weight) * abs2(centerDiff))) * centerDiff;
-                vel                 -= momentMultiplicator * immediates[i]->faction->weight;
-                immediates[i]->vel  -= momentMultiplicator * faction->weight;
+                vel                 = limit(vel - momentMultiplicator * immediates[i]->faction->weight, conf::boid_min_speed, conf::boid_max_speed);
+                immediates[i]->vel  = limit(vel - momentMultiplicator * faction->weight,                conf::boid_min_speed, conf::boid_max_speed);;
             } else {
-                vel = (2/(1+faction->weight/immediates[i]->faction->weight)) * immediates[i]->vel;
-                immediates[i]->vel = ((1-faction->weight/immediates[i]->faction->weight)/(1+faction->weight/immediates[i]->faction->weight)) * immediates[i]->vel;
+                vel = limit((2/(1+faction->weight/immediates[i]->faction->weight)) * immediates[i]->vel, conf::boid_min_speed, conf::boid_max_speed);
+                immediates[i]->vel = limit(((1-faction->weight/immediates[i]->faction->weight)/(1+faction->weight/immediates[i]->faction->weight)) * immediates[i]->vel, conf::boid_min_speed, conf::boid_max_speed);
             }
 
             collided = true;

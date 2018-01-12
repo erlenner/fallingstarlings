@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "conf.h"
 #include "mutexctrl.h"
+//#include <fenv.h>
 
 bool shouldStop = false;
 
@@ -52,6 +53,7 @@ void pollControls(Lead& lead){
 
 int main(int argc, char *argv[])
 {
+    //feenableexcept(FE_ALL_EXCEPT & ~FE_INEXACT);
 
     double dt;
     uint64_t now, before;
@@ -61,27 +63,27 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 100, n_leads_a = 1;
-    const uint32_t n_boids_b = 10, n_leads_b = 1;
+    const uint32_t n_boids_a = 1000, n_leads_a = 1;
+    //const uint32_t n_boids_b = 600, n_leads_b = 1;
 
     std::vector<Boid> boids_a(n_boids_a);
     array<Lead, n_leads_a> leads_a = { Lead() };
 
-    std::vector<Boid> boids_b(n_boids_b);
-    array<Lead, n_leads_b> leads_b = { Lead() };
+    //std::vector<Boid> boids_b(n_boids_b);
+    //array<Lead, n_leads_b> leads_b = { Lead() };
 
     add_capacity(n_leads_a, starling.n_vertices, starling.n_indices, vertices, colors, indices);
     add_capacity(n_boids_a, starling.n_vertices, starling.n_indices, vertices, colors, indices);
 
-    add_capacity(n_leads_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
-    add_capacity(n_boids_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
+    //add_capacity(n_leads_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
+    //add_capacity(n_boids_b, starling.n_vertices, starling.n_indices, vertices, colors, indices);
 
 
     initialize_boids(boids_a.data(), n_boids_a, {.5,.5}, &starling, vertices, colors, indices);
     leads_a[0].init(vertices, indices, colors, {.5,.5}, &starling);
 
-    initialize_boids(boids_b.data(), n_boids_b, {-.5,-.5}, &starling, vertices, colors, indices);
-    leads_b[0].init(vertices, indices, colors, {-.5,-.5}, &starling);
+    //initialize_boids(boids_b.data(), n_boids_b, {-.5,-.5}, &starling, vertices, colors, indices);
+    //leads_b[0].init(vertices, indices, colors, {-.5,-.5}, &starling);
 
     //std::cout << "boids:\n";
     //for (auto& boid : boids_a)
@@ -129,10 +131,10 @@ int main(int argc, char *argv[])
 
         updateWp(vertices, colors, indices);
 
-        for (auto& boid : boids_b)
-            boid.update(dt, leads_b.data, n_leads_b);
-        for (auto& lead : leads_b)
-            lead.update(dt);
+        //for (auto& boid : boids_b)
+        //    boid.update(dt, leads_b.data, n_leads_b);
+        //for (auto& lead : leads_b)
+        //    lead.update(dt);
         for (auto& boid : boids_a)
             boid.update(dt, leads_a.data, n_leads_a);
         {
@@ -141,6 +143,8 @@ int main(int argc, char *argv[])
                 lead.update(dt);
         }
     }
+    for (auto& thread : threads)
+        thread.join();
 
     SDL_GL_DeleteContext(glContext);
     SDL_Quit();

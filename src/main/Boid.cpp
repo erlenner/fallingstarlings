@@ -97,16 +97,16 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
     else
         vertex[0] = newPos;
 
-    float speed = abs(vel);
-    if (speed > 0){
+    if (vel){
+        float speed = abs(vel);
         vec velNormed = vel / speed;
-        //vertex[1] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(-velNormed.y, velNormed.x);
-        //vertex[2] = vertex[0] - velNormed * conf::boid_length + conf::boid_width * vec(velNormed.y, -velNormed.x);
 
         mat velocityProjection = {  velNormed.y,    velNormed.x,
                                     -velNormed.x,   velNormed.y };
-        for (uint8_t i=1; i < starling.n_vertices; ++i)
-            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(starling.vertex_offsets)[i];
+
+        uint8_t index = (secs() % faction->n_frames) * faction->n_vertices;
+        for (uint8_t i=1; i < faction->n_vertices; ++i)
+            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(faction->vertex_offsets)[i+index];
     }
 }
 
@@ -150,10 +150,12 @@ vec Boid::separation(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_l
     for (uint8_t i=0; i < n_leads; ++i){
         for (uint8_t j=0; j<leads[i].faction->n_vertices; ++j){
             vec diff = *vertex - *(leads[i].vertex+j);
-            float dist2 = abs2(diff);
-            if (dist2 < conf::comfort_zone*conf::comfort_zone){
-                force += conf::lead_weight * diff / dist2;
-                tooClose += conf::lead_weight;
+            if (diff){
+                float dist2 = abs2(diff);
+                if (dist2 < conf::comfort_zone*conf::comfort_zone){
+                    force += conf::lead_weight * diff / dist2;
+                    tooClose += conf::lead_weight;
+                }
             }
         }
     }

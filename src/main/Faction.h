@@ -11,6 +11,7 @@ struct Faction{
     float weight;
     uint8_t n_vertices;
     uint8_t n_indices;
+    uint8_t n_frames;
     float const * vertex_offsets;
     float const * colors;
     uint32_t const * index_offsets;
@@ -32,6 +33,31 @@ const float starling_vertex_offsets[] = {
     2.5 * starling_side,    3.5 * starling_side,
     -2.5 * starling_side,   3.5 * starling_side,
     -1.5 * starling_side,   1.5 * starling_side,
+
+    0 * starling_side,      0 * starling_side,
+    .5 * starling_side,     1.5 * starling_side,
+    -.5 * starling_side,    1.5 * starling_side,
+    0 * starling_side,      2 * starling_side,
+    .6 * starling_side,    2.2 * starling_side,
+    0 * starling_side,      4 * starling_side,
+    -.6 * starling_side,   2.2 * starling_side,
+    1.5 * starling_side,    2.3 * starling_side,
+    2 * starling_side,    4.5 * starling_side,
+    -2 * starling_side,   4.5 * starling_side,
+    -1.5 * starling_side,   2.3 * starling_side,
+
+    0 * starling_side,      0 * starling_side,
+    .5 * starling_side,     1.5 * starling_side,
+    -.5 * starling_side,    1.5 * starling_side,
+    0 * starling_side,      2 * starling_side,
+    .3 * starling_side,    2 * starling_side,
+    0 * starling_side,      4 * starling_side,
+    -.3 * starling_side,   2 * starling_side,
+    1 * starling_side,    2.5 * starling_side,
+    .3 * starling_side,    4.7 * starling_side,
+    -.3 * starling_side,   4.7 * starling_side,
+    -1 * starling_side,   2.5 * starling_side,
+
 };
 const float starling_colors[] = {
     1,  0,  0,  1,
@@ -55,6 +81,7 @@ const Faction starling = {
     1,  // weight
     11, // n_vertices
     15, // v_indices
+    3,  // n_frames
     starling_vertex_offsets,
     starling_colors,
     starling_index_offsets,

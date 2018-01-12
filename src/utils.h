@@ -9,10 +9,7 @@
 
  #define SQUARE(var) ((var) * (var))
 
-inline float secs()
-{ return (float)SDL_GetPerformanceCounter() / 1e9; }
-
-inline float secs32()
+inline uint32_t secs()
 { return (float)SDL_GetTicks() / 1e3; }
 
 

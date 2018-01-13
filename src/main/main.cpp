@@ -41,9 +41,6 @@ void pollControls(Lead& lead){
                         case SDLK_ESCAPE:
                             shouldStop = true;
                         break;
-                        case SDLK_CAPSLOCK:
-                            shouldStop = true;
-                        break;
                     }
                 break;
             }

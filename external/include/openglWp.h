@@ -136,8 +136,7 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
     glEnableVertexAttribArray(1);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    // indices:vbo
+    // indices_vbo
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_DYNAMIC_DRAW);
     glDrawElements(GL_TRIANGLES, sizeof(uint32_t)*indices.size(), GL_UNSIGNED_INT, 0);
@@ -150,7 +149,7 @@ GLuint BuildShaderProgram(const char *vsPath, const char *fsPath)
 {
     GLuint vertexShader;
     GLuint fragmentShader;
-    
+
     vertexShader = CreateShader(GL_VERTEX_SHADER, vsPath);
     fragmentShader = CreateShader(GL_FRAGMENT_SHADER, fsPath);
 
@@ -185,46 +184,46 @@ return tempProgram;
 
 GLuint CreateShader(GLenum eShaderType, const char *strShaderFile)
 {
-	char shaderSource[4096];
-	char inChar;
-	FILE *shaderFile;
-	int i = 0;
+    char shaderSource[4096];
+    char inChar;
+    FILE *shaderFile;
+    int i = 0;
 
-	shaderFile = fopen(strShaderFile, "r");
-	while(fscanf(shaderFile,"%c",&inChar) > 0)
-	{
+    shaderFile = fopen(strShaderFile, "r");
+    while(fscanf(shaderFile,"%c",&inChar) > 0)
+    {
     shaderSource[i++] = inChar; //loading the file's chars into array
-	}
-	shaderSource[i - 1] = '\0';
-	fclose(shaderFile);
+    }
+    shaderSource[i - 1] = '\0';
+    fclose(shaderFile);
 
-	GLuint shader = glCreateShader(eShaderType);
-	const char *ss = shaderSource;
-	glShaderSource(shader, 1, &ss, NULL);
+    GLuint shader = glCreateShader(eShaderType);
+    const char *ss = shaderSource;
+    glShaderSource(shader, 1, &ss, NULL);
 
-	glCompileShader(shader);
+    glCompileShader(shader);
 
-	GLint status;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-	if (status == GL_FALSE)
-	{
-    GLint infoLogLength;
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+    GLint status;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    if (status == GL_FALSE)
+    {
+        GLint infoLogLength;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
-    GLchar strInfoLog[4096];
-    glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
-        
-		char strShaderType[16];
-		switch(eShaderType)
-		{
-	    case GL_VERTEX_SHADER: sprintf(strShaderType, "vertex"); break;
-	    case GL_GEOMETRY_SHADER: sprintf(strShaderType, "geometry"); break;
-	    case GL_FRAGMENT_SHADER: sprintf(strShaderType, "fragment"); break;
-		}
+        GLchar strInfoLog[4096];
+        glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
 
-		printf("Compile failure in %s shader:\n%s\n", strShaderType, strInfoLog);
-		return -1;
-	}
+        char strShaderType[16];
+        switch(eShaderType)
+        {
+            case GL_VERTEX_SHADER: sprintf(strShaderType, "vertex"); break;
+            case GL_GEOMETRY_SHADER: sprintf(strShaderType, "geometry"); break;
+            case GL_FRAGMENT_SHADER: sprintf(strShaderType, "fragment"); break;
+        }
 
-	return shader;
+        printf("Compile failure in %s shader:\n%s\n", strShaderType, strInfoLog);
+        return -1;
+    }
+
+return shader;
 }

@@ -12,25 +12,11 @@ void Boid::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     vertex = reinterpret_cast<vec*>(&(*vertices.end()));
     color = reinterpret_cast<col*>(&(*colors.end()));
 
-    switch (faction->id){
-    case STARLING:
-        for (uint8_t i=0; i<starling.n_indices; ++i)
-            indices.push_back(vertices.size()/2 + starling.index_offsets[i]);
-        for (uint8_t i=0; i<starling.n_vertices; ++i)
-            push_back_vec(vertices, pos + reinterpret_cast<const vec*>(starling.vertex_offsets)[i]);
-        colors.insert(colors.end(), starling.colors, starling.colors + starling.n_vertices*4);
-        break;
-    case AUK:
-        for (auto indexOffset : conf::auk_index_offsets)
-            indices.push_back(vertices.size()/2 + indexOffset);
-        for (uint8_t i=0; i<conf::auk_points; ++i)
-            push_back_vec(vertices, pos + reinterpret_cast<const vec*>(conf::auk_vertex_offsets)[i]);
-        colors.insert(colors.end(), conf::auk_colors, conf::auk_colors + conf::auk_points*4);
-        break;
-    default:
-        break;
-    }
-
+    for (uint8_t i=0; i<faction->n_indices; ++i)
+        indices.push_back(vertices.size()/2 + faction->index_offsets[i]);
+    for (uint8_t i=0; i<faction->n_vertices; ++i)
+        push_back_vec(vertices, pos + reinterpret_cast<const vec*>(faction->vertex_offsets)[i]);
+    colors.insert(colors.end(), faction->colors, faction->colors + faction->n_vertices*4);
 
     Grid::insert(*this);
 }
@@ -204,7 +190,7 @@ void Boid::die()
     state = DEAD;
 
     for (uint8_t i=0; i<faction->n_vertices; ++i)
-        color[i] = col(0,0,0,0);
+        color[i].a = 0;
 }
 
 bool allies(const Boid& lhs, const Boid& rhs)

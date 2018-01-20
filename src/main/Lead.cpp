@@ -11,13 +11,15 @@ void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
     vertex = reinterpret_cast<vec*>(&(*vertices.end()));
     color = reinterpret_cast<col*>(&(*colors.end()));
  
-    for (uint8_t i=0; i<starling.n_indices; ++i)
-        indices.push_back(vertices.size()/2 + starling.index_offsets[i]);
-    for (uint8_t i=0; i<starling.n_vertices; ++i)
-        push_back_vec(vertices, pos + reinterpret_cast<const vec*>(starling.vertex_offsets)[i]);
-    colors.insert(colors.end(), starling.colors, starling.colors + starling.n_vertices*4);
+    for (uint8_t i=0; i<faction->n_indices; ++i)
+        indices.push_back(vertices.size()/2 + faction->index_offsets[i]);
+    for (uint8_t i=0; i<faction->n_vertices; ++i)
+        push_back_vec(vertices, pos + reinterpret_cast<const vec*>(faction->vertex_offsets)[i]);
+    colors.insert(colors.end(), faction->colors, faction->colors + faction->n_vertices*4);
 
     Grid::insert(*this);
+
+    this->dest = *vertex;
 }
 
 void Lead::steer(vec dest)
@@ -48,8 +50,8 @@ void Lead::update(float dt)
         vec velNormed = vel / speed;
         mat velocityProjection = {  velNormed.y,    velNormed.x,
                                         -velNormed.x,   velNormed.y };
-        for (uint8_t i=1; i < starling.n_vertices; ++i)
-            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(starling.vertex_offsets)[i];
+        for (uint8_t i=1; i < faction->n_vertices; ++i)
+            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(faction->vertex_offsets)[i];
     }
 
 }

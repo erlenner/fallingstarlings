@@ -88,3 +88,47 @@ const Faction starling = {
     3,  // center_index
     &starling_point_in_boid,
 };
+
+const float auk_side = .01;
+const float auk_vertex_offsets[] = {
+    0 * auk_side,       0 * auk_side,
+    .5 * auk_side,      1.5 * auk_side,
+    -.5 * auk_side,     1.5 * auk_side,
+    0 * auk_side,       2 * auk_side,
+    .6 * auk_side,      2 * auk_side,
+    0 * auk_side,       4 * auk_side,
+    -.6 * auk_side,     2 * auk_side,
+    1.5 * auk_side,     1.5 * auk_side,
+    2.5 * auk_side,     3.5 * auk_side,
+    -2.5 * auk_side,    3.5 * auk_side,
+    -1.5 * auk_side,    1.5 * auk_side,
+};
+const float auk_colors[] = {
+    0,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+};
+const uint32_t auk_index_offsets[] = {0,1,2,2,1,3,4,5,6,3,7,8,3,9,10};
+
+bool auk_point_in_boid(vec v, const Boid& boid);
+
+const Faction auk = {
+    AUK,
+    1,  // weight
+    11, // n_vertices
+    15, // v_indices
+    1,  // n_frames
+    auk_vertex_offsets,
+    auk_colors,
+    auk_index_offsets,
+    3,  // center_index
+    &auk_point_in_boid,
+};

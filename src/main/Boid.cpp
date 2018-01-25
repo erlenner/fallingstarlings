@@ -60,7 +60,7 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         //    std::cout << friends[i] << "\t";
         //std::cout << "\n";
 
-        std::cout << force << "\n";
+        //std::cout << force << "\n";
 
         vec newVel = vel + faction->weight * force * dt;
         const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));

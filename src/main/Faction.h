@@ -4,7 +4,7 @@
 
 class Boid;
 
-enum FactionID : int8_t {STARLING = 0, AUK};
+enum FactionID : int8_t {STARLING = 0, AUK, BAT};
 
 struct Faction{
     FactionID id;
@@ -104,17 +104,17 @@ const float auk_vertex_offsets[] = {
     -1.5 * auk_side,    1.5 * auk_side,
 };
 const float auk_colors[] = {
-    0,  0,  1,  1,
     1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
-    1,  0,  1,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
+    0,  1,  0,  1,
 };
 const uint32_t auk_index_offsets[] = {0,1,2,2,1,3,4,5,6,3,7,8,3,9,10};
 
@@ -131,4 +131,57 @@ const Faction auk = {
     auk_index_offsets,
     3,  // center_index
     &auk_point_in_boid,
+};
+
+const float bat_side = .01;
+const float bat_vertex_offsets[] = {
+    0 * bat_side,       0 * bat_side,
+    .3 * bat_side,      1 * bat_side,
+    -.3 * bat_side,     1 * bat_side,
+    0 * bat_side,       2 * bat_side,
+    .5 * bat_side,      2.5 * bat_side,
+    -.5 * bat_side,     2.5 * bat_side,
+    1 * bat_side,       .5 * bat_side,
+    2.3 * bat_side,     2 * bat_side,
+    -2.3 * bat_side,    2 * bat_side,
+    -1 * bat_side,      .5 * bat_side,
+
+    0 * bat_side,       0 * bat_side,
+    .3 * bat_side,      1 * bat_side,
+    -.3 * bat_side,     1 * bat_side,
+    0 * bat_side,       2 * bat_side,
+    .5 * bat_side,      2.5 * bat_side,
+    -.5 * bat_side,     2.5 * bat_side,
+    .9 * bat_side,       .8 * bat_side,
+    1.9 * bat_side,     2.7 * bat_side,
+    -1.9 * bat_side,    2.7 * bat_side,
+    -.9 * bat_side,      .8 * bat_side,
+};
+const float bat_colors[] = {
+    1,  1,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+    1,  0,  1,  1,
+};
+const uint32_t bat_index_offsets[] = {0,1,2,2,1,3,3,4,5,1,6,7,2,8,9};
+
+bool bat_point_in_boid(vec v, const Boid& boid);
+
+const Faction bat = {
+    BAT,
+    1,  // weight
+    10, // n_vertices
+    15, // v_indices
+    2,  // n_frames
+    bat_vertex_offsets,
+    bat_colors,
+    bat_index_offsets,
+    3,  // center_index
+    &bat_point_in_boid,
 };

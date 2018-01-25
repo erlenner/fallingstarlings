@@ -23,14 +23,15 @@ inline float sq(float n)
 { return n*n; }
 
 
-inline void add_capacity(uint32_t add_boids, uint8_t n_vertices, uint8_t n_indices, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
+inline void add_capacity(uint32_t add_boids, uint8_t add_vertices, uint8_t add_indices, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
 {
-    static uint32_t n_boids = 0;
-    n_boids += add_boids;
+    static uint32_t n_vertices = 0, n_indices = 0;
+    n_vertices += add_boids * add_vertices;
+    n_indices += add_boids * add_indices;
 
-    vertices    .reserve(n_boids * n_vertices * 2);
-    colors      .reserve(n_boids * n_vertices * 4);
-    indices     .reserve(n_boids * n_indices);
+    vertices    .reserve(n_vertices * 2);
+    colors      .reserve(n_vertices * 4);
+    indices     .reserve(n_indices);
 }
 
 inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center,  Faction const * faction, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)
@@ -39,7 +40,7 @@ inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center,  Faction
         static vec initPos, velInit(.1,.1);
 
         float angle = (std::rand() % 360) * 3.14f / 180.f;
-        float vectorSize = .05 + (std::rand() % 600) / 2e3;
+        float vectorSize = .05 + (std::rand() % 300) / 2e3;
         initPos = center + vec(std::cos(angle) * vectorSize, std::sin(angle) * vectorSize);
 
         boids[i].init(vertices, indices, colors, initPos, velInit, faction);

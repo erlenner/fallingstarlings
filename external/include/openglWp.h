@@ -13,7 +13,7 @@ SDL_GLContext glContext;
 GLuint BuildShaderProgram(const char *vsPath, const char *fsPath);
 GLuint CreateShader(GLenum eShaderType, const char *strShaderFile);
 GLuint shaderProgram;
-GLuint vao;
+//GLuint vao;
 GLuint vertex_vbo;
 GLuint color_vbo;
 GLuint elements;
@@ -26,10 +26,10 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
 
     //SDL_DisplayMode displayMode;
     //SDL_GetCurrentDisplayMode(0, &displayMode);
-    width = 512;
-    height = 512;
     //width = displayMode.w;
     //height = displayMode.h;
+    width = 512;
+    height = 512;
 
     window = SDL_CreateWindow("Falling Starlings", 0, 0,
         //SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -86,14 +86,12 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
         return 0;
     }
 
-    glGenVertexArrays(1, &vao);
+    //glGenVertexArrays(1, &vao);
 
     // vertex_vbo
     glGenBuffers(1, &vertex_vbo); //create the buffer
-
     // color_vbo
     glGenBuffers(1, &color_vbo); //create the buffer
-
     // index_vbo
     glGenBuffers(1, &elements);
 

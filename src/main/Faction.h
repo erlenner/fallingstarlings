@@ -1,6 +1,7 @@
 #pragma once
 #include "Boid.h"
 #include "vec.h"
+#include "conf.h"
 
 class Boid;
 
@@ -89,6 +90,19 @@ const Faction starling = {
     &starling_point_in_boid,
 };
 
+const Faction starling_lead = {
+    (FactionID)(STARLING + conf::n_factions),
+    4 * starling.weight,  // weight
+    11, // n_vertices
+    15, // v_indices
+    3,  // n_frames
+    starling_vertex_offsets,
+    starling_colors,
+    starling_index_offsets,
+    3,  // center_index
+    &starling_point_in_boid,
+};
+
 const float auk_side = .01;
 const float auk_vertex_offsets[] = {
     0 * auk_side,       0 * auk_side,
@@ -123,6 +137,19 @@ bool auk_point_in_boid(vec v, const Boid& boid);
 const Faction auk = {
     AUK,
     1,  // weight
+    11, // n_vertices
+    15, // v_indices
+    1,  // n_frames
+    auk_vertex_offsets,
+    auk_colors,
+    auk_index_offsets,
+    3,  // center_index
+    &auk_point_in_boid,
+};
+
+const Faction auk_lead = {
+    (FactionID)(AUK + conf::n_factions),
+    4 * auk.weight,  // weight
     11, // n_vertices
     15, // v_indices
     1,  // n_frames
@@ -176,6 +203,19 @@ bool bat_point_in_boid(vec v, const Boid& boid);
 const Faction bat = {
     BAT,
     1,  // weight
+    10, // n_vertices
+    15, // v_indices
+    2,  // n_frames
+    bat_vertex_offsets,
+    bat_colors,
+    bat_index_offsets,
+    3,  // center_index
+    &bat_point_in_boid,
+};
+
+const Faction bat_lead = {
+    (FactionID)(BAT + conf::n_factions),
+    4 * bat.weight,  // weight
     10, // n_vertices
     15, // v_indices
     2,  // n_frames

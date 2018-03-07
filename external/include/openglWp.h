@@ -12,8 +12,9 @@ SDL_GLContext glContext;
 
 GLuint BuildShaderProgram(const char *vsPath, const char *fsPath);
 GLuint CreateShader(GLenum eShaderType, const char *strShaderFile);
-GLuint shaderProgram;
-//GLuint vao;
+GLuint shader1;
+GLuint shader2;
+GLuint vao;
 GLuint vertex_vbo;
 GLuint color_vbo;
 GLuint elements;
@@ -79,14 +80,11 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
         return 1;
     }
 
-    shaderProgram = BuildShaderProgram("shaders/vs1.glsl", "shaders/fs1.glsl");
-    if (shaderProgram == 1)
-    {
-        SDL_Quit();
-        return 0;
-    }
+    shader1 = BuildShaderProgram("shaders/vs1.glsl", "shaders/fs1.glsl");
+    shader2 = BuildShaderProgram("shaders/vs2.glsl", "shaders/fs2.glsl");
 
-    //glGenVertexArrays(1, &vao);
+    // vbos and vbas
+    glGenVertexArrays(1, &vao);
 
     // vertex_vbo
     glGenBuffers(1, &vertex_vbo); //create the buffer
@@ -95,7 +93,19 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     // index_vbo
     glGenBuffers(1, &elements);
 
-    std::cout << width << " " << height << "\n";
+    glBindVertexArray(vao);
+    // vertex_vbo
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
+    glEnableVertexAttribArray(0);
+    // color_vbo
+    glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
+    glEnableVertexAttribArray(1);
+    // indices_vbo
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
+
+    //std::cout << width << " " << height << "\n";
     ////glViewport(-width/2, -height/2, width, height);
     //glViewport(0, 0, width, height);
     //glMatrixMode(GL_PROJECTION);
@@ -103,14 +113,13 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     //glOrtho(0, width, height, 0, -1, 1);
     //glMatrixMode(GL_MODELVIEW);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_BLEND);
 
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
 
-    glUseProgram(shaderProgram);
-    glViewport(0, 0, width, height);
-    glClearColor(0.0,0.0,0.0,1.0);
+    //glViewport(0, 0, width, height);
+    //glClearColor(0.0,0.0,0.0,1.0);
 
     SDL_GL_SetSwapInterval(conf::use_vsync);
 
@@ -122,18 +131,14 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //glBindVertexArray(vao);
-
+    glUseProgram(shader1);
+    glBindVertexArray(vao);
     // vertex_vbo
     glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
-    glEnableVertexAttribArray(0);
     // color_vbo
-    glBindBuffer(GL_ARRAY_BUFFER, color_vbo); //we're "using" this one now
+    glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
-    glEnableVertexAttribArray(1);
     // indices_vbo
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_DYNAMIC_DRAW);
@@ -156,8 +161,7 @@ GLuint BuildShaderProgram(const char *vsPath, const char *fsPath)
 
     glAttachShader(tempProgram, vertexShader);
     glAttachShader(tempProgram, fragmentShader);
-    glBindAttribLocation(tempProgram, 0, "position");
-    glBindAttribLocation(tempProgram, 1, "color");
+    glBindFragDataLocation(tempProgram, 0, "outputColor");
 
     glLinkProgram(tempProgram);
 

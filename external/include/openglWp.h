@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #define GLEW_STATIC
 #include <GL/glew.h>
+#include <SOIL/SOIL.h>
 #include <vector>
 #include "conf.h"
 
@@ -12,12 +13,18 @@ SDL_GLContext glContext;
 
 GLuint BuildShaderProgram(const char *vsPath, const char *fsPath);
 GLuint CreateShader(GLenum eShaderType, const char *strShaderFile);
-GLuint shader1;
-GLuint shader2;
-GLuint vao;
+GLuint unit_shader;
+GLuint unit_vao;
 GLuint vertex_vbo;
 GLuint color_vbo;
 GLuint elements;
+
+GLuint map_shader;
+GLuint map_vao;
+GLuint map_vertex_vbo;
+GLuint map_color_vbo;
+GLuint map_elements_vbo;
+GLuint map_tex_vbo;
 
 uint32_t width, height;
 
@@ -60,6 +67,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     SDL_SetWindowFullscreen(window, SDL_FALSE);
 
     const unsigned char *version = glGetString(GL_VERSION);
+    //printf((const char*)version);
     if (version == NULL) 
     {
         printf("There was an error creating the OpenGL context!\n");
@@ -80,30 +88,30 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
         return 1;
     }
 
-    shader1 = BuildShaderProgram("shaders/vs1.glsl", "shaders/fs1.glsl");
-    shader2 = BuildShaderProgram("shaders/vs2.glsl", "shaders/fs2.glsl");
+    unit_shader = BuildShaderProgram("shaders/vs1.glsl", "shaders/fs1.glsl");
+    map_shader = BuildShaderProgram("shaders/vs2.glsl", "shaders/fs2.glsl");
 
     // vbos and vbas
-    glGenVertexArrays(1, &vao);
+    glGenVertexArrays(1, &unit_vao);
 
     // vertex_vbo
-    glGenBuffers(1, &vertex_vbo); //create the buffer
+    glGenBuffers(1, &vertex_vbo);
     // color_vbo
-    glGenBuffers(1, &color_vbo); //create the buffer
+    glGenBuffers(1, &color_vbo);
     // index_vbo
     glGenBuffers(1, &elements);
 
-    glBindVertexArray(vao);
-    // vertex_vbo
+    glBindVertexArray(unit_vao);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
-    glEnableVertexAttribArray(0);
-    // color_vbo
+    GLint posAttrib = glGetAttribLocation(unit_shader, "position");
+    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 2*sizeof(float), 0);
     glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
-    glEnableVertexAttribArray(1);
-    // indices_vbo
+    GLint colAttrib = glGetAttribLocation(unit_shader, "color");
+    glEnableVertexAttribArray(colAttrib);
+    glVertexAttribPointer(colAttrib, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_DYNAMIC_DRAW);
 
     //std::cout << width << " " << height << "\n";
     ////glViewport(-width/2, -height/2, width, height);
@@ -121,6 +129,66 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     //glViewport(0, 0, width, height);
     //glClearColor(0.0,0.0,0.0,1.0);
 
+    GLfloat map_vertices[] = {
+    //  Position      Color             Texcoords
+        -1.0f,  1.0f, 1.0f, 0.0f, 0.0f, 0.25f, 0.25f, // Top-left
+         1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.75f, 0.25f, // Top-right
+         1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.75f, 0.75f, // Bottom-right
+        -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.25f, 0.75f  // Bottom-left
+    };
+
+    GLuint map_indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    glGenVertexArrays(1, &map_vao);
+    glGenBuffers(1, &map_vertex_vbo);
+    glGenBuffers(1, &map_elements_vbo);
+
+    glBindVertexArray(map_vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, map_vertex_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(map_vertices), map_vertices, GL_STATIC_DRAW);
+
+    posAttrib = glGetAttribLocation(map_shader, "position");
+    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
+    colAttrib = glGetAttribLocation(map_shader, "color");
+    glEnableVertexAttribArray(colAttrib);
+    glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2 * sizeof(GLfloat)));
+    GLint texAttrib = glGetAttribLocation(map_shader, "texcoord");
+    glEnableVertexAttribArray(texAttrib);
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, map_elements_vbo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(map_indices), map_indices, GL_STATIC_DRAW);
+
+
+    // Load textures
+    glGenTextures(1, &map_tex_vbo);
+
+    int width, height;
+    unsigned char* image;
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, map_tex_vbo);
+    image = SOIL_load_image("res/map.png", &width, &height, 0, SOIL_LOAD_RGB);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    SOIL_free_image_data(image);
+    glUniform1i(glGetUniformLocation(map_shader, "tex"), 0);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, map_tex_vbo);
+
+
+
+
+
     SDL_GL_SetSwapInterval(conf::use_vsync);
 
     return 0;
@@ -129,22 +197,41 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
 int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
 {
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shader1);
-    glBindVertexArray(vao);
+    glUseProgram(map_shader);
+    glBindVertexArray(map_vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+    glUseProgram(unit_shader);
+    glBindVertexArray(unit_vao);
     // vertex_vbo
     glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
     // color_vbo
     glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
-    // indices_vbo
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_DYNAMIC_DRAW);
     glDrawElements(GL_TRIANGLES, sizeof(uint32_t)*indices.size(), GL_UNSIGNED_INT, 0);
 
+
     SDL_GL_SwapWindow(window);
+    return 0;
+}
+
+int cleanupWp()
+{
+
+    //glDeleteTextures(1, map_tex_vbo);
+    //glDeleteProgram(map_shader);
+    //glDeleteProgram(unit_shader);
+    //glDeleteBuffers(1, &vertex_vbo);
+
+
+    SDL_GL_DeleteContext(glContext);
+    SDL_Quit();
+
     return 0;
 }
 
@@ -161,7 +248,7 @@ GLuint BuildShaderProgram(const char *vsPath, const char *fsPath)
 
     glAttachShader(tempProgram, vertexShader);
     glAttachShader(tempProgram, fragmentShader);
-    glBindFragDataLocation(tempProgram, 0, "outputColor");
+    glBindFragDataLocation(tempProgram, 0, "outColor");
 
     glLinkProgram(tempProgram);
 

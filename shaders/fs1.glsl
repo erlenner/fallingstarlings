@@ -1,10 +1,10 @@
 #version 300 es
 precision mediump float;
-smooth in vec4 theColor;
-out vec4 outputColor;
+smooth in vec4 Color;
+out vec4 outColor;
 void main()
 {
-    if(theColor.a < 0.5)
+    if(Color.a < 0.5)
         discard;
-	outputColor = theColor;
+	outColor = Color;
 }

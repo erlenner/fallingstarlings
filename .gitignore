@@ -8,3 +8,6 @@ massif.*
 *~
 .tup
 *.log
+*.jpg
+*.png
+!res/*

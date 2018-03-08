@@ -1,0 +1,5 @@
+gcc-6
+freeglut3-dev
+glew
+libsdl2-dev
+libsoil-dev

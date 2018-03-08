@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     for (auto& thread : threads)
         thread.join();
 
-    SDL_GL_DeleteContext(glContext);
-    SDL_Quit();
+    cleanupWp();
+
     return 0;
 }

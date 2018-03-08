@@ -1,10 +1,10 @@
 #version 300 es
 precision mediump float;
-smooth in vec4 theColor;
-out vec4 outputColor;
+in vec3 Color;
+in vec2 Texcoord;
+out vec4 outColor;
+uniform sampler2D tex;
 void main()
 {
-    if(theColor.a < 0.5)
-        discard;
-	outputColor = theColor;
+    outColor = texture(tex, Texcoord);
 }

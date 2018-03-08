@@ -1,10 +1,13 @@
 #version 300 es
 precision mediump float;
-layout(location = 0) in vec2 position;
-layout(location = 1) in vec4 color;
-smooth out vec4 theColor;
+in vec2 position;
+in vec3 color;
+in vec2 texcoord;
+out vec3 Color;
+out vec2 Texcoord;
 void main()
 {
-	gl_Position = vec4(position, 0.0, 1.0);
-	theColor = vec4(1.0,1.0,1.0,1.0);
+    Color = color;
+    Texcoord = texcoord;
+    gl_Position = vec4(position, 0.0, 1.0);
 }

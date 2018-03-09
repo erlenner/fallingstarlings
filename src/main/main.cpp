@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "conf.h"
 #include "mutexctrl.h"
+#include "Map.h"
 //#include <fenv.h>
 
 bool shouldStop = false;
@@ -19,8 +20,19 @@ void cleanup(int signum){
     shouldStop = true;
 }
 
-void pollControls(Lead& lead){
+void pollControls(Lead& lead, Map& map){
+    double dt;
+    uint64_t now, before;
+    before = now = SDL_GetPerformanceCounter();
     while (!shouldStop){
+        now = SDL_GetPerformanceCounter();
+        dt = (double)(now - before) / SDL_GetPerformanceFrequency();
+        if (dt < .017){
+            SDL_Delay(17 - 1000*dt);
+            now = SDL_GetPerformanceCounter();
+            dt = (double)(now - before) / SDL_GetPerformanceFrequency();
+        }
+        before = now;
 
         SDL_Event e;
         while ( SDL_PollEvent(&e) ) {
@@ -41,6 +53,34 @@ void pollControls(Lead& lead){
                         case SDLK_ESCAPE:
                             shouldStop = true;
                         break;
+                        case SDLK_w:
+                            map.activateScroll(1,-1);
+                        break;
+                        case SDLK_a:
+                            map.activateScroll(0,-1);
+                        break;
+                        case SDLK_s:
+                            map.activateScroll(1,1);
+                        break;
+                        case SDLK_d:
+                            map.activateScroll(0,1);
+                        break;
+                    }
+                break;
+                case SDL_KEYUP:
+                    switch (e.key.keysym.sym) {
+                        case SDLK_w:
+                            map.resetScroll(1);
+                        break;
+                        case SDLK_a:
+                            map.resetScroll(0);
+                        break;
+                        case SDLK_s:
+                            map.resetScroll(1);
+                        break;
+                        case SDLK_d:
+                            map.resetScroll(0);
+                        break;
                     }
                 break;
             }
@@ -55,6 +95,8 @@ int main(int argc, char *argv[])
     double dt;
     uint64_t now, before;
     before = now = SDL_GetPerformanceCounter();
+
+    Map* map = &barrens;
 
     std::vector<float> vertices;
     std::vector<float> colors;
@@ -82,55 +124,32 @@ int main(int argc, char *argv[])
     initialize_boids(boids_b.data(), n_boids_b, {-.7,-.7}, &auk, vertices, colors, indices);
     leads_b[0].init(vertices, indices, colors, {-.7,-.7}, &auk);
 
-    //std::cout << "boids:\n";
-    //for (auto& boid : boids_a)
-    //    std::cout << &boid << "\t";
-    //std::cout << "\n";
-
-
-    //std::cout << "leads:\n";
-    //for (auto& lead : leads_a)
-    //    std::cout << &lead << "\t";
-    //std::cout << "\n";
-
-    //std::cout << "\nvertices:\n";
-    //for (uint32_t i=0; i<vertices.size(); ++i){
-    //    std::cout << vertices[i] << "\t";
-    //    if(i%12==11) std::cout << "\n";
-    //}
-    //std::cout << "\nindices:\n";
-    //for (uint32_t i=0; i<indices.size(); ++i)
-    //    std::cout << (int)indices[i] << "\t";
-    //std::cout << "\ncolors:\n";
-    //for (uint32_t i=0; i<colors.size(); ++i)
-    //    std::cout << colors[i] << "\t";
-    //std::cout << "\nN:\n";
-    //std::cout << n_boids_a << "\t" << vertices.size() << "\t" << colors.size() << "\t" << indices.size() << "\n";
-
     initWp(vertices, colors, indices);
 
-    threads.push_back(std::thread(pollControls, std::ref(leads_a[0])));
+    loadMap(*map);
+
+    threads.push_back(std::thread(pollControls, std::ref(leads_a[0]), std::ref(*map)));
 
     signal(SIGINT, cleanup);
 
     while (!shouldStop){
 
-        now = SDL_GetPerformanceCounter();
-        dt = (double)(now - before) / SDL_GetPerformanceFrequency();
-        if (dt < .017){
-            SDL_Delay(17 - 1000*dt);
             now = SDL_GetPerformanceCounter();
             dt = (double)(now - before) / SDL_GetPerformanceFrequency();
-        }
-        before = now;
+            if (dt < .017){
+                SDL_Delay(17 - 1000*dt);
+                now = SDL_GetPerformanceCounter();
+                dt = (double)(now - before) / SDL_GetPerformanceFrequency();
+            }
+            before = now;
 
-        std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
+            std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
 
-        updateWp(vertices, colors, indices);
+            updateWp(vertices, colors, indices, *map);
 
-        for (auto& boid : boids_b)
-            boid.update(dt, leads_b.data, n_leads_b);
-        for (auto& lead : leads_b)
+            for (auto& boid : boids_b)
+                boid.update(dt, leads_b.data, n_leads_b);
+            for (auto& lead : leads_b)
             lead.update(dt);
         for (auto& boid : boids_a)
             boid.update(dt, leads_a.data, n_leads_a);
@@ -139,6 +158,8 @@ int main(int argc, char *argv[])
             for (auto& lead : leads_a)
                 lead.update(dt);
         }
+
+        map->applyScroll(dt);
     }
     for (auto& thread : threads)
         thread.join();

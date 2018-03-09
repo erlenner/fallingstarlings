@@ -5,6 +5,7 @@
 #include <SOIL/SOIL.h>
 #include <vector>
 #include "conf.h"
+#include "Map.h"
 
 #define  WGL_SWAP_METHOD_ARB WGL_SWAP_EXCHANGE_ARB
 
@@ -22,7 +23,7 @@ GLuint elements;
 GLuint map_shader;
 GLuint map_vao;
 GLuint map_vertex_vbo;
-GLuint map_color_vbo;
+GLuint map_tex_coord_vbo;
 GLuint map_elements_vbo;
 GLuint map_tex_vbo;
 
@@ -88,8 +89,8 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
         return 1;
     }
 
-    unit_shader = BuildShaderProgram("shaders/vs1.glsl", "shaders/fs1.glsl");
-    map_shader = BuildShaderProgram("shaders/vs2.glsl", "shaders/fs2.glsl");
+    unit_shader = BuildShaderProgram("shaders/unit_vs.glsl", "shaders/unit_fs.glsl");
+    map_shader = BuildShaderProgram("shaders/map_vs.glsl", "shaders/map_fs.glsl");
 
     // vbos and vbas
     glGenVertexArrays(1, &unit_vao);
@@ -111,7 +112,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     glEnableVertexAttribArray(colAttrib);
     glVertexAttribPointer(colAttrib, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_STATIC_DRAW);
 
     //std::cout << width << " " << height << "\n";
     ////glViewport(-width/2, -height/2, width, height);
@@ -130,11 +131,11 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     //glClearColor(0.0,0.0,0.0,1.0);
 
     GLfloat map_vertices[] = {
-    //  Position      Color             Texcoords
-        -1.0f,  1.0f, 1.0f, 0.0f, 0.0f, 0.25f, 0.25f, // Top-left
-         1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.75f, 0.25f, // Top-right
-         1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.75f, 0.75f, // Bottom-right
-        -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 0.25f, 0.75f  // Bottom-left
+    //  Position      Color             
+        -1.0f,  1.0f, 1.0f, 0.0f, 0.0f,  // NW
+         1.0f,  1.0f, 0.0f, 1.0f, 0.0f,  // NE
+         1.0f, -1.0f, 0.0f, 0.0f, 1.0f,  // SE
+        -1.0f, -1.0f, 1.0f, 1.0f, 1.0f,  // SW
     };
 
     GLuint map_indices[] = {
@@ -144,6 +145,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
 
     glGenVertexArrays(1, &map_vao);
     glGenBuffers(1, &map_vertex_vbo);
+    glGenBuffers(1, &map_tex_coord_vbo);
     glGenBuffers(1, &map_elements_vbo);
 
     glBindVertexArray(map_vao);
@@ -153,18 +155,25 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
 
     posAttrib = glGetAttribLocation(map_shader, "position");
     glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
+    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
     colAttrib = glGetAttribLocation(map_shader, "color");
     glEnableVertexAttribArray(colAttrib);
-    glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), (void*)(2 * sizeof(GLfloat)));
+    glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(2 * sizeof(GLfloat)));
+    glBindBuffer(GL_ARRAY_BUFFER, map_tex_coord_vbo);
     GLint texAttrib = glGetAttribLocation(map_shader, "texcoord");
     glEnableVertexAttribArray(texAttrib);
-    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat), (void*)(5 * sizeof(GLfloat)));
-
+    glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, map_elements_vbo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(map_indices), map_indices, GL_STATIC_DRAW);
 
 
+    SDL_GL_SetSwapInterval(conf::use_vsync);
+
+    return 0;
+}
+
+int loadMap(const Map& map)
+{
     // Load textures
     glGenTextures(1, &map_tex_vbo);
 
@@ -173,7 +182,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, map_tex_vbo);
-    image = SOIL_load_image("res/map.png", &width, &height, 0, SOIL_LOAD_RGB);
+    image = SOIL_load_image(map.img_path, &width, &height, 0, SOIL_LOAD_RGB);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
     SOIL_free_image_data(image);
     glUniform1i(glGetUniformLocation(map_shader, "tex"), 0);
@@ -183,25 +192,19 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glBindTexture(GL_TEXTURE_2D, map_tex_vbo);
-
-
-
-
-
-    SDL_GL_SetSwapInterval(conf::use_vsync);
-
     return 0;
 }
 
-int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
-{
 
+int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices, const Map& map)
+{
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(map_shader);
     glBindVertexArray(map_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, map_tex_coord_vbo);
+    glBufferData(GL_ARRAY_BUFFER, 8*sizeof(float), map.coords, GL_DYNAMIC_DRAW);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
@@ -209,7 +212,7 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
     glBindVertexArray(unit_vao);
     // vertex_vbo
     glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STREAM_DRAW);
     // color_vbo
     glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);

@@ -12,6 +12,8 @@ struct vec
     vec(const vec& rhs): x(rhs.x),y(rhs.y){}
     vec(float* rhs): x(rhs[0]),y(rhs[1]){}
 
+    float operator[](uint8_t i)const{ if (i==0) return x; else return y; }
+    float& operator[](uint8_t i){ if (i==0) return x; else return y; }
     vec operator=(const vec& rhs){ x=rhs.x; y=rhs.y; return *this; }
     float operator*(const vec& rhs)const{ return x*rhs.x+y*rhs.y; }
     vec operator*(float rhs)const{ return vec(x*rhs,y*rhs); }
@@ -27,6 +29,7 @@ struct vec
     friend vec limit_sup(const vec& vecc, float sizeLimit){ float size2=abs2(vecc); return (size2 > sizeLimit*sizeLimit) ? vecc * (sizeLimit / sqrt(size2)) : vecc; }
     friend vec limit_inf(const vec& vecc, float sizeLimit){ float size2=abs2(vecc); return (size2 < sizeLimit*sizeLimit) ? vecc * (sizeLimit / sqrt(size2)) : vecc; }
     friend vec limit(const vec& vecc, float lowerLimit, float upperLimit){ float size2=abs2(vecc); return (size2 > upperLimit*upperLimit) ? vecc * (upperLimit / sqrt(size2)) : ((size2 < lowerLimit*lowerLimit) ? vecc * (lowerLimit / sqrt(size2)) : vecc); }
+
     friend vec norm(const vec& vecc){ float size2=abs2(vecc); return (size2 > 0) ? vecc / sqrt(size2) : vecc; }
     friend float abs2(const vec& vecc){ return vecc.x*vecc.x+vecc.y*vecc.y; }
     friend float abs(const vec& vecc){ return sqrt(vecc.x*vecc.x+vecc.y*vecc.y); }

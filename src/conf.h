@@ -39,6 +39,9 @@ namespace conf{
     const uint32_t max_boids                = 100;
     const uint32_t max_square_radius_search_distance = 7 * .03 / grid_step;
 
+// MAP
+    const float scroll_speed = 1;
+
 // STATES
     const uint8_t n_factions = 10;
 

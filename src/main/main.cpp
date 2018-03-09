@@ -25,14 +25,7 @@ void pollControls(Lead& lead, Map& map){
     uint64_t now, before;
     before = now = SDL_GetPerformanceCounter();
     while (!shouldStop){
-        now = SDL_GetPerformanceCounter();
-        dt = (double)(now - before) / SDL_GetPerformanceFrequency();
-        if (dt < .017){
-            SDL_Delay(17 - 1000*dt);
-            now = SDL_GetPerformanceCounter();
-            dt = (double)(now - before) / SDL_GetPerformanceFrequency();
-        }
-        before = now;
+        //iterate_time(now, before, dt, 30);
 
         SDL_Event e;
         while ( SDL_PollEvent(&e) ) {
@@ -134,14 +127,7 @@ int main(int argc, char *argv[])
 
     while (!shouldStop){
 
-            now = SDL_GetPerformanceCounter();
-            dt = (double)(now - before) / SDL_GetPerformanceFrequency();
-            if (dt < .017){
-                SDL_Delay(17 - 1000*dt);
-                now = SDL_GetPerformanceCounter();
-                dt = (double)(now - before) / SDL_GetPerformanceFrequency();
-            }
-            before = now;
+            iterate_time(now, before, dt, 60);
 
             std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
 

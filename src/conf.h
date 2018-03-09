@@ -4,7 +4,7 @@ namespace conf{
 
 // SDL / OPENGL
 
-    const int use_vsync = 1;
+    const int use_vsync = 0;
 
 // LEADS
     const uint8_t max_leads         = 1;

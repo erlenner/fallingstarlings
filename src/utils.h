@@ -12,6 +12,17 @@
 inline uint32_t secs()
 { return (float)SDL_GetTicks() / 1e3; }
 
+inline void iterate_time(uint64_t& now, uint64_t& before, double& dt, float framerate)
+{
+    now = SDL_GetPerformanceCounter();
+    dt = (double)(now - before) / SDL_GetPerformanceFrequency();
+    if (dt < 1/framerate){
+        SDL_Delay(1000/framerate - 1000*dt);
+        now = SDL_GetPerformanceCounter();
+        dt = (double)(now - before) / SDL_GetPerformanceFrequency();
+    }
+    before = now;
+}
 
 inline float deg_rad(float deg)
 { return deg * M_PI / 180; }

@@ -33,8 +33,8 @@ namespace conf{
     const float vel_max_rot_deg         = 30;
 
 // GRID
-    const uint32_t grid_size                = 100;
-    const uint32_t map_size                 = 2;
+    const uint32_t grid_size                = 200;
+    const uint32_t map_size                 = 1;
     const float grid_step                   = (float)map_size / (float)grid_size;
     const uint32_t max_boids                = 100;
     const uint32_t max_square_radius_search_distance = 7 * .03 / grid_step;

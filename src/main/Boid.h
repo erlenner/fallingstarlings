@@ -11,15 +11,16 @@ enum BoidState : int8_t {DYING = -1, DEAD, ALIVE};
 
 class Lead;
 class Faction;
+class Map;
 
 class Boid
 {
 public:
     vec* vertex;
-    col* color;
+    col* color = nullptr;
     vec vel;
-    uint32_t gridIndex;
-    Faction const * faction;
+    uint32_t gridIndex = 0;
+    Faction const * faction = 0;
     BoidState state = ALIVE;
 
 public:

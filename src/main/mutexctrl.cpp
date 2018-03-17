@@ -1,19 +1,8 @@
-# pragma once
+#include "mutexctrl.h"
 
-#include <shared_mutex>
-#include <cmath>
-#include <assert.h>
-#include "utils.h"
-
-#define IS_SET(var,pos) ((var) & (1<<(pos)))
-
-const int N_MUTEXES = 2;
 
 std::shared_mutex mutexes[N_MUTEXES];
 
-// flags
-const long LEAD_DEST =  1 << 0;
-const long MAP_SCROLL = 1 << 1;
 
 inline void lock(long readWriteFlags, long readOnlyFlags = 0){
     for (int i=0; i<N_MUTEXES; ++i)
@@ -31,19 +20,12 @@ inline void unlock(long readWriteFlags, long readOnlyFlags = 0){
             mutexes[i].unlock_shared();
 }
 
-struct locker{
+locker::locker(long readWriteFlags, long readOnlyFlags = 0)
+: readWriteFlags(readWriteFlags), readOnlyFlags(readOnlyFlags)
+{ lock(readWriteFlags, readOnlyFlags); }
 
-    locker(long readWriteFlags, long readOnlyFlags = 0)
-    : readWriteFlags(readWriteFlags), readOnlyFlags(readOnlyFlags)
-    { lock(readWriteFlags, readOnlyFlags); }
-
-    ~locker()
-    { unlock(readWriteFlags, readOnlyFlags); }
-
-private:
-    long readWriteFlags = 0;
-    long readOnlyFlags = 0;
-};
+locker::~locker()
+{ unlock(readWriteFlags, readOnlyFlags); }
 
 
 

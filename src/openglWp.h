@@ -1,4 +1,3 @@
-//gcc sdl2-opengl-sample.c -o sdl2-opengl-sample -Wall -std=c99 -I/usr/local/include/SDL2 -lSDL2 -I/usr/include/GL -lGL -lGLEW -Wall
 #include <SDL2/SDL.h>
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -7,7 +6,7 @@
 #include "conf.h"
 #include "Map.h"
 
-#define  WGL_SWAP_METHOD_ARB WGL_SWAP_EXCHANGE_ARB
+//#define  WGL_SWAP_METHOD_ARB WGL_SWAP_EXCHANGE_ARB
 
 SDL_Window* window;
 SDL_GLContext glContext;
@@ -26,10 +25,11 @@ GLuint map_vertex_vbo;
 GLuint map_tex_coord_vbo;
 GLuint map_elements_vbo;
 GLuint map_tex_vbo;
+GLint map_coords_loc;
 
 uint32_t width, height;
 
-int initWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
+int initWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices, const Map& map)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) return 1;
 
@@ -113,6 +113,8 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     glVertexAttribPointer(colAttrib, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_STATIC_DRAW);
+
+    map_coords_loc = glGetUniformLocation(unit_shader, "map_position");
 
     //std::cout << width << " " << height << "\n";
     ////glViewport(-width/2, -height/2, width, height);
@@ -216,6 +218,7 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
     // color_vbo
     glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
+    glUniform2f(map_coords_loc, map.position().x, map.position().y);
     glDrawElements(GL_TRIANGLES, sizeof(uint32_t)*indices.size(), GL_UNSIGNED_INT, 0);
 
 

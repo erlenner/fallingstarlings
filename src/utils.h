@@ -57,3 +57,10 @@ inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center,  Faction
         boids[i].init(vertices, indices, colors, initPos, velInit, faction);
     }
 }
+
+inline vec glob2frame(vec globVec)
+{
+    vec frameVec = (globVec);
+    frameVec.y *= -1;
+    return frameVec;
+}

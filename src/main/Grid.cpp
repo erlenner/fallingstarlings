@@ -11,7 +11,7 @@ namespace Grid{
 
     void insert(Boid& boid)
     {
-        uint32_t index = (uint32_t)((boid.vertex->x + 1) / conf::grid_step) + conf::grid_size * (uint32_t)((boid.vertex->y + 1) / conf::grid_step);
+        uint32_t index = (uint32_t)(boid.vertex->x / conf::grid_step) + conf::grid_size * (uint32_t)(boid.vertex->y / conf::grid_step);
         if ((index > 0) && (index < conf::grid_size*conf::grid_size)){
             grid[index].push_back(&boid);
             boid.gridIndex = index;
@@ -20,7 +20,7 @@ namespace Grid{
 
     void update(Boid& boid)
     {
-        uint32_t index = (uint32_t)((boid.vertex->x + 1) / conf::grid_step) + conf::grid_size * (uint32_t)((boid.vertex->y + 1) / conf::grid_step);
+        uint32_t index = (uint32_t)(boid.vertex->x / conf::grid_step) + conf::grid_size * (uint32_t)(boid.vertex->y / conf::grid_step);
 
         if ((index != boid.gridIndex) && (index > 0) && (index < conf::grid_size*conf::grid_size)){
             grid[boid.gridIndex].erase(&boid);

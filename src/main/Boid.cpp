@@ -74,15 +74,15 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         die();
 
     vec newPos = vertex[0] + vel*dt;
-    if (newPos.x * newPos.x > 1){
-        vel.x *= -1;
-        vertex[0] += vel*dt;
-    }
-    else if (newPos.y * newPos.y > 1){
-        vel.y *= -1;
-        vertex[0] += vel*dt;
-    }
-    else
+    //if (newPos.x * newPos.x > 1){
+    //    vel.x *= -1;
+    //    vertex[0] += vel*dt;
+    //}
+    //else if (newPos.y * newPos.y > 1){
+    //    vel.y *= -1;
+    //    vertex[0] += vel*dt;
+    //}
+    //else
         vertex[0] = newPos;
 
     if (vel){

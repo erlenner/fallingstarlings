@@ -38,7 +38,7 @@ void pollControls(Lead& lead, Map& map){
                     SDL_GetMouseState(&x, &y);
                     {
                         locker l(LEAD_DEST, 0);
-                        lead.steer(vec(2*(float)x/width - 1, 1 - 2*(float)y/height));
+                        lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
                     }
                 break;
                 case SDL_KEYDOWN:
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 300, n_leads_a = 1;
+    const uint32_t n_boids_a = 3, n_leads_a = 1;
     //const uint32_t n_boids_b = 300, n_leads_b = 1;
 
     std::vector<Boid> boids_a(n_boids_a);
@@ -112,7 +112,8 @@ int main(int argc, char *argv[])
     //add_capacity(n_boids_b, auk.n_vertices, auk.n_indices, vertices, colors, indices);
 
 
-    vec center_a = glob2frame({0,0});
+    vec center_a = glob2frame({.55,.55});
+    std::cout << "center_a: " << center_a << "\n";
     //vec center_b = glob2frame({.5,.8});
     initialize_boids(boids_a.data(), n_boids_a, center_a, &starling, vertices, colors, indices);
     leads_a[0].init(vertices, indices, colors, center_a, &starling);

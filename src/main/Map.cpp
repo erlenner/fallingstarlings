@@ -30,21 +30,24 @@ void Map::resetScroll(bool xy){
     this->scroll[xy] = 0;
 }
 
-vec Map::position()const{
-    //return (((vec*)coords)[0] + ((vec*)coords)[1] + ((vec*)coords)[2] + ((vec*)coords)[3]) / 4;
-    return ((vec*)coords)[0];
+vec Map::glob_pos()const{
+    return (((vec*)coords)[0] + ((vec*)coords)[1] + ((vec*)coords)[2] + ((vec*)coords)[3]) / 4;
+    //return ((vec*)coords)[0];
 }
 
+vec Map::span()const{
+    return (((vec*)coords)[2] - ((vec*)coords)[0]) / 2;
+}
 
 // instances:
 
 const char * barrens_img_path = "res/map.png";
 
 float barrens_initial_coords[] = {
-    0.25f, 0.25f,   // NW
-    0.75f, 0.25f,   // NE
-    0.75f, 0.75f,   // SE
-    0.25f, 0.75f,   // SW
+    .25f, .25f,   // NW
+    .75f, .25f,   // NE
+    .75f, .75f,   // SE
+    .25f, .75f,   // SW
 };
 
 Map barrens = {

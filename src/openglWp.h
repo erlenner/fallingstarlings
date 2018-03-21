@@ -114,7 +114,7 @@ int initWp(const std::vector<float>& vertices, const std::vector<float>& colors,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elements);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t)*indices.size(), indices.data(), GL_STATIC_DRAW);
 
-    map_coords_loc = glGetUniformLocation(unit_shader, "map_position");
+    map_coords_loc = glGetUniformLocation(unit_shader, "map_info");
 
     //std::cout << width << " " << height << "\n";
     ////glViewport(-width/2, -height/2, width, height);
@@ -200,6 +200,8 @@ int loadMap(const Map& map)
 
 int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices, const Map& map)
 {
+    std::cout << "map.position(): " << map.glob_pos() << "\n";
+
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -218,7 +220,7 @@ int updateWp(const std::vector<float>& vertices, const std::vector<float>& color
     // color_vbo
     glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
-    glUniform2f(map_coords_loc, map.position().x, map.position().y);
+    glUniform4f(map_coords_loc, map.glob_pos().x, map.glob_pos().y, map.span().x, map.span().y);
     glDrawElements(GL_TRIANGLES, sizeof(uint32_t)*indices.size(), GL_UNSIGNED_INT, 0);
 
 

@@ -13,7 +13,8 @@ struct Map{
     void applyScroll(float dt);
     void activateScroll(bool xy, float dir);
     void resetScroll(bool xy);
-    vec position()const;
+    vec glob_pos()const;
+    vec span()const;
 };
 
 

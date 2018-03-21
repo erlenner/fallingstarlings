@@ -200,8 +200,6 @@ int loadMap(const Map& map)
 
 int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices, const Map& map)
 {
-    std::cout << "map.position(): " << map.glob_pos() << "\n";
-
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 

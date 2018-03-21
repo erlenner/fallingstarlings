@@ -7,7 +7,7 @@ smooth out vec4 Color;
 void main()
 {
     gl_Position = vec4( (position.x - map_info.x) / map_info.z,
-                        (position.y + map_info.y) / map_info.w,
+                        (map_info.y - position.y) / map_info.w,
                         0.0, 1.0);
     Color = color;
 }

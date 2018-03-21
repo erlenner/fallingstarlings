@@ -61,7 +61,7 @@ inline void initialize_boids(Boid* boids, uint32_t n_boids, vec center,  Faction
 
 inline vec glob2frame(vec globVec)
 {
-    vec frameVec = (globVec - Context::map->glob_pos());
+    vec frameVec = globVec - Context::map->glob_pos();
     vec frameSpan = Context::map->span();
     frameVec.x /= frameSpan.x;
     frameVec.y /= frameSpan.y;
@@ -73,11 +73,23 @@ inline vec frame2glob(vec frameVec)
 {
     vec globVec = frameVec;
     vec frameSpan = Context::map->span();
-    frameVec.x *= frameSpan.x;
-    frameVec.y *= frameSpan.y;
-    frameVec.y *= -1;
+    globVec.x *= frameSpan.x;
+    globVec.y *= frameSpan.y;
+    globVec.y *= -1;
 
     globVec += Context::map->glob_pos();
 
     return globVec;
 }
+
+//inline vec simpleframe2glob(vec frameVec)
+//{
+//    vec globVec = frameVec;
+//    vec frameSpan = Context::map->span();
+//    frameVec.x *= frameSpan.x;
+//    frameVec.y *= frameSpan.y;
+//
+//    globVec += ((vec*)Context::map->coords)[0];
+//
+//    return globVec;
+//}

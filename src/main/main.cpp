@@ -38,6 +38,9 @@ void pollControls(Lead& lead, Map& map){
                     SDL_GetMouseState(&x, &y);
                     {
                         locker l(LEAD_DEST, 0);
+                        std::cout << "frame2glob steering: " << frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)) << "\n" ;
+                        //lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
+                        //lead.steer(frame2glob(2*vec((float)x/width-1,1-2*(float)y/height)));
                         lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
                     }
                 break;
@@ -112,7 +115,7 @@ int main(int argc, char *argv[])
     //add_capacity(n_boids_b, auk.n_vertices, auk.n_indices, vertices, colors, indices);
 
 
-    vec center_a = glob2frame({.55,.55});
+    vec center_a = {.55,.55};
     std::cout << "center_a: " << center_a << "\n";
     //vec center_b = glob2frame({.5,.8});
     initialize_boids(boids_a.data(), n_boids_a, center_a, &starling, vertices, colors, indices);
@@ -133,7 +136,7 @@ int main(int argc, char *argv[])
 
             iterate_time(now, before, dt, 60);
 
-            std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
+            //std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
 
             updateWp(vertices, colors, indices, *map);
 

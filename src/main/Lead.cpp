@@ -53,7 +53,4 @@ void Lead::update(float dt)
         for (uint8_t i=1; i < faction->n_vertices; ++i)
             vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(faction->vertex_offsets)[i];
     }
-
-    std::cout << "lead_pos:\t" << *vertex << "\tdest:\t" << dest << "\n";
-
 }

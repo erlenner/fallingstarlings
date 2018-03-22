@@ -81,15 +81,3 @@ inline vec frame2glob(vec frameVec)
 
     return globVec;
 }
-
-//inline vec simpleframe2glob(vec frameVec)
-//{
-//    vec globVec = frameVec;
-//    vec frameSpan = Context::map->span();
-//    frameVec.x *= frameSpan.x;
-//    frameVec.y *= frameSpan.y;
-//
-//    globVec += ((vec*)Context::map->coords)[0];
-//
-//    return globVec;
-//}

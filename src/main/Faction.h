@@ -21,7 +21,7 @@ struct Faction{
 };
 
 
-const float starling_side = .01;
+const float starling_side = .0025;
 const float starling_vertex_offsets[] = {
     0 * starling_side,      0 * starling_side,
     .5 * starling_side,     1.5 * starling_side,
@@ -82,7 +82,7 @@ const Faction starling = {
     1,  // weight
     11, // n_vertices
     15, // v_indices
-    3,  // n_frames
+    1,  // n_frames
     starling_vertex_offsets,
     starling_colors,
     starling_index_offsets,

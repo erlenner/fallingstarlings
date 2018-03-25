@@ -38,8 +38,6 @@ void pollControls(Lead& lead, Map& map){
                     SDL_GetMouseState(&x, &y);
                     {
                         locker l(LEAD_DEST, 0);
-                        //lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
-                        //lead.steer(frame2glob(2*vec((float)x/width-1,1-2*(float)y/height)));
                         lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
                     }
                 break;
@@ -99,28 +97,28 @@ int main(int argc, char *argv[])
     std::vector<uint32_t> indices;
 
     const uint32_t n_boids_a = 100, n_leads_a = 1;
-    //const uint32_t n_boids_b = 300, n_leads_b = 1;
+    const uint32_t n_boids_b = 100, n_leads_b = 1;
 
     std::vector<Boid> boids_a(n_boids_a);
     array<Lead, n_leads_a> leads_a = { Lead() };
 
-    //std::vector<Boid> boids_b(n_boids_b);
-    //array<Lead, n_leads_b> leads_b = { Lead() };
+    std::vector<Boid> boids_b(n_boids_b);
+    array<Lead, n_leads_b> leads_b = { Lead() };
 
     add_capacity(n_leads_a, starling.n_vertices, starling.n_indices, vertices, colors, indices);
     add_capacity(n_boids_a, starling.n_vertices, starling.n_indices, vertices, colors, indices);
 
-    //add_capacity(n_leads_b, auk.n_vertices, auk.n_indices, vertices, colors, indices);
-    //add_capacity(n_boids_b, auk.n_vertices, auk.n_indices, vertices, colors, indices);
+    add_capacity(n_leads_b, auk.n_vertices, auk.n_indices, vertices, colors, indices);
+    add_capacity(n_boids_b, auk.n_vertices, auk.n_indices, vertices, colors, indices);
 
 
-    vec center_a = {.55,.55};
-    //vec center_b = glob2frame({.5,.8});
+    vec center_a = {.3,.3};
+    vec center_b = {.7,.7};
     initialize_boids(boids_a.data(), n_boids_a, center_a, &starling, vertices, colors, indices);
     leads_a[0].init(vertices, indices, colors, center_a, &starling);
 
-    //initialize_boids(boids_b.data(), n_boids_b, center_b, &auk, vertices, colors, indices);
-    //leads_b[0].init(vertices, indices, colors, center_b, &auk);
+    initialize_boids(boids_b.data(), n_boids_b, center_b, &auk, vertices, colors, indices);
+    leads_b[0].init(vertices, indices, colors, center_b, &auk);
 
     initWp(vertices, colors, indices, *map);
 
@@ -138,10 +136,10 @@ int main(int argc, char *argv[])
 
             updateWp(vertices, colors, indices, *map);
 
-            //for (auto& boid : boids_b)
-            //    boid.update(dt, leads_b.data, n_leads_b);
-            //for (auto& lead : leads_b)
-            //lead.update(dt);
+            for (auto& boid : boids_b)
+                boid.update(dt, leads_b.data, n_leads_b);
+            for (auto& lead : leads_b)
+            lead.update(dt);
         for (auto& boid : boids_a)
             boid.update(dt, leads_a.data, n_leads_a);
         {

@@ -13,18 +13,18 @@ namespace conf{
 // SWARM DYNAMICS
     const uint8_t neighbours_considered = 7;
 
-    const float comfort_zone        = .015;
+    const float comfort_zone        = .045;
     const float cohesion_weight     = 30;
-    const float alignment_weight    = 40;
+    const float alignment_weight    = 30;
     const float separation_weight   = .05;
-    const float lead_weight         = 4;
+    const float lead_weight         = 20;
 
     const float conflict_alignment_gain         = .1;
     const float conflict_flee_cohesion_gain     = 5;
     const float conflict_attack_cohesion_gain   = 5;
 
-    const float boid_max_speed          = .4;
-    const float boid_min_speed          = .15;
+    const float boid_max_speed          = .3;
+    const float boid_min_speed          = .1;
     const float max_force               = 10;
     const float max_separation_force    = 300;
     const float vel_max_rot_deg         = 30;

@@ -103,7 +103,7 @@ const Faction starling_lead = {
     &starling_point_in_boid,
 };
 
-const float auk_side = .01;
+const float auk_side = starling_side;
 const float auk_vertex_offsets[] = {
     0 * auk_side,       0 * auk_side,
     .5 * auk_side,      1.5 * auk_side,

@@ -1,0 +1,1 @@
+AI maintains estimate of enemy locations after first contact.

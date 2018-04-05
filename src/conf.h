@@ -19,9 +19,9 @@ namespace conf{
     const float separation_weight   = .05;
     const float lead_weight         = 20;
 
-    const float conflict_alignment_gain         = .1;
-    const float conflict_flee_cohesion_gain     = 5;
-    const float conflict_attack_cohesion_gain   = 5;
+    const float conflict_alignment_gain         = .05;
+    const float conflict_flee_cohesion_gain     = 3;
+    const float conflict_attack_cohesion_gain   = 3;
 
     const float boid_max_speed          = .3;
     const float boid_min_speed          = .1;

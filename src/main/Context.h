@@ -14,7 +14,7 @@ namespace Context{
 
 
 
-
+    extern ContextID id;
 
     extern Map* map;
 

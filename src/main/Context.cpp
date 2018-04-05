@@ -4,6 +4,8 @@
 
 namespace Context{
 
+    ContextID id;
+
     Map* map;
 
 }

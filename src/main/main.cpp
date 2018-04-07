@@ -21,9 +21,9 @@ void cleanup(int signum){
 }
 
 void pollControls(Lead& lead, Map& map){
-    double dt;
-    uint64_t now, before;
-    before = now = SDL_GetPerformanceCounter();
+    //double dt;
+    //uint64_t now, before;
+    //before = now = SDL_GetPerformanceCounter();
     while (!shouldStop){
         //iterate_time(now, before, dt, 30);
 
@@ -57,6 +57,9 @@ void pollControls(Lead& lead, Map& map){
                         break;
                         case SDLK_d:
                             map.activateScroll(0,1);
+                        break;
+                        case SDLK_r:
+                            map.scrollToLead(lead);
                         break;
                     }
                 break;

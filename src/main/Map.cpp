@@ -2,13 +2,7 @@
 #include "mutexctrl.h"
 #include "conf.h"
 
-void Map::applyScroll(float dt){
-    vec adjustedScroll;
-    {   
-        locker l(MAP_SCROLL,0);
-        if (!scroll) return;
-        adjustedScroll = dt * conf::scroll_speed * norm(scroll);
-    }
+void Map::applyAdjustedScroll(vec adjustedScroll){
     for (vec* ref = (vec*)coords;ref!=(vec*)coords+4;++ref){
         vec tmp = *ref + adjustedScroll;
         if (tmp.x > 1)      adjustedScroll.x = 1 - ref->x;
@@ -18,6 +12,16 @@ void Map::applyScroll(float dt){
     }
     for (vec* ref = (vec*)coords;ref!=(vec*)coords+4;++ref)
         *ref += adjustedScroll;
+}
+
+void Map::applyScroll(float dt){
+    vec adjustedScroll;
+    {   
+        locker l(MAP_SCROLL,0);
+        if (!scroll) return;
+        adjustedScroll = dt * conf::scroll_speed * norm(scroll);
+    }
+    applyAdjustedScroll(adjustedScroll);
 }
 
 void Map::activateScroll(bool xy, float dir){
@@ -30,9 +34,13 @@ void Map::resetScroll(bool xy){
     this->scroll[xy] = 0;
 }
 
+void Map::scrollToLead(const Lead& lead){
+    vec adjustedScroll = *(lead.vertex) - glob_pos();
+    applyAdjustedScroll(adjustedScroll);
+}
+
 vec Map::glob_pos()const{
     return (((vec*)coords)[0] + ((vec*)coords)[1] + ((vec*)coords)[2] + ((vec*)coords)[3]) / 4;
-    //return ((vec*)coords)[0];
 }
 
 vec Map::span()const{

@@ -4,8 +4,6 @@
 
 namespace Context{
 
-    ContextID id;
-
-    Map* map;
+    context_attributes()
 
 }

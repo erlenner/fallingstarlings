@@ -11,11 +11,10 @@ namespace Context{
 
 
 
+    #define context_attributes(prefix) \
+        prefix ContextID id;\
+        prefix Map* map;\
 
-
-
-    extern ContextID id;
-
-    extern Map* map;
+    context_attributes(extern)
 
 }

@@ -36,10 +36,7 @@ void pollControls(Lead& lead, Map& map){
                 case SDL_MOUSEBUTTONUP:
                     int x, y;
                     SDL_GetMouseState(&x, &y);
-                    {
-                        locker l(LEAD_LOCK, 0);
-                        lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
-                    }
+                    lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
                 break;
                 case SDL_KEYDOWN:
                     switch (e.key.keysym.sym) {
@@ -145,14 +142,11 @@ int main(int argc, char *argv[])
             for (auto& boid : boids_b)
                 boid.update(dt, leads_b.data, n_leads_b);
             for (auto& lead : leads_b)
-            lead.update(dt);
-        for (auto& boid : boids_a)
-            boid.update(dt, leads_a.data, n_leads_a);
-        {
-            locker l(0, LEAD_LOCK);
+                lead.update(dt);
+            for (auto& boid : boids_a)
+                boid.update(dt, leads_a.data, n_leads_a);
             for (auto& lead : leads_a)
                 lead.update(dt);
-        }
 
         map->applyScroll(dt, leads_a[0]);
     }

@@ -11,7 +11,7 @@ struct Map{
     float * coords;
 
     vec scroll;
-    bool keepLeadCentered = 0;
+    bool keepLeadCentered = true;
 
     void applyScroll(float dt, const Lead& lead);
     void activateScroll(bool xy, float dir);

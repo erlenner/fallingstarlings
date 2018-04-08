@@ -1,6 +1,7 @@
 #include "Lead.h"
 #include "utils.h"
 #include "mat.h"
+#include "mutexctrl.h"
 
 void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, std::vector<float>& colors, const vec& pos, Faction const * faction)
 {
@@ -24,11 +25,14 @@ void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
 
 void Lead::steer(vec dest)
 {
+    locker l(LEAD_LOCK,0);
     this->dest = dest;
 }
 
 void Lead::update(float dt)
 {
+    locker l(LEAD_LOCK,0);
+
     Grid::update(*this);
 
     vec togo = dest - *vertex;

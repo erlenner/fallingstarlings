@@ -40,7 +40,7 @@ void Map::resetScroll(bool xy){
 }
 
 void Map::scrollToLead(const Lead& lead){
-    vec adjustedScroll = *readConcurrent(lead.vertex, LEAD_LOCK) - glob_pos();
+    vec adjustedScroll = *(lead.vertex) - glob_pos();
     applyAdjustedScroll(adjustedScroll);
 }
 

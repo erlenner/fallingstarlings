@@ -11,8 +11,8 @@ const int N_MUTEXES = 2;
 extern std::shared_mutex mutexes[N_MUTEXES];
 
 // flags
-const long LEAD_DEST =  1 << 0;
-const long MAP_SCROLL = 1 << 1;
+const long LEAD_LOCK =  1 << 0;
+const long MAP_LOCK =   1 << 1;
 
 inline void lock(long readWriteFlags, long readOnlyFlags = 0){
     for (int i=0; i<N_MUTEXES; ++i)

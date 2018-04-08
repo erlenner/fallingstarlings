@@ -37,7 +37,7 @@ void pollControls(Lead& lead, Map& map){
                     int x, y;
                     SDL_GetMouseState(&x, &y);
                     {
-                        locker l(LEAD_DEST, 0);
+                        locker l(LEAD_LOCK, 0);
                         lead.steer(frame2glob(vec(2*(float)x/width - 1, 1 - 2*(float)y/height)));
                     }
                 break;
@@ -60,6 +60,9 @@ void pollControls(Lead& lead, Map& map){
                         break;
                         case SDLK_r:
                             map.scrollToLead(lead);
+                        break;
+                        case SDLK_t:
+                            map.keepLeadCentered ^= 1;
                         break;
                     }
                 break;
@@ -146,12 +149,12 @@ int main(int argc, char *argv[])
         for (auto& boid : boids_a)
             boid.update(dt, leads_a.data, n_leads_a);
         {
-            locker l(0, LEAD_DEST);
+            locker l(0, LEAD_LOCK);
             for (auto& lead : leads_a)
                 lead.update(dt);
         }
 
-        map->applyScroll(dt);
+        map->applyScroll(dt, leads_a[0]);
     }
     for (auto& thread : threads)
         thread.join();

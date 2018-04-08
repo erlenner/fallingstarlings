@@ -14,28 +14,33 @@ void Map::applyAdjustedScroll(vec adjustedScroll){
         *ref += adjustedScroll;
 }
 
-void Map::applyScroll(float dt){
-    vec adjustedScroll;
-    {   
-        locker l(MAP_SCROLL,0);
-        if (!scroll) return;
-        adjustedScroll = dt * conf::scroll_speed * norm(scroll);
+void Map::applyScroll(float dt, const Lead& lead){
+    if (keepLeadCentered){
+        scrollToLead(lead);
     }
-    applyAdjustedScroll(adjustedScroll);
+    else{
+        vec adjustedScroll;
+        {
+            locker l(MAP_LOCK,0);
+            if (!scroll) return;
+            adjustedScroll = dt * conf::scroll_speed * norm(scroll);
+        }
+        applyAdjustedScroll(adjustedScroll);
+    }
 }
 
 void Map::activateScroll(bool xy, float dir){
-    locker l(MAP_SCROLL,0);
+    locker l(MAP_LOCK,0);
     this->scroll[xy] = dir;
 }
 
 void Map::resetScroll(bool xy){
-    locker l(MAP_SCROLL,0);
+    locker l(MAP_LOCK,0);
     this->scroll[xy] = 0;
 }
 
 void Map::scrollToLead(const Lead& lead){
-    vec adjustedScroll = *(lead.vertex) - glob_pos();
+    vec adjustedScroll = *readConcurrent(lead.vertex, LEAD_LOCK) - glob_pos();
     applyAdjustedScroll(adjustedScroll);
 }
 

@@ -5,6 +5,8 @@
 
 class Boid;
 
+enum AccAnimation : int8_t {FORWARD = 0};
+
 enum FactionID : int8_t {STARLING = 0, AUK, BAT};
 
 struct Faction{
@@ -81,7 +83,7 @@ const Faction starling = {
     STARLING,
     1,  // weight
     11, // n_vertices
-    15, // v_indices
+    15, // n_indices
     1,  // n_frames
     starling_vertex_offsets,
     starling_colors,
@@ -94,8 +96,8 @@ const Faction starling_lead = {
     (FactionID)(STARLING + conf::n_factions),
     4 * starling.weight,  // weight
     11, // n_vertices
-    15, // v_indices
-    3,  // n_frames
+    15, // n_indices
+    1,  // n_frames
     starling_vertex_offsets,
     starling_colors,
     starling_index_offsets,
@@ -116,6 +118,18 @@ const float auk_vertex_offsets[] = {
     2.5 * auk_side,     3.5 * auk_side,
     -2.5 * auk_side,    3.5 * auk_side,
     -1.5 * auk_side,    1.5 * auk_side,
+
+    0 * auk_side,       0 * starling_side,
+    .5 * auk_side,      1.5 * starling_side,
+    -.5 * auk_side,     1.5 * starling_side,
+    0 * auk_side,       2 * starling_side,
+    .6 * auk_side,      2.2 * starling_side,
+    0 * auk_side,       4 * starling_side,
+    -.6 * auk_side,     2.2 * starling_side,
+    1.5 * auk_side,     2.3 * starling_side,
+    2 * auk_side,       4.5 * starling_side,
+    -2 * auk_side,      4.5 * starling_side,
+    -1.5 * auk_side,    2.3 * starling_side,
 };
 const float auk_colors[] = {
     1,  0,  1,  1,

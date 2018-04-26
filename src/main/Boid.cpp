@@ -36,6 +36,7 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
     array<Boid*, conf::max_boids*9> immediates;
     Grid::findNeighbours(*this, friends, immediates, foes);
 
+    uint8_t index = 0;
     if (!collision(immediates)){
 
         friends.trim_value(nullptr);
@@ -43,15 +44,15 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         foes.trim_value(nullptr);
         foes.limit_size(conf::neighbours_considered);
 
-        vec force;
+        vec acc;
         if (foes){
             if (friends.size() < foes.size())
-                force = limit_sup((separation(friends, leads, n_leads) + (-1) * cohesion(foes, nullptr, 0) * conf::conflict_flee_cohesion_gain) / 2, conf::max_force);
+                acc = limit_sup((separation(friends, leads, n_leads) + (-1) * cohesion(foes, nullptr, 0) * conf::conflict_flee_cohesion_gain) / 2, conf::max_acc);
             else
-                force = limit_sup((separation(friends, leads, n_leads) + alignment(foes) * conf::conflict_alignment_gain + cohesion(foes, nullptr, 0) * conf::conflict_attack_cohesion_gain) / 3, conf::max_force);
+                acc = limit_sup((separation(friends, leads, n_leads) + alignment(foes) * conf::conflict_alignment_gain + cohesion(foes, nullptr, 0) * conf::conflict_attack_cohesion_gain) / 3, conf::max_acc);
         }
         else
-            force = limit_sup((separation(friends, leads, n_leads) + alignment(friends) + cohesion(friends, leads, n_leads)) / 3, conf::max_force);
+            acc = limit_sup((separation(friends, leads, n_leads) + alignment(friends) + cohesion(friends, leads, n_leads)) / 3, conf::max_acc);
 
         //std::cout << "s:\t" << abs(separation(friends, leads, n_leads)) << "\ta:\t" << abs(alignment(friends)) << "\tc:\t" << abs(cohesion(friends, leads, n_leads)) << "\n";
 
@@ -60,9 +61,20 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         //    std::cout << friends[i] << "\t";
         //std::cout << "\n";
 
-        //std::cout << force << "\n";
+        //std::cout << acc << "\n";
 
-        vec newVel = vel + faction->weight * force * dt;
+        vec momentum = faction->weight * acc * dt;
+
+        //std::cout << abs2(momentum) << "\t" << abs2(vel) << "\n";
+
+        vec newVel;
+        if (abs2(momentum) > .0002){
+            newVel = vel + momentum;
+            index = 2;
+        }
+        else
+            newVel = vel;
+
         const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
         const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
         if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit)
@@ -92,9 +104,8 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         mat velocityProjection = {  velNormed.y,    velNormed.x,
                                     -velNormed.x,   velNormed.y };
 
-        uint8_t index = (secs() % faction->n_frames) * faction->n_vertices;
         for (uint8_t i=1; i < faction->n_vertices; ++i)
-            vertex[i] = *vertex - velocityProjection * reinterpret_cast<const vec*>(faction->vertex_offsets)[i+index];
+            vertex[i] = *vertex - velocityProjection * ((const vec*)faction->vertex_offsets)[i+index*faction->n_vertices];
     }
 }
 
@@ -106,7 +117,7 @@ vec Boid::cohesion(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_lea
         averagePos += *(neighbours[i]->vertex);
     for (uint8_t i=0; i < n_leads; ++i)
         averagePos += conf::lead_weight*(*(leads[i].vertex));
-    return (neighbours || n_leads) ? limit_sup((averagePos/(neighbours.size()+n_leads*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_force) : vec(0,0);
+    return (neighbours || n_leads) ? limit_sup((averagePos/(neighbours.size()+n_leads*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_acc) : vec(0,0);
 }
 
 template<uint32_t N>
@@ -115,13 +126,13 @@ vec Boid::alignment(const array<Boid*, N>& neighbours)const
     vec averageVel;
     for (uint8_t i=0; i < neighbours.size(); ++i)
         averageVel += neighbours[i]->vel;
-    return neighbours ? limit_sup((averageVel/neighbours.size() - vel) * conf::alignment_weight, conf::max_force) : vec(0,0);
+    return neighbours ? limit_sup((averageVel/neighbours.size() - vel) * conf::alignment_weight, conf::max_acc) : vec(0,0);
 }
 
 template<uint32_t N>
 vec Boid::separation(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_leads)const
 {
-    vec force;
+    vec acc;
     float tooClose = 0;
     for (uint8_t i=0; i < neighbours.size(); ++i){
         for (uint8_t j=0; j<faction->n_vertices; ++j){
@@ -129,7 +140,7 @@ vec Boid::separation(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_l
             if (diff){
                 float dist2 = abs2(diff);
                 if (dist2 < conf::comfort_zone*conf::comfort_zone){
-                    force += diff / dist2;
+                    acc += diff / dist2;
                     ++tooClose;
                 }
             }
@@ -141,13 +152,13 @@ vec Boid::separation(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_l
             if (diff){
                 float dist2 = abs2(diff);
                 if (dist2 < conf::comfort_zone*conf::comfort_zone){
-                    force += conf::lead_weight * diff / dist2;
+                    acc += conf::lead_weight * diff / dist2;
                     tooClose += conf::lead_weight;
                 }
             }
         }
     }
-    return tooClose ? limit_sup(force * (conf::separation_weight / tooClose), conf::max_separation_force) : vec(0,0);
+    return tooClose ? limit_sup(acc * (conf::separation_weight / tooClose), conf::max_separation_acc) : vec(0,0);
 }
 
 bool Boid::collision(const array<Boid*, conf::max_boids*9>& immediates)

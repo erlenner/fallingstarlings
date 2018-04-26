@@ -23,10 +23,10 @@ namespace conf{
     const float conflict_flee_cohesion_gain     = 3;
     const float conflict_attack_cohesion_gain   = 3;
 
-    const float boid_max_speed          = .3;
+    const float boid_max_speed          = .4;
     const float boid_min_speed          = .1;
-    const float max_force               = 10;
-    const float max_separation_force    = 300;
+    const float max_acc                 = 10;
+    const float max_separation_acc      = 300;
     const float vel_max_rot_deg         = 30;
 
 // GRID

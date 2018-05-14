@@ -67,13 +67,14 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         //std::cout << abs2(momentum) << "\t" << abs2(vel) << "\n";
 
         vec newVel = vel;
-        if (abs2(momentum) > .0002 && state == HOVERING){
-            state = static_cast<BoidState>(1);
+        if ((abs2(momentum) > .0005) && (state == HOVERING)){
+            if (newVel && (SQUARE(momentum.x*newVel.x+momentum.y*newVel.y)/abs2(newVel) > 1e-5))
+                newVel += momentum;
+            else
+                state = static_cast<BoidState>(0);
         }
 
         switch(state){
-            case DEAD:
-                break;
             case DYING:
                 die();
                 break;
@@ -84,8 +85,6 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
                 state = static_cast<BoidState>(static_cast<int>(state)+1);
                 break;
         }
-
-        std::cout << state << "\t";
 
         //const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
         //const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
@@ -116,6 +115,7 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 
         for (uint8_t i=1; i < faction->n_vertices; ++i)
             vertex[i] = *vertex - velocityProjection * ((const vec*)faction->vertex_offsets)[i+static_cast<int>(state)*faction->n_vertices];
+
     }
 }
 

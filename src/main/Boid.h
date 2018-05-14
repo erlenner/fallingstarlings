@@ -7,7 +7,7 @@
 
 #include "Grid.h"
 
-enum BoidState : int8_t {DYING=-1, DEAD=0, HOVERING=22};
+enum BoidState : int8_t {DYING=-1, DEAD, HOVERING=22};
 
 class Lead;
 class Faction;

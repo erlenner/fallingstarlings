@@ -317,7 +317,6 @@ const float starling_vertex_offsets[] = {
     2.5 * starling_side,    3.5 * starling_side,
     -2.5 * starling_side,   3.5 * starling_side,
     -1.5 * starling_side,   1.5 * starling_side,
-
 };
 const float starling_colors[] = {
     1,  0,  0,  1,

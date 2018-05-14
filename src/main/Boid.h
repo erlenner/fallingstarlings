@@ -7,7 +7,7 @@
 
 #include "Grid.h"
 
-enum BoidState : int8_t {DYING = -1, DEAD, ALIVE};
+enum BoidState : int8_t {DYING=-1, DEAD=0, HOVERING=22};
 
 class Lead;
 class Faction;
@@ -21,7 +21,7 @@ public:
     vec vel;
     uint32_t gridIndex = 0;
     Faction const * faction = 0;
-    BoidState state = ALIVE;
+    BoidState state = HOVERING;
 
 public:
 

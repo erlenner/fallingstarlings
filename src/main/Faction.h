@@ -348,6 +348,19 @@ const Faction starling = {
     &starling_point_in_boid,
 };
 
+const float starling_lead_colors[] = {
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+};
 const Faction starling_lead = {
     (FactionID)(STARLING + conf::n_factions),
     4 * starling.weight,  // weight
@@ -355,7 +368,7 @@ const Faction starling_lead = {
     15, // n_indices
     1,  // n_frames
     starling_vertex_offsets,
-    starling_colors,
+    starling_lead_colors,
     starling_index_offsets,
     3,  // center_index
     &starling_point_in_boid,

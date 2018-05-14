@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 100, n_leads_a = 1;
+    const uint32_t n_boids_a = 200, n_leads_a = 1;
     //const uint32_t n_boids_b = 100, n_leads_b = 1;
 
     std::vector<Boid> boids_a(n_boids_a);

@@ -44,3 +44,5 @@ bool bat_point_in_boid(vec v, const Boid& boid)
 
     return (a > 0) && (b > 0) && ((a + b) < 1);
 }
+
+const float* auk_vertex_offsets = starling_vertex_offsets;

@@ -375,43 +375,7 @@ const Faction starling_lead = {
 };
 
 const float auk_side = starling_side;
-const float auk_vertex_offsets[] = {
-    0 * auk_side,       0 * auk_side,
-    .5 * auk_side,      1.5 * auk_side,
-    -.5 * auk_side,     1.5 * auk_side,
-    0 * auk_side,       2 * auk_side,
-    .6 * auk_side,      2 * auk_side,
-    0 * auk_side,       4 * auk_side,
-    -.6 * auk_side,     2 * auk_side,
-    1.5 * auk_side,     1.5 * auk_side,
-    2.5 * auk_side,     3.5 * auk_side,
-    -2.5 * auk_side,    3.5 * auk_side,
-    -1.5 * auk_side,    1.5 * auk_side,
-
-    0 * auk_side,       0 * starling_side,
-    .5 * auk_side,      1.5 * starling_side,
-    -.5 * auk_side,     1.5 * starling_side,
-    0 * auk_side,       2 * starling_side,
-    .6 * auk_side,      2.2 * starling_side,
-    0 * auk_side,       4 * starling_side,
-    -.6 * auk_side,     2.2 * starling_side,
-    1.5 * auk_side,     2.3 * starling_side,
-    2 * auk_side,       4.5 * starling_side,
-    -2 * auk_side,      4.5 * starling_side,
-    -1.5 * auk_side,    2.3 * starling_side,
-
-    0 * auk_side,      0 * auk_side,
-    .5 * auk_side,     1.5 * auk_side,
-    -.5 * auk_side,    1.5 * auk_side,
-    0 * auk_side,      2 * auk_side,
-    .3 * auk_side,    2 * auk_side,
-    0 * auk_side,      4 * auk_side,
-    -.3 * auk_side,   2 * auk_side,
-    1 * auk_side,    2.5 * auk_side,
-    .3 * auk_side,    4.7 * auk_side,
-    -.3 * auk_side,   4.7 * auk_side,
-    -1 * auk_side,   2.5 * auk_side,
-};
+extern const float* auk_vertex_offsets;
 const float auk_colors[] = {
     1,  0,  1,  1,
     0,  1,  0,  1,

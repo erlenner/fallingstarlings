@@ -5,6 +5,7 @@
 #include "conf.h"
 #include "Boid.h"
 #include "Context.h"
+#include "generate.h"
 
 #define IS_SET(var,pos) ((var) & (1<<(pos)))
 

@@ -4,7 +4,7 @@
 #include <SOIL/SOIL.h>
 #include <vector>
 #include "conf.h"
-#include "Map.h"
+#include "Context.h"
 
 //#define  WGL_SWAP_METHOD_ARB WGL_SWAP_EXCHANGE_ARB
 
@@ -198,28 +198,32 @@ int loadMap(const Map& map)
 }
 
 
-int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices, const Map& map)
+int updateWp(const std::vector<float>& vertices, const std::vector<float>& colors, const std::vector<uint32_t>& indices)
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(map_shader);
-    glBindVertexArray(map_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, map_tex_coord_vbo);
-    glBufferData(GL_ARRAY_BUFFER, 8*sizeof(float), map.coords, GL_DYNAMIC_DRAW);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    switch(Context::id){
+        case PLAY:
+            glUseProgram(map_shader);
+            glBindVertexArray(map_vao);
+            glBindBuffer(GL_ARRAY_BUFFER, map_tex_coord_vbo);
+            glBufferData(GL_ARRAY_BUFFER, 8*sizeof(float), Context::map->coords, GL_DYNAMIC_DRAW);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
-    glUseProgram(unit_shader);
-    glBindVertexArray(unit_vao);
-    // vertex_vbo
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STREAM_DRAW);
-    // color_vbo
-    glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
-    glUniform4f(map_coords_loc, map.glob_pos().x, map.glob_pos().y, map.span().x, map.span().y);
-    glDrawElements(GL_TRIANGLES, sizeof(uint32_t)*indices.size(), GL_UNSIGNED_INT, 0);
+            glUseProgram(unit_shader);
+            glBindVertexArray(unit_vao);
+            // vertex_vbo
+            glBindBuffer(GL_ARRAY_BUFFER, vertex_vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(), vertices.data(), GL_STREAM_DRAW);
+            // color_vbo
+            glBindBuffer(GL_ARRAY_BUFFER, color_vbo);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float)*colors.size(), colors.data(), GL_DYNAMIC_DRAW);
+            glUniform4f(map_coords_loc, Context::map->glob_pos().x, Context::map->glob_pos().y, Context::map->span().x, Context::map->span().y);
+            glDrawElements(GL_TRIANGLES, sizeof(uint32_t)*indices.size(), GL_UNSIGNED_INT, 0);
+            break;
+    }
 
 
     SDL_GL_SwapWindow(window);

@@ -2,7 +2,7 @@
 #include "vec.h"
 #include "Map.h"
 
-enum ContextID : int8_t {action = 0};
+enum ContextID : int8_t { PLAY };
 
 
 
@@ -16,5 +16,7 @@ namespace Context{
         prefix Map* map;\
 
     context_attributes(extern)
+
+    void init(ContextID id, Map* map);
 
 }

@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     before = now = SDL_GetPerformanceCounter();
 
     Map* map = &barrens;
-    Context::map = map;
+    Context::init(PLAY, map);
 
     std::vector<float> vertices;
     std::vector<float> colors;
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
             std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
 
-            updateWp(vertices, colors, indices, *map);
+            updateWp(vertices, colors, indices);
 
             for (auto& boid : boids_b)
                 boid.update(dt, leads_b.data, n_leads_b);

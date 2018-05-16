@@ -1,15 +1,7 @@
 #include "Context.h"
-#include "generate.h"
 
 
 
-namespace Context{
+INIT_NAMESPACE(Context, ContextID, id, Map*, map)
 
-    context_attributes()
 
-    void init(ContextID id, Map* map){
-        Context::id = id;
-        Context::map = map;
-    }
-
-}

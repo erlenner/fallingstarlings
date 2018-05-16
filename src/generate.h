@@ -85,11 +85,11 @@
 
 #define FOR_EACH_INDIRECT() FOR_EACH_NO_EVAL
 #define FOR_EACH_NO_EVAL(prefix, ...) \
-  IF ( IS_LIST_NOT_EMPTY( __VA_ARGS__ )  ) \
-  ( \
-      prefix OPT_REM_ENCLOSE(HEAD(__VA_ARGS__); ) \
-      DEFER2 ( FOR_EACH_INDIRECT ) () (prefix, TAIL(__VA_ARGS__)) \
-  )
+    IF ( IS_LIST_NOT_EMPTY( __VA_ARGS__ )  ) \
+    ( \
+        prefix OPT_REM_ENCLOSE(HEAD(__VA_ARGS__); ) \
+        DEFER2 ( FOR_EACH_INDIRECT ) () (prefix, TAIL(__VA_ARGS__)) \
+    )
 #define FOR_EACH(prefix, ...) \
     EVAL(FOR_EACH_NO_EVAL(prefix, __VA_ARGS__))
 
@@ -130,6 +130,13 @@
     EVAL(INIT_NAMESPACE_SHORT_NO_EVAL(namespace_name, __VA_ARGS__))
 
 //INIT_NAMESPACE(Context, int, num1, float*, num2, float, num3)
+#define INIT_NAMESPACE_INDIRECT_DECLARATIONS() INIT_NAMESPACE_NO_EVAL_DECLARATIONS
+#define INIT_NAMESPACE_NO_EVAL_DECLARATIONS(namespace_name, ...) \
+    IF ( IS_LIST_NOT_EMPTY( __VA_ARGS__ )  ) \
+    ( \
+        HEAD(__VA_ARGS__) namespace_name::VICE(__VA_ARGS__); \
+        DEFER2 ( INIT_NAMESPACE_INDIRECT_DECLARATIONS ) () (namespace_name, VICE_TAIL(__VA_ARGS__)) \
+    )
 #define INIT_NAMESPACE_INDIRECT_BODY() INIT_NAMESPACE_NO_EVAL_BODY
 #define INIT_NAMESPACE_NO_EVAL_BODY(namespace_name, ...) \
     IF ( IS_LIST_NOT_EMPTY( __VA_ARGS__ )  ) \
@@ -149,8 +156,41 @@
         DEFER2 ( INIT_NAMESPACE_INDIRECT_PARAMETERS ) () (VICE_TAIL(__VA_ARGS__)) \
     )
 #define INIT_NAMESPACE(namespace_name, ...) \
-    void init(EVAL(INIT_NAMESPACE_NO_EVAL_PARAMETERS(__VA_ARGS__))){ \
+    EVAL(INIT_NAMESPACE_NO_EVAL_DECLARATIONS(namespace_name, __VA_ARGS__)) \
+    void namespace_name::init(EVAL(INIT_NAMESPACE_NO_EVAL_PARAMETERS(__VA_ARGS__))){ \
     EVAL(INIT_NAMESPACE_NO_EVAL_BODY(namespace_name, __VA_ARGS__)) \
+    }
+
+//INIT_NAMESPACE_HEADER(Context, int, num1, float*, num2, float, num3)
+#define INIT_NAMESPACE_HEADER_INDIRECT_DECLARATIONS() INIT_NAMESPACE_HEADER_NO_EVAL_DECLARATIONS
+#define INIT_NAMESPACE_HEADER_NO_EVAL_DECLARATIONS(...) \
+    IF ( IS_LIST_NOT_EMPTY( __VA_ARGS__ )  ) \
+    ( \
+        extern HEAD(__VA_ARGS__) VICE(__VA_ARGS__); \
+        DEFER2 ( INIT_NAMESPACE_HEADER_INDIRECT_DECLARATIONS ) () (VICE_TAIL(__VA_ARGS__)) \
+    )
+#define INIT_NAMESPACE_HEADER_INDIRECT_BODY() INIT_NAMESPACE_HEADER_NO_EVAL_BODY
+#define INIT_NAMESPACE_HEADER_NO_EVAL_BODY(...) \
+    IF ( IS_LIST_NOT_EMPTY( __VA_ARGS__ )  ) \
+    ( \
+        VICE(__VA_ARGS__) = VICE(__VA_ARGS__); \
+        DEFER2 ( INIT_NAMESPACE_HEADER_INDIRECT_BODY ) () (VICE_TAIL(__VA_ARGS__)) \
+    )
+#define INIT_NAMESPACE_HEADER_INDIRECT_PARAMETERS() INIT_NAMESPACE_HEADER_NO_EVAL_PARAMETERS
+#define INIT_NAMESPACE_HEADER_NO_EVAL_PARAMETERS(...) \
+    IF ( IS_LIST_NOT_EMPTY( __VA_ARGS__ )  ) \
+    ( \
+        HEAD(__VA_ARGS__) VICE(__VA_ARGS__) \
+        IF ( IS_LIST_NOT_EMPTY( VICE_TAIL(__VA_ARGS__) ) ) \
+        ( \
+            OPT_REM_ENCLOSE(,) \
+        ) \
+        DEFER2 ( INIT_NAMESPACE_HEADER_INDIRECT_PARAMETERS ) () (VICE_TAIL(__VA_ARGS__)) \
+    )
+#define INIT_NAMESPACE_HEADER(namespace_name, ...) \
+    namespace namespace_name{ \
+        EVAL(INIT_NAMESPACE_HEADER_NO_EVAL_DECLARATIONS(__VA_ARGS__)) \
+        void init(EVAL(INIT_NAMESPACE_HEADER_NO_EVAL_PARAMETERS(__VA_ARGS__))); \
     }
 
 //INIT_STRUCT(Boid, int, num1, float*, num2, float, num3)

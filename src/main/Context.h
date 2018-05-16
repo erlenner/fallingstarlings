@@ -1,22 +1,13 @@
 #pragma once
 #include "vec.h"
 #include "Map.h"
+#include "generate.h"
 
 enum ContextID : int8_t { PLAY };
 
 
 
-namespace Context{
+INIT_NAMESPACE_HEADER(Context, ContextID, id, Map*, map)
 
+namespace Context{}
 
-
-
-    #define context_attributes(prefix) \
-        prefix ContextID id;\
-        prefix Map* map;\
-
-    context_attributes(extern)
-
-    void init(ContextID id, Map* map);
-
-}

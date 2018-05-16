@@ -4,6 +4,7 @@ CFLAGS += -std=c++17
 CFLAGS += -O2
 CFLAGS += -Wall
 CFLAGS += -g
+#CFLAGS += -fmax-errors=1
 
 INCLUDES += -I$(TUP_CWD)/src
 INCLUDES += -I$(TUP_CWD)/src/main

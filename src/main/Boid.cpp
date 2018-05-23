@@ -62,17 +62,13 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 
         //std::cout << acc << "\n";
 
+        //std::cout << abs2(acc) << "\t" << abs2(vel) << "\n";
+
         vec momentum = faction->weight * acc * dt;
 
-        //std::cout << abs2(momentum) << "\t" << abs2(vel) << "\n";
-
         vec newVel = vel;
-        if ((abs2(momentum) > .0005) && (state == HOVERING)){
-            if (newVel && (SQUARE(momentum.x*newVel.x+momentum.y*newVel.y)/abs2(newVel) > 1e-5))
-                newVel += momentum;
-            else
-                state = static_cast<BoidState>(0);
-        }
+        if ((state == HOVERING) && (abs2(momentum) > .0005) && newVel && (SQ(momentum * newVel)/abs2(newVel) > 2e-5))
+            state = static_cast<BoidState>(0);
 
         switch(state){
             case DYING:
@@ -86,10 +82,10 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
                 break;
         }
 
-        //const static float sinAngleDiff2Limit = sq(sin(deg_rad(conf::vel_max_rot_deg)));
-        //const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
-        //if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit)
-        //    newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
+        const static float sinAngleDiff2Limit = SQ(sin(deg_rad(conf::vel_max_rot_deg)));
+        const static mat rot_vel_max_rot_deg(deg_rad(conf::vel_max_rot_deg));
+        if (sinAngleDiff2(vel, newVel) > sinAngleDiff2Limit)
+            newVel = rot_vel_max_rot_deg * norm(vel) * abs(newVel);
         vel = limit(newVel, conf::boid_min_speed, conf::boid_max_speed);
     }
 

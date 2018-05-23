@@ -9,7 +9,7 @@
 
 #define IS_SET(var,pos) ((var) & (1<<(pos)))
 
- #define SQUARE(var) ((var) * (var))
+ #define SQ(var) ((var) * (var))
 
 inline uint32_t secs()
 { return (float)SDL_GetTicks() / 1e3; }
@@ -31,9 +31,6 @@ inline float deg_rad(float deg)
 
 inline float rad_deg(float rad)
 { return rad * 180 / M_PI; }
-
-inline float sq(float n)
-{ return n*n; }
 
 
 inline void add_capacity(uint32_t add_boids, uint8_t add_vertices, uint8_t add_indices, std::vector<float>& vertices, std::vector<float>& colors, std::vector<uint32_t>& indices)

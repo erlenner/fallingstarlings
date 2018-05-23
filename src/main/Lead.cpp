@@ -39,7 +39,7 @@ void Lead::update(float dt)
 
     float dist2 = abs2(togo);
     vec newVel;
-    if (dist2 > SQUARE(conf::lead_speed*dt))
+    if (dist2 > SQ(conf::lead_speed*dt))
         newVel = togo * (conf::lead_speed) / sqrt(dist2);
     else
         newVel = togo / dt;

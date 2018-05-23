@@ -67,7 +67,9 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         vec momentum = faction->weight * acc * dt;
 
         vec newVel = vel;
-        if ((state == HOVERING) && (abs2(momentum) > .0005) && newVel && (SQ(momentum * newVel)/abs2(newVel) > 2e-5))
+
+        float parallell2 = SQ(newVel*momentum)/abs2(newVel);
+        if ((state == HOVERING) && (abs2(momentum) > .0005) && newVel && (parallell2 > 2e-5))
             state = static_cast<BoidState>(0);
 
         switch(state){
@@ -75,6 +77,7 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
                 die();
                 break;
             case HOVERING:
+                newVel += newVel ? inv(newVel)*(newVel.x*momentum.y-newVel.y*momentum.x)/abs2(newVel) : vec(0,0); // centripetal
                 break;
             default:
                 newVel += momentum;

@@ -28,5 +28,7 @@ struct mat
 
     friend mat operator*(float lhs, const mat& rhs){ return rhs * lhs; }
 
+    friend float det(const mat& matt){ return matt.m00*matt.m11 - matt.m01*matt.m10; }
+
     friend std::ostream& operator<<(std::ostream& os, const mat& matt){ os << matt.m00 << "," << matt.m01 << "," << matt.m10 << "," << matt.m11; return os; }
 };

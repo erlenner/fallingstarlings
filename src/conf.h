@@ -6,6 +6,9 @@ namespace conf{
 
     const int use_vsync = 0;
 
+// PHYSICS
+    const float air_resistance = .1;
+
 // LEADS
     const uint8_t max_leads = 1;
     const float lead_speed  = .3;
@@ -28,6 +31,7 @@ namespace conf{
     const float max_acc                 = 10;
     const float max_separation_acc      = 10;
     const float vel_max_rot_deg         = 120;
+    const float max_centripetal2        = .2;
 
 // GRID
     const uint32_t  grid_size                           = 200;

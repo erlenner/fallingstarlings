@@ -55,34 +55,29 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
 
         //std::cout << "s:\t" << abs(separation(friends, leads, n_leads)) << "\ta:\t" << abs(alignment(friends)) << "\tc:\t" << abs(cohesion(friends, leads, n_leads)) << "\n";
 
-        //std::cout << this << ":\t";
-        //for (uint32_t i=0; i<friends.size(); ++i)
-        //    std::cout << friends[i] << "\t";
-        //std::cout << "\n";
-
-        //std::cout << acc << "\n";
-
-        //std::cout << abs2(acc) << "\t" << abs2(vel) << "\n";
-
-        vec momentum = faction->weight * acc * dt;
+        vec delta = acc * dt;
 
         vec newVel = vel;
 
-        float parallell2 = SQ(newVel*momentum)/abs2(newVel);
-        if ((state == HOVERING) && (abs2(momentum) > .0005) && newVel && (parallell2 > 2e-5))
+        float parallell2 = newVel ? SQ(newVel*delta)/abs2(newVel) : 0;
+        if ((state == HOVERING) && (abs2(delta) > .0005) && newVel && (parallell2 > 2e-5))
             state = static_cast<BoidState>(0);
 
-        switch(state){
-            case DYING:
+        switch((int)state){
+            case (int)DYING:
                 die();
                 break;
-            case HOVERING:
-                newVel += newVel ? inv(newVel)*(newVel.x*momentum.y-newVel.y*momentum.x)/abs2(newVel) : vec(0,0); // centripetal
+            #define FLAP(i, _) \
+            case i: \
+                newVel += delta; \
+                state = static_cast<BoidState>(static_cast<int>(state)+1); \
                 break;
-            default:
-                newVel += momentum;
-                state = static_cast<BoidState>(static_cast<int>(state)+1);
-                break;
+            EVAL(RANGE(FLAP, 0, 22))
+            case (int)HOVERING:
+                {float centripetal2 = std::min(newVel ? (newVel.x*delta.y-newVel.y*delta.x)/abs2(newVel) : 0, conf::max_centripetal2);
+                newVel += inv(newVel) * centripetal2;
+                //animation = static_cast<int>(HOVERING) + (int)(15 * centripetal2 / conf::max_centripetal2);
+                break;}
         }
 
         const static float sinAngleDiff2Limit = SQ(sin(deg_rad(conf::vel_max_rot_deg)));
@@ -92,6 +87,7 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
         vel = limit(newVel, conf::boid_min_speed, conf::boid_max_speed);
     }
 
+    vel -= conf::air_resistance*dt*vel;
 
     vec newPos = vertex[0] + vel*dt;
     if ((newPos.x < 0) || (newPos.x > 1)){

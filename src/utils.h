@@ -79,3 +79,27 @@ inline vec frame2glob(vec frameVec)
 
     return globVec;
 }
+
+inline float limit(float var, float lower, float upper)
+{
+    if (var < lower)
+        return lower;
+    else if (var > upper)
+        return upper;
+    else
+        return var;
+}
+
+inline float limit_size(float var, float size)
+{
+    if (var > size)
+        return size;
+    else if (var < -size)
+        return -size;
+    else
+        return var;
+}
+
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}

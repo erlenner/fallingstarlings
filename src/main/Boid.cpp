@@ -36,6 +36,11 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
     array<Boid*, conf::max_boids*9> immediates;
     Grid::findNeighbours(*this, friends, immediates, foes);
 
+    //std::cout << this << ":\t";
+    //for (uint32_t i=0; i<friends.size(); ++i)
+    //    std::cout << friends[i] << "\t";
+    //std::cout << "\n";
+
     if (!collision(immediates)){
 
         friends.trim_value(nullptr);
@@ -54,9 +59,9 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             acc = limit_sup((separation(friends, leads, n_leads) + alignment(friends) + cohesion(friends, leads, n_leads)) / 3, conf::max_acc);
 
         //std::cout << "s:\t" << abs(separation(friends, leads, n_leads)) << "\ta:\t" << abs(alignment(friends)) << "\tc:\t" << abs(cohesion(friends, leads, n_leads)) << "\n";
-        static Boid* test = this;
-        if (this == test)
-            std::cout << "st: " << state << "\n";
+        //static Boid* test = this;
+        //if (this == test)
+        //    std::cout << "st: " << state << "\n";
 
         vec delta = acc * dt;
 
@@ -146,7 +151,7 @@ vec Boid::cohesion(const array<Boid*, N>& neighbours, Lead* leads, uint8_t n_lea
         averagePos += *(neighbours[i]->vertex);
     for (uint8_t i=0; i < n_leads; ++i)
         averagePos += conf::lead_weight*(*(leads[i].vertex));
-    return (neighbours || n_leads) ? limit_sup((averagePos/(neighbours.size()+n_leads*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_acc) : vec(0,0);
+    return (neighbours || (n_leads && conf::lead_weight)) ? limit_sup((averagePos/(neighbours.size()+n_leads*conf::lead_weight) - *vertex) * conf::cohesion_weight, conf::max_acc) : vec(0,0);
 }
 
 template<uint32_t N>

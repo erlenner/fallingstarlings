@@ -31,7 +31,7 @@ namespace conf{
     const float max_acc                 = 10;
     const float max_separation_acc      = 10;
     const float vel_max_rot_deg         = 120;
-    const float max_centripetal2        = .2;
+    const float max_centripetal         = .45;
 
 // GRID
     const uint32_t  grid_size                           = 200;

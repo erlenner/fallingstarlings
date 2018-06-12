@@ -59,9 +59,9 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             acc = limit_sup((separation(friends, leads, n_leads) + alignment(friends) + cohesion(friends, leads, n_leads)) / 3, conf::max_acc);
 
         //std::cout << "s:\t" << abs(separation(friends, leads, n_leads)) << "\ta:\t" << abs(alignment(friends)) << "\tc:\t" << abs(cohesion(friends, leads, n_leads)) << "\n";
-        //static Boid* test = this;
-        //if (this == test)
-        //    std::cout << "st: " << state << "\n";
+        static Boid* test = this;
+        if (this == test)
+            std::cout << "st: " << state << "\n";
 
         vec delta = acc * dt;
 
@@ -79,10 +79,10 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             EVAL(RANGE(FLAP, 0, 22))
             case HOVERING:
                 {float centripetal2 = newVel ? (newVel.x*delta.y-newVel.y*delta.x)/abs2(newVel) : 0;
-                centripetal2 = limit_size(centripetal2, conf::max_centripetal2);
+                centripetal2 = limit_size(centripetal2, SQ(conf::max_centripetal));
                 newVel += inv(newVel) * centripetal2;
                 float sign = sgn(centripetal2);
-                int offset = (1 + sign)/2 + 2*6*sign*centripetal2/conf::max_centripetal2;
+                int offset = (1 - sign)/2 + 2*6*sqrt(abs(centripetal2))/conf::max_centripetal;
                 state = (BoidState)(offset + (int)HOVERING);
 
                 float parallell2 = newVel ? SQ(newVel*delta)/abs2(newVel) : 0;
@@ -92,12 +92,12 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             #define TURN(i, _) \
             case i: \
                 {float centripetal2 = newVel ? (newVel.x*delta.y-newVel.y*delta.x)/abs2(newVel) : 0; \
-                centripetal2 = limit(centripetal2, -conf::max_centripetal2, conf::max_centripetal2); \
+                centripetal2 = limit(centripetal2, -SQ(conf::max_centripetal), SQ(conf::max_centripetal)); \
                 newVel += inv(newVel) * centripetal2; \
                 float sign = sgn(centripetal2); \
-                int offset = (1 - sign)/2 + 2*6*sign*centripetal2/conf::max_centripetal2; \
+                int offset = (1 - sign)/2 + 2*6*sqrt(abs(centripetal2))/conf::max_centripetal; \
                 if (offset%2 == i%2) \
-                    state = std::max((BoidState)(offset + (int)HOVERING), (BoidState)(i - 2)); \
+                    state = (BoidState)std::max(offset + (int)HOVERING, i - 2); \
                 else if (i == 1 + (int)HOVERING)\
                     state = HOVERING; \
                 else \
@@ -138,7 +138,7 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
                                     -velNormed.x,   velNormed.y };
 
         for (uint8_t i=1; i < faction->n_vertices; ++i)
-            vertex[i] = *vertex - velocityProjection * ((const vec*)faction->vertex_offsets)[i+static_cast<int>(state)*faction->n_vertices];
+            vertex[i] = *vertex - velocityProjection * ((const vec*)faction->vertex_offsets)[i+(int)(state)*faction->n_vertices];
 
     }
 }

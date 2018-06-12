@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 
             iterate_time(now, before, dt, 60);
 
-            std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
+            //std::cout << "rate:\t" << 1/dt << "\t" << dt << "\n";
 
             updateWp(vertices, colors, indices);
 

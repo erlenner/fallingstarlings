@@ -234,6 +234,7 @@
 
 #define INC(n) CAT(INC_, n)
  
+#define DEC_0 127
 #define DEC_1 0
 #define DEC_2 1
 #define DEC_3 2

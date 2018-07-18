@@ -20,11 +20,11 @@ void cleanup(int signum){
 }
 
 void pollControls(Lead& lead, Map& map){
-    //double dt;
-    //uint64_t now, before;
-    //before = now = SDL_GetPerformanceCounter();
+    double dt;
+    uint64_t now, before;
+    before = now = SDL_GetPerformanceCounter();
     while (!shouldStop){
-        //iterate_time(now, before, dt, 30);
+        iterate_time(now, before, dt, 20);
 
         SDL_Event e;
         while ( SDL_PollEvent(&e) ) {
@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
     std::vector<float> colors;
     std::vector<uint32_t> indices;
 
-    const uint32_t n_boids_a = 200, n_leads_a = 1;
-    const uint32_t n_boids_b = 200, n_leads_b = 1;
+    const uint32_t n_boids_a = 500, n_leads_a = 1;
+    const uint32_t n_boids_b = 500, n_leads_b = 1;
 
     std::vector<Boid> boids_a(n_boids_a);
     array<Lead, n_leads_a> leads_a = { Lead() };

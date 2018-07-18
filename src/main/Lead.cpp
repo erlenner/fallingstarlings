@@ -18,7 +18,7 @@ void Lead::init(std::vector<float>& vertices, std::vector<uint32_t>& indices, st
         push_back_vec(vertices, pos + reinterpret_cast<const vec*>(faction->vertex_offsets)[i]);
     colors.insert(colors.end(), faction->colors, faction->colors + faction->n_vertices*4);
 
-    Grid::insert(*this);
+    //Grid::insert(*this);
 
     this->dest = *vertex;
 }
@@ -33,7 +33,7 @@ void Lead::update(float dt)
 {
     locker l(LEAD_LOCK,0);
 
-    Grid::update(*this);
+    //Grid::update(*this);
 
     vec togo = dest - *vertex;
 

@@ -479,8 +479,8 @@ const float starling_vertex_offsets[] = {
 };
 const float starling_colors[] = {
     1,  0,  0,  1,
-    1,  1,  1,  1,
-    1,  1,  1,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
     1,  1,  1,  1,
     1,  1,  1,  1,
     1,  1,  1,  1,
@@ -508,9 +508,9 @@ const Faction starling = {
 };
 
 const float starling_lead_colors[] = {
-    1,  0,  0,  1,
-    1,  0,  0,  1,
-    1,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
     1,  0,  0,  1,
     1,  0,  0,  1,
     1,  0,  0,  1,
@@ -536,17 +536,17 @@ const Faction starling_lead = {
 const float auk_side = starling_side;
 extern const float* auk_vertex_offsets;
 const float auk_colors[] = {
-    1,  0,  1,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
-    0,  1,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    1,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
+    0,  0,  0,  1,
 };
 const uint32_t auk_index_offsets[] = {0,1,2,2,1,3,4,5,6,3,7,8,3,9,10};
 

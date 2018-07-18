@@ -59,9 +59,9 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             acc = limit_sup((separation(friends, leads, n_leads) + alignment(friends) + cohesion(friends, leads, n_leads)) / 3, conf::max_acc);
 
         //std::cout << "s:\t" << abs(separation(friends, leads, n_leads)) << "\ta:\t" << abs(alignment(friends)) << "\tc:\t" << abs(cohesion(friends, leads, n_leads)) << "\n";
-        static Boid* test = this;
-        if (this == test)
-            std::cout << "st: " << state << "\n";
+        //static Boid* test = this;
+        //if (this == test)
+        //    std::cout << "st: " << state << "\n";
 
         vec delta = acc * dt;
 

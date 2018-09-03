@@ -59,16 +59,16 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             acc = limit_sup((separation(friends, leads, n_leads) + alignment(friends) + cohesion(friends, leads, n_leads)) / 3, conf::max_acc);
 
         //std::cout << "s:\t" << abs(separation(friends, leads, n_leads)) << "\ta:\t" << abs(alignment(friends)) << "\tc:\t" << abs(cohesion(friends, leads, n_leads)) << "\n";
-        //static Boid* test = this;
-        //if (this == test)
-        //    std::cout << "st: " << state << "\n";
+        static Boid* test = this;
+        if (this == test)
+            std::cout << "st: " << state << "\n";
 
         vec delta = acc * dt;
 
         vec newVel = vel;
 
         switch((int)state){
-            case (int)DYING:
+            case DYING:
                 die();
                 break;
             #define FLAP(i, _) \
@@ -77,6 +77,8 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
                 state = (BoidState)(i + 1); \
                 break;
             EVAL(RANGE(FLAP, 0, 22))
+            case (int)HOVERING+1:
+                state = HOVERING;
             case HOVERING:
                 {float centripetal2 = newVel ? (newVel.x*delta.y-newVel.y*delta.x)/abs2(newVel) : 0;
                 centripetal2 = limit_size(centripetal2, SQ(conf::max_centripetal));
@@ -92,21 +94,19 @@ void Boid::update(float dt, Lead* leads, uint8_t n_leads)
             #define TURN(i, _) \
             case i: \
                 {float centripetal2 = newVel ? (newVel.x*delta.y-newVel.y*delta.x)/abs2(newVel) : 0; \
-                centripetal2 = limit(centripetal2, -SQ(conf::max_centripetal), SQ(conf::max_centripetal)); \
+                centripetal2 = limit_size(centripetal2, SQ(conf::max_centripetal)); \
                 newVel += inv(newVel) * centripetal2; \
                 float sign = sgn(centripetal2); \
                 int offset = (1 - sign)/2 + 2*6*sqrt(abs(centripetal2))/conf::max_centripetal; \
-                if (offset%2 == i%2) \
-                    state = (BoidState)std::max(offset + (int)HOVERING, i - 2); \
-                else if (i == 1 + (int)HOVERING)\
-                    state = HOVERING; \
-                else \
-                    state = (BoidState)(i - 2); \
                 float parallell2 = newVel ? SQ(newVel*delta)/abs2(newVel) : 0; \
                 if ((abs2(delta) > .0005) && (parallell2 > 2e-5)) \
                     state = (BoidState)1; \
+                else if (offset%2 == i%2) \
+                    state = (BoidState)std::max(offset + (int)HOVERING, i - 2); \
+                else \
+                    state = (BoidState)(i - 2); \
                 break;}
-            EVAL(RANGE(TURN, 23, 36))
+            EVAL(RANGE(TURN, 24, 36))
         }
 
         const static float sinAngleDiff2Limit = SQ(sin(deg_rad(conf::vel_max_rot_deg)));

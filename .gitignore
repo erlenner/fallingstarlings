@@ -1,4 +1,4 @@
-*.swp
+e.swp
 *.swo
 *.o
 build-*/*
@@ -10,4 +10,3 @@ massif.*
 *.log
 *.jpg
 *.png
-!res/*

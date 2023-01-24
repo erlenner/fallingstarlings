@@ -2,6 +2,7 @@
 #include <shared_mutex>
 #include <cmath>
 #include <assert.h>
+#include <mutex>
 #include "utils.h"
 
 #define IS_SET(var,pos) ((var) & (1<<(pos)))
